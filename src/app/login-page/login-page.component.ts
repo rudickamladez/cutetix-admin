@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authPasswordFlowConfig } from '../auth-password-flow.config';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   templateUrl: './login-page.component.html',
@@ -17,10 +18,26 @@ export class LoginPageComponent implements OnInit {
     password: new FormControl('')
   });
 
+  protected readonly canRun = signal(false);
+
   constructor(
     private router: Router,
     private oauthService: OAuthService
   ) {
+    // Check if browser is chromium based and version >= 132
+    if (environment.BROWSER_CORE_CHECK === false) {
+      this.canRun.set(true);
+    } else {
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      const brands = (navigator as any).userAgentData?.brands as { brand: string, version: string }[] | undefined;
+      if (brands && brands.some(({ brand, version }) => brand === "Chromium" && Number(version) >= 132)) {
+        this.canRun.set(true);
+      } else {
+        this.errorText = "Your browser is not supported. Please use a Chromium-based browser (Chrome, Edge, Opera, Brave) with version 132 or higher.";
+        this.canRun.set(false);
+      }
+    }
+
     // Tweak config for password flow
     // This is just needed b/c this demo uses both,
     // implicit flow as well as password flow

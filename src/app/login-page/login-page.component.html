@@ -1,12 +1,12 @@
 <h1 class="title">CuteTix admin interface</h1>
 
-<div class="error" *ngIf="loginFailed">
+<div class="error" *ngIf="loginFailed || !canRun()">
     <p>
         {{ errorText }}
     </p>
 </div>
 
-<div class="window">
+<div class="window" *ngIf="canRun()">
     <h2 class="ignore-mobile">Login</h2>
     <p>You must be logged in to enter the system.</p>
     <form [formGroup]="loginForm" (submit)="loginWithPassword()">
