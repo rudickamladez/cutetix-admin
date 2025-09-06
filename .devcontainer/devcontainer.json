@@ -1,10 +1,20 @@
-// Reference: https://code.visualstudio.com/docs/remote/containers#_devcontainerjson-reference
 {
-  "name": "Angular dev container",
-  "dockerFile": "Dockerfile",
-  "appPort": [4000, 4200, 4433, 5000, 8080, 9876],
-  "forwardPorts": [4200],
-  "postCreateCommand": "npm install",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:0-18",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
+  "postCreateCommand": "npm install -g @angular/cli && ng --version",
+  "appPort": [
+    4000,
+    4200,
+    4433,
+    5000,
+    8080,
+    9876
+  ],
+  "forwardPorts": [
+    4200
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -12,7 +22,8 @@
         "gkalpak.aio-docs-utils",
         "xaver.clang-format",
         "Angular.ng-template",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "PKief.material-icon-theme"
       ]
     }
   }
