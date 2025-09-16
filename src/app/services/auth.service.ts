@@ -91,7 +91,7 @@ export class AuthService {
         body.set("grant_type", "password");
 
         this.#loginSub = this.#http.post<TokensFromApi>(
-            new URL("auth/token", environment.backend.api).href,
+            new URL("auth/login", environment.backend.api).href,
             body.toString(),
             {
                 headers: {
