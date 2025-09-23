@@ -38,7 +38,7 @@ export class TicketGroupService {
   }
 
   public get(): Observable<TicketGroup[]> {
-    return this.httpClient.get(`${environment.backend.api}/${this.API_PATH}`).pipe(
+    return this.httpClient.get(`${environment.backend.api}/${this.API_PATH}/`).pipe(
       map(
         (res: any) => {
           return res.map(
@@ -52,9 +52,8 @@ export class TicketGroupService {
   public getById(
     id: string
   ): Observable<TicketGroup> {
-    console.log(`${environment.backend.api}/${this.API_PATH}/${id}`)
     return this.httpClient.get(
-      `${environment.backend.api}/${this.API_PATH}/${id}`
+      `${environment.backend.api}/${this.API_PATH}/${id}/`
     ).pipe(
       map(
         (res: any) => {
@@ -66,7 +65,7 @@ export class TicketGroupService {
 
   public create(ticket_group: TicketGroup): Observable<TicketGroup> {
     return this.httpClient.post(
-      `${environment.backend.api}/${this.API_PATH}`,
+      `${environment.backend.api}/${this.API_PATH}/`,
       ticket_group
     ).pipe(
       map(
@@ -82,7 +81,7 @@ export class TicketGroupService {
     body: TicketGroupUpdate
   ): Observable<TicketGroup> {
     return this.httpClient.put(
-      `${environment.backend.api}/${this.API_PATH}/${id}`,
+      `${environment.backend.api}/${this.API_PATH}/${id}/`,
       body
     ).pipe(
       map(
@@ -94,7 +93,7 @@ export class TicketGroupService {
   }
 
   public delete(id: string): Observable<TicketGroup> {
-    return this.httpClient.delete(`${environment.backend.api}/${this.API_PATH}/${id}`).pipe(
+    return this.httpClient.delete(`${environment.backend.api}/${this.API_PATH}/${id}/`).pipe(
       map(
         (res: any) => {
           return <TicketGroup>res;

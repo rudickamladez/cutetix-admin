@@ -38,7 +38,7 @@ export class TicketService {
   }
 
   public get(): Observable<Ticket[]> {
-    return this.httpClient.get(`${environment.backend.api}/${this.API_PATH}`).pipe(
+    return this.httpClient.get(`${environment.backend.api}/${this.API_PATH}/`).pipe(
       map(
         (res: any) => {
           return res.map(
@@ -52,9 +52,8 @@ export class TicketService {
   public getById(
     id: string
   ): Observable<Ticket> {
-    console.log(`${environment.backend.api}/${this.API_PATH}/${id}`)
     return this.httpClient.get(
-      `${environment.backend.api}/${this.API_PATH}/${id}`
+      `${environment.backend.api}/${this.API_PATH}/${id}/`
     ).pipe(
       map(
         (res: any) => {
@@ -66,7 +65,7 @@ export class TicketService {
 
   public create(ticket: Ticket): Observable<Ticket> {
     return this.httpClient.post(
-      `${environment.backend.api}/${this.API_PATH}`,
+      `${environment.backend.api}/${this.API_PATH}/`,
       ticket
     ).pipe(
       map(
@@ -82,7 +81,7 @@ export class TicketService {
   //   body: Ticket
   // ): Observable<Ticket> {
   //   return this.httpClient.patch(
-  //     `${environment.backend.api}/${this.API_PATH}/${id}`,
+  //     `${environment.backend.api}/${this.API_PATH}/${id}/`,
   //     body
   //   ).pipe(
   //     map(
@@ -94,7 +93,7 @@ export class TicketService {
   // }
 
   public delete(id: string): Observable<Ticket> {
-    return this.httpClient.delete(`${environment.backend.api}/${this.API_PATH}/${id}`).pipe(
+    return this.httpClient.delete(`${environment.backend.api}/${this.API_PATH}/${id}/`).pipe(
       map(
         (res: any) => {
           return <Ticket>res;
@@ -105,7 +104,7 @@ export class TicketService {
 
   public cancel(ticket: Ticket): Observable<Ticket> {
     return this.httpClient.post(
-      `${environment.backend.api}/${this.API_PATH}/cancel`,
+      `${environment.backend.api}/${this.API_PATH}/cancel/`,
       {
         id: ticket.id,
         email: ticket.email,

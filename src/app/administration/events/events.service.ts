@@ -38,7 +38,7 @@ export class EventService {
   }
 
   public get(): Observable<Event[]> {
-    return this.httpClient.get(`${environment.backend.api}/${this.API_PATH}`).pipe(
+    return this.httpClient.get(`${environment.backend.api}/${this.API_PATH}/`).pipe(
       map(
         (res: any) => {
           return res.map(
@@ -52,9 +52,8 @@ export class EventService {
   public getById(
     id: string
   ): Observable<Event> {
-    console.log(`${environment.backend.api}/${this.API_PATH}/${id}`)
     return this.httpClient.get(
-      `${environment.backend.api}/${this.API_PATH}/${id}`
+      `${environment.backend.api}/${this.API_PATH}/${id}/`
     ).pipe(
       map(
         (res: any) => {
@@ -66,7 +65,7 @@ export class EventService {
 
   public create(event: Event): Observable<Event> {
     return this.httpClient.post(
-      `${environment.backend.api}/${this.API_PATH}`,
+      `${environment.backend.api}/${this.API_PATH}/`,
       event
     ).pipe(
       map(
@@ -82,7 +81,7 @@ export class EventService {
     body: Event
   ): Observable<Event> {
     return this.httpClient.patch(
-      `${environment.backend.api}/${this.API_PATH}/${id}`,
+      `${environment.backend.api}/${this.API_PATH}/${id}/`,
       body
     ).pipe(
       map(
@@ -94,7 +93,7 @@ export class EventService {
   }
 
   // public delete(id: string): Observable<Event> {
-  //   return this.httpClient.delete(`${environment.backend.api}/${this.API_PATH}/${id}`).pipe(
+  //   return this.httpClient.delete(`${environment.backend.api}/${this.API_PATH}/${id}/`).pipe(
   //     map(
   //       (res: any) => {
   //         return <Event>res;
