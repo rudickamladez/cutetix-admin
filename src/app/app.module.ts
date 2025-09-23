@@ -12,6 +12,9 @@ import { AdministrationModule } from './administration/administration.module';
 import { DataTablesModule } from 'angular-datatables';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { provideHttpClient, withFetch, withInterceptors } from "@angular/common/http";
+import { authInterceptor } from './interceptors/auth.interceptor';
+
 
 @NgModule({
     declarations: [
@@ -30,6 +33,11 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
         DataTablesModule,
         FontAwesomeModule
     ],
-    providers: []
+    providers: [
+        provideHttpClient(
+            withFetch(),
+            withInterceptors([authInterceptor]),
+        ),
+    ]
 })
 export class AppModule { }
