@@ -62,7 +62,6 @@ export class TicketGroupsEditComponent {
             progressBar: true
           }
         )
-        console.log(ticket_group)
         this.form.setValue({
           name: ticket_group.name,
           capacity: ticket_group.capacity,

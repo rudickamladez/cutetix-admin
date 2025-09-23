@@ -68,7 +68,6 @@ export class EventsFormComponent {
               progressBar: true
             }
           )
-          console.log(event)
           this.form.setValue({
             name: event.name,
             ticketsSalesStart: event.tickets_sales_start,

@@ -49,7 +49,6 @@ export class TicketGroupsListComponent implements OnInit, OnDestroy {
         this.errorLoading.text = err.message;
         this.loadingState--;
       },
-      complete: () => console.info('complete')
     });
 
     this.ticket_groupService.deleteAsObservable().subscribe(

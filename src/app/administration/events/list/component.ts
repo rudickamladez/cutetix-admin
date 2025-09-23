@@ -50,7 +50,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
         this.errorLoading.text = err.message;
         this.loadingState--;
       },
-      complete: () => console.info('complete')
     });
 
     this.eventsService.deleteAsObservable().subscribe(
