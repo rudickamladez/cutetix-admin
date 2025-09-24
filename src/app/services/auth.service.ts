@@ -42,19 +42,16 @@ export class AuthService implements OnDestroy {
     #refreshingTimer: ReturnType<typeof setTimeout> | null = null;
     #loginSub?: Subscription;
 
-    get api_url() {
-        return this.#storageService.get(StorageKeys.API_URL) || environment.backend.api;
-    }
-
     constructor() {
         // could not be unsubscribed, because it is provided in root
-        this.#storageService.storageEvent$(StorageKeys.ACCESS_TOKEN)
-            .pipe(filter(e => e.action !== "delete"))
-            .subscribe({
-                next: () => {
-                    this.#refreshAccessTokenOnWS();
-                }
-            });
+        // this.#storageService.storageEvent$(StorageKeys.ACCESS_TOKEN)
+        //     .pipe(filter(e => e.action !== "delete"))
+        //     .subscribe({
+        //         next: () => {
+        //             this.#refreshAccessTokenOnWS();
+        //         }
+        //     });
+        this.#storageService.set(StorageKeys.API_URL, environment.backend.api) 
 
         effect(() => {
             if (this.#visibilityService.visible()) {
@@ -69,7 +66,7 @@ export class AuthService implements OnDestroy {
                 clearTimeout(this.#refreshingTimer);
                 this.#refreshingTimer = null;
             }
-        });
+        }, { allowSignalWrites: true });
     }
 
     ngOnDestroy(): void {
@@ -96,7 +93,7 @@ export class AuthService implements OnDestroy {
         body.set("grant_type", "password");
 
         this.#loginSub = this.#http.post<TokensFromApi>(
-            new URL("auth/login", this.api_url).href,
+            new URL("auth/login", this.#storageService.get(StorageKeys.API_URL)!).href,
             body.toString(),
             {
                 headers: {
@@ -138,7 +135,7 @@ export class AuthService implements OnDestroy {
         this.#isRefreshingToken = true;
         try {
             this.#http.post<TokensFromApi>(
-                new URL("auth/refresh", this.api_url).href,
+                new URL("auth/refresh", this.#storageService.get(StorageKeys.API_URL)!).href,
                 { refresh_token: refreshToken }
             ).subscribe({
                 next: ({ refresh_token, access_token }) => {
