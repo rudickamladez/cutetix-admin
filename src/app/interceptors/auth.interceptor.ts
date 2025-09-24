@@ -6,9 +6,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const cloned = access_token
         ? req.clone({
             setHeaders: { Authorization: `Bearer ${access_token}` },
-            withCredentials: true, // should be true when using cookies/CSRF
         })
-        : req.clone({ withCredentials: true });
+        : req.clone();
 
     return next(cloned);
 };
