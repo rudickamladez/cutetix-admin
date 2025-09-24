@@ -43,8 +43,8 @@ export class StorageService {
     return current !== null ? "create" : "delete";
   }
 
-  get<T extends string = string>(key: StorageKeys): T | null {
-    return localStorage.getItem(key) as T | null;
+  get<T extends string = string>(key: StorageKeys, defaultValue?: T): T | null {
+    return (localStorage.getItem(key) ?? defaultValue ?? null) as T | null;
   }
 
   set<T extends string = string>(key: StorageKeys, value: T): this {
