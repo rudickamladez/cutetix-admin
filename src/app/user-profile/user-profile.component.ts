@@ -1,40 +1,33 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { Component, inject } from '@angular/core';
+import { StorageKeys } from '../tokens/storage.tokens';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.scss']
+  styleUrls: ['./user-profile.component.scss'],
 })
 export class UserProfileComponent {
+  readonly #auth = inject(AuthService);
 
-  constructor(
-    private oauthService: OAuthService
-  ) { }
+  constructor() { }
 
-  get username() {
-    let claims = this.oauthService.getIdentityClaims();
-    if (!claims) return 'undefined';
-    return claims['preferred_username']
+  get username(): string {
+    return this.#auth.getDecodedAccessToken()?.sub || "undefined";
   }
 
   get name() {
-    let claims = this.oauthService.getIdentityClaims();
-    if (!claims) return 'undefined';
-    return claims['name']
+    return "undefined";
   }
 
   get email() {
-    let claims = this.oauthService.getIdentityClaims();
-    if (!claims) return 'undefined';
-    return claims['email']
+    return "undefined";
   }
 
   get email_verified() {
-    let claims = this.oauthService.getIdentityClaims();
-    if (!claims) return 'undefined';
-    return claims['email_verified']
+    return "undefined";
   }
+
+
 
 }
