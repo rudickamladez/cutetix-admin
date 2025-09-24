@@ -8,6 +8,7 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./user-profile.component.scss'],
 })
 export class UserProfileComponent {
+  readonly keys = StorageKeys;
   readonly #auth = inject(AuthService);
 
   constructor() { }

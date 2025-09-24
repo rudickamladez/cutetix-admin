@@ -20,3 +20,7 @@
         white-space: pre-wrap;
     }
 }
+
+.details:nth-child(2n) {
+    margin: 1.5rem 0;
+}
