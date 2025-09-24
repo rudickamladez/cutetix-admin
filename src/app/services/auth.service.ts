@@ -129,14 +129,17 @@ export class AuthService implements OnDestroy {
             this.logout();
             return;
         }
-
+        const access_token_payload = Object(this.getDecodedAccessToken());
 
         this.#logging.log("auth", "Refreshing of access token.");
         this.#isRefreshingToken = true;
         try {
             this.#http.post<TokensFromApi>(
                 new URL("auth/refresh", this.#storageService.get(StorageKeys.API_URL)!).href,
-                { refresh_token: refreshToken }
+                {
+                    refresh_token: refreshToken,
+                    requested_scopes: access_token_payload.scope || null,
+                }
             ).subscribe({
                 next: ({ refresh_token, access_token }) => {
                     this.#logging.log("auth", "Access token was refreshed.");
