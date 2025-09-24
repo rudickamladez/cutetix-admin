@@ -17,8 +17,8 @@ export class LoggedUserComponent {
     @Inject(DOCUMENT) private document: Document
   ) { }
 
-  get username() {
-    return 'undefined';
+  get username(): string {
+    return this.#auth.getDecodedAccessToken()?.sub || "undefined";
   }
 
   get name() {
@@ -31,6 +31,20 @@ export class LoggedUserComponent {
 
   get email_verified() {
     return 'undefined';
+  }
+
+  get access_token_expire() {
+    const exp = this.#auth.getDecodedAccessToken()?.exp;
+    if (!exp) return 'undefined';
+
+    const userLocale = navigator.languages?.[0] || navigator.language || 'cs-CZ';
+    return new Intl.DateTimeFormat(
+      userLocale,
+      {
+        dateStyle: 'short',
+        timeStyle: 'medium'
+      }
+    ).format(new Date(exp * 1000));
   }
 
   logout() {

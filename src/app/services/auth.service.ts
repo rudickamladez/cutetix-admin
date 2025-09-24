@@ -272,6 +272,17 @@ export class AuthService implements OnDestroy {
         return this.#storageService.get(StorageKeys.ACCESS_TOKEN);
     }
 
+    getDecodedAccessToken() {
+        const accessToken = this.getAccessToken();
+        if (accessToken === null) return null;
+
+        try {
+            return jwtDecode(accessToken);
+        } catch (err) {
+            return null;
+        }
+    }
+
     getRefreshToken(): string | null {
         return this.#storageService.get(StorageKeys.REFRESH_TOKEN);
     }
