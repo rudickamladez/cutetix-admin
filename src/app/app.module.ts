@@ -14,6 +14,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { provideHttpClient, withFetch, withInterceptors } from "@angular/common/http";
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { LocalStorageFieldComponent } from './components/local-storage-field/component';
+import { CommonModule } from '@angular/common';
 
 
 @NgModule({
@@ -23,11 +25,13 @@ import { authInterceptor } from './interceptors/auth.interceptor';
         NotFoundComponent,
         LoginPageComponent,
         UserProfileComponent,
+        LocalStorageFieldComponent,
     ],
     bootstrap: [AppComponent],
     imports: [
         AdministrationModule,
         BrowserModule,
+        CommonModule,
         ReactiveFormsModule,
         RouterModule.forRoot(APP_ROUTES, { useHash: false }),
         DataTablesModule,

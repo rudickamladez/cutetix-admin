@@ -83,6 +83,16 @@ h2 {
     }
 }
 
+button.config {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    color: transparent;
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: inset 0px 0px 0px transparent;
+}
+
 .window {
     z-index: 1;
     max-width: 550px;

@@ -1,0 +1,45 @@
+@import "../../administration/common/styles.scss";
+
+.lsf-label {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    margin: .5rem 0;
+}
+
+.lsf-title {
+    font-weight: 600;
+}
+
+.lsf-input {
+    border: 2px solid black;
+    font-size: 1.5rem;
+    line-height: 1rem;
+    padding: .5rem .75rem;
+    min-height: 15px;
+    margin: .25rem;
+    outline: none;
+
+    &:focus-within {
+        border: 2px solid rgba($color: black, $alpha: .75);
+        background-color: rgba($color: black, $alpha: .25);
+        color: $foreColor;
+
+        &::placeholder {
+            color: $foreColor;
+        }
+    }
+}
+
+.lsf-actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .875rem;
+}
+
+.lsf-status {
+    display: block;
+    opacity: .8;
+    margin: 5px;
+}
