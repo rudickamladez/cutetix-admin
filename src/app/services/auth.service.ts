@@ -1,26 +1,28 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { Injectable, type OnDestroy, effect, inject, signal } from "@angular/core";
+import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
+
 import { jwtDecode } from "jwt-decode";
-import { effect, inject, Injectable, signal } from "@angular/core";
-import { ToastrService } from "ngx-toastr";
-import { filter, Subscription } from "rxjs";
+import { timeout, filter, type Subscription } from "rxjs";
 // import { Socket } from "ngx-socket-io";
-import { LoggingService } from "./logging.service";
-import { environment } from "src/environments/environment";
+import { ToastrService } from "ngx-toastr";
+
 import { StorageService } from "./storage.service";
 import { StorageKeys } from "../tokens/storage.tokens";
+import { LoggingService } from "./logging.service";
 import { LockNames } from "../tokens/lock.tokens";
 import { VisibilityService } from "./visibility.service";
+import { environment } from "src/environments/environment";
+// import { NgxIndexedDBService } from "ngx-indexed-db";
 
 type TokensFromApi = {
-    access_token: string,
     refresh_token: string,
-    token_type: string,
+    access_token: string,
 }
 
 @Injectable({
     providedIn: "root"
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
     readonly #http = inject(HttpClient);
     readonly #toastr = inject(ToastrService);
     // readonly #socket = inject(Socket);
@@ -32,7 +34,7 @@ export class AuthService {
     readonly #canGoToPrivate = signal(false);
     readonly canGoToPrivate = this.#canGoToPrivate.asReadonly();
 
-    #canrefresh_token = false;
+    #canRefreshToken = false;
     #isRefreshingToken = false;
 
     #lockAbortController = new AbortController();
@@ -40,6 +42,9 @@ export class AuthService {
     #refreshingTimer: ReturnType<typeof setTimeout> | null = null;
     #loginSub?: Subscription;
 
+    get api_url() {
+        return this.#storageService.get(StorageKeys.API_URL) || environment.backend.api;
+    }
 
     constructor() {
         // could not be unsubscribed, because it is provided in root
@@ -47,7 +52,7 @@ export class AuthService {
             .pipe(filter(e => e.action !== "delete"))
             .subscribe({
                 next: () => {
-                    this.#refreshaccess_tokenOnWS();
+                    this.#refreshAccessTokenOnWS();
                 }
             });
 
@@ -91,7 +96,7 @@ export class AuthService {
         body.set("grant_type", "password");
 
         this.#loginSub = this.#http.post<TokensFromApi>(
-            new URL("auth/login", environment.backend.api).href,
+            new URL("auth/login", this.api_url).href,
             body.toString(),
             {
                 headers: {
@@ -118,22 +123,24 @@ export class AuthService {
         });
     }
 
-
-
     refresh(): void {
         this.#logging.log("auth", "Initiating refreshing of access token.");
-        if (!this.#canrefresh_token || this.#isRefreshingToken || !this.#visibilityService.visible()) return;
+        if (!this.#canRefreshToken || this.#isRefreshingToken || !this.#visibilityService.visible()) return;
 
-        const refresh_token = this.getrefresh_token();
-        if (!refresh_token) {
+        const refreshToken = this.getRefreshToken();
+        if (!refreshToken) {
             this.logout();
             return;
         }
 
+
         this.#logging.log("auth", "Refreshing of access token.");
         this.#isRefreshingToken = true;
         try {
-            this.#http.post<TokensFromApi>(new URL("refresh", environment.backend.api).href, { refresh_token }).subscribe({
+            this.#http.post<TokensFromApi>(
+                new URL("auth/refresh", this.api_url).href,
+                { refresh_token: refreshToken }
+            ).subscribe({
                 next: ({ refresh_token, access_token }) => {
                     this.#logging.log("auth", "Access token was refreshed.");
                     this.#storageService
@@ -148,7 +155,7 @@ export class AuthService {
                     this.#logging.error("auth", "Error while refreshing token.", err);
                     this.#isRefreshingToken = false;
 
-                    if (err.status === 401) {   // pokud není navázáno spojení, status erroru je 0, tj. nechceme uživatele odhlásit
+                    if (err.status === 401 || err.status === 400) {   // pokud není navázáno spojení, status erroru je 0, tj. nechceme uživatele odhlásit
                         this.#storageService.delete(StorageKeys.REFRESH_TOKEN);
                         this.logout();
                         return;
@@ -166,13 +173,25 @@ export class AuthService {
     logout(): void {
         if (!this.isLoggedIn()) return;
 
-        const refresh_token = this.getrefresh_token();
+        const refreshToken = this.getRefreshToken();
+        const apiUrl = this.#storageService.get(StorageKeys.API_URL);
         this.#storageService.clear();
 
-        if (!refresh_token) {
+        if (!refreshToken || !apiUrl) {
             window.location.reload();
             return;
         }
+
+        // TODO rework with navigator.sendBeacon
+        this.#http.post(
+            (new URL("auth/logout", apiUrl)).href,
+            { refresh_token: refreshToken }
+        ).pipe(
+            timeout(1000)
+        ).subscribe({
+            next: () => window.location.reload(),
+            error: () => window.location.reload(),
+        });
     }
 
     #scheduleNextRefresh(): void {
@@ -185,15 +204,15 @@ export class AuthService {
                 clearTimeout(this.#refreshingTimer);
                 this.#refreshingTimer = null;
             }
-            const access_token = this.getaccess_token()!;
-            if (access_token === null) {
+            const accessToken = this.getAccessToken()!;
+            if (accessToken === null) {
                 this.refresh();
             }
-            const parsedaccess_token = jwtDecode(access_token);
+            const parsedAccessToken = jwtDecode(accessToken);
 
             // if the token is non-expiring, there is no point in planning for renewal
-            if (parsedaccess_token.exp !== undefined) {
-                const remainingValidity = (parsedaccess_token.exp * 1000) - Date.now();
+            if (parsedAccessToken.exp !== undefined) {
+                const remainingValidity = (parsedAccessToken.exp * 1000) - Date.now();
 
                 // at the earliest after 5 seconds, but at the latest 15 seconds before expiration
                 const refreshTime = Math.max(5_000, remainingValidity - 15_000);
@@ -210,7 +229,7 @@ export class AuthService {
     }
 
     #handleRefreshLock() {
-        if (this.#canrefresh_token === true) return;
+        if (this.#canRefreshToken === true) return;
         if (this.#visibilityService.visible() === false) return;
 
         if (this.#lockAbortController.signal.aborted) {
@@ -219,7 +238,7 @@ export class AuthService {
         this.#logging.log("auth", "Requesting refresh lock.");
         navigator.locks.request(LockNames.REFRESH_LOCK, { signal: this.#lockAbortController.signal }, () => {
             this.#logging.log("auth", "This window will refresh access tokens.");
-            this.#canrefresh_token = true;
+            this.#canRefreshToken = true;
 
             if (this.isLoggedIn()) {
                 this.#scheduleNextRefresh();
@@ -232,41 +251,41 @@ export class AuthService {
             });
         }).catch(() => {
             this.#logging.log("auth", "This window will not refresh access tokens.");
-            this.#canrefresh_token = false;
+            this.#canRefreshToken = false;
             setTimeout(() => this.#handleRefreshLock(), 500);
         });
     }
 
     isLoggedIn(): boolean {
-        const access_token = this.getaccess_token();
-        if (access_token === null) return false;
+        const accessToken = this.getAccessToken();
+        if (accessToken === null) return false;
 
         try {
-            const parsedaccess_token = jwtDecode(access_token);
-            return parsedaccess_token.exp === undefined || parsedaccess_token.exp * 1000 > Date.now();
+            const parsedAccessToken = jwtDecode(accessToken);
+            return parsedAccessToken.exp === undefined || parsedAccessToken.exp * 1000 > Date.now();
         } catch (err) {
             return false;
         }
     }
 
-    getaccess_token(): string | null {
+    getAccessToken(): string | null {
         return this.#storageService.get(StorageKeys.ACCESS_TOKEN);
     }
 
-    getrefresh_token(): string | null {
+    getRefreshToken(): string | null {
         return this.#storageService.get(StorageKeys.REFRESH_TOKEN);
     }
 
-    #refreshaccess_tokenOnWS(): void {
+    #refreshAccessTokenOnWS(): void {
         this.#logging.log("auth", "NOW SHOULD Refresh access token on WS, but it is NOT IMPLEMENTED right now.");
         // this.#logging.log("auth", "Refreshing access token on WS.", this.#socket.connected);
         // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // (this.#socket.ioSocket as any)._opts.extraHeaders["Authorization"] = `Bearer ${this.getaccess_token()}`;
+        // (this.#socket.ioSocket as any)._opts.extraHeaders["Authorization"] = `Bearer ${this.getAccessToken()}`;
 
         // if (this.#socket.connected) {
-        //     this.#socket.emit("refresh", this.getaccess_token());
+        //   this.#socket.emit("refresh", this.getAccessToken());
         // } else {
-        //     this.#socket.connect();
+        //   this.#socket.connect();
         // }
     }
 }
