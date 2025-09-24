@@ -74,7 +74,7 @@ h2 {
     margin-top: auto;
     z-index: 1;
     width: 100%;
-    grid-area: error;
+    grid-area: "error";
     text-align: center;
     p {
         background-color: rgba($color: red, $alpha: 0.15);
@@ -93,7 +93,7 @@ h2 {
     background: $backColorMedium;
     box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 0.15);
     text-align: center;
-    grid-area: window;
+    grid-area: "window";
     margin: auto;
     animation-delay: 350ms;
 
