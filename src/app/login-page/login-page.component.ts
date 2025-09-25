@@ -13,7 +13,7 @@ import { StorageService } from '../services/storage.service';
 export class LoginPageComponent {
   readonly #auth = inject(AuthService);
   readonly #router = inject(Router);
-  readonly #storage = inject(StorageService);
+  readonly #storageService = inject(StorageService);
 
   public loggingIn: boolean = false;
   public loginFailed: boolean = false;
@@ -29,7 +29,7 @@ export class LoginPageComponent {
 
   constructor() {
     // Check if browser is chromium based and version >= 132
-    if (Boolean(this.#storage.get(StorageKeys.BROWSER_CORE_CHECK) ?? environment.BROWSER_CORE_CHECK) === false) {
+    if (Boolean(this.#storageService.get(StorageKeys.BROWSER_CORE_CHECK) ?? environment.BROWSER_CORE_CHECK) === false) {
       this.canRun.set(true);
     } else {
       // eslint-disable-next-line  @typescript-eslint/no-explicit-any
