@@ -289,6 +289,17 @@ export class AuthService implements OnDestroy {
         return this.#storageService.get(StorageKeys.REFRESH_TOKEN);
     }
 
+    getDecodedRefreshToken() {
+        const refreshToken = this.getRefreshToken();
+        if (refreshToken === null) return null;
+
+        try {
+            return jwtDecode(refreshToken);
+        } catch (err) {
+            return null;
+        }
+    }
+
     #refreshAccessTokenOnWS(): void {
         this.#logging.log("auth", "NOW SHOULD Refresh access token on WS, but it is NOT IMPLEMENTED right now.");
         // this.#logging.log("auth", "Refreshing access token on WS.", this.#socket.connected);

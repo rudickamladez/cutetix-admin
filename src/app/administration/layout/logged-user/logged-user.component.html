@@ -6,8 +6,7 @@
 </div>
 
 <div class="details">
-    <div class="info" label="Username">{{username}}</div>
-    <div class="info" label="Access token expires on">{{access_token_expire}} ‒ {{time_to_access_token_expire}}</div>
+    <app-user-info></app-user-info>
     <div class="button-container">
         <button (click)="toggleTheme()">Switch theme</button>
         <button (click)="logout()">

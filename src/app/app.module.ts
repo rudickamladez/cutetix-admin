@@ -16,6 +16,7 @@ import { provideHttpClient, withFetch, withInterceptors } from "@angular/common/
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { LocalStorageFieldComponent } from './components/local-storage-field/component';
 import { CommonModule } from '@angular/common';
+import { SharedModule } from './shared/shared.module';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { CommonModule } from '@angular/common';
         ReactiveFormsModule,
         RouterModule.forRoot(APP_ROUTES, { useHash: false }),
         DataTablesModule,
-        FontAwesomeModule
+        FontAwesomeModule,
+        SharedModule,
     ],
     providers: [
         provideHttpClient(

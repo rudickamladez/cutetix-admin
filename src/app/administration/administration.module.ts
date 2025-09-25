@@ -20,6 +20,7 @@ import { EventsListComponent } from './events/list/component';
 import { TicketsListComponent } from './tickets/list/component';
 import { TicketsNewComponent } from './tickets/new/component';
 import { EventsFormComponent } from './events/form/component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
     declarations: [
@@ -45,7 +46,8 @@ import { EventsFormComponent } from './events/form/component';
         FontAwesomeModule,
         BrowserAnimationsModule,
         ToastrModule.forRoot(),
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        SharedModule,
     ]
 })
 export class AdministrationModule { }
