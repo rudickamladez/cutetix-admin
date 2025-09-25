@@ -155,7 +155,7 @@ export class AuthService implements OnDestroy {
                     this.#logging.error("auth", "Error while refreshing token.", err);
                     this.#isRefreshingToken = false;
 
-                    if (err.status === 401) {   // pokud není navázáno spojení, status erroru je 0, tj. nechceme uživatele odhlásit
+                    if (err.status !== 0) {
                         this.#storageService.delete(StorageKeys.REFRESH_TOKEN);
                         this.logout();
                         return;
