@@ -51,7 +51,9 @@ export class AuthService implements OnDestroy {
         //             this.#refreshAccessTokenOnWS();
         //         }
         //     });
-        this.#storageService.set(StorageKeys.API_URL, environment.backend.api)
+        if (!this.#storageService.get(StorageKeys.API_URL)) {
+            this.#storageService.set(StorageKeys.API_URL, environment.backend.api)
+        }
 
         effect(() => {
             if (this.#visibilityService.visible()) {
