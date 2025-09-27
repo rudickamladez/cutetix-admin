@@ -42,11 +42,6 @@ export class LoginPageComponent {
       }
     }
 
-
-    if (this.#auth.isLoggedIn()) {
-      this.#router.navigate(["/dashboard"]);
-    }
-
     effect(() => {
       const canGoToPrivate = this.#auth.canGoToPrivate();
       if (canGoToPrivate) {
