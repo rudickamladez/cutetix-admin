@@ -29,7 +29,7 @@ export class LoginPageComponent {
 
   constructor() {
     // Check if browser is chromium based and version >= 132
-    if (Boolean(this.#storageService.get(StorageKeys.BROWSER_CORE_CHECK) ?? environment.BROWSER_CORE_CHECK) === false) {
+    if (this.#storageService.getBoolean(StorageKeys.BROWSER_CORE_CHECK) === false) {
       this.canRun.set(true);
     } else {
       // eslint-disable-next-line  @typescript-eslint/no-explicit-any
