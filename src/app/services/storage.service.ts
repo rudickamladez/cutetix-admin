@@ -51,12 +51,19 @@ export class StorageService {
     const previousValue = localStorage.getItem(key);
     localStorage.setItem(key, value);
     const currentValue = localStorage.getItem(key);
-    
+
     this.#storageEventsFromThisWindow.next({
       currentValue,
       action: this.#actionMapper(previousValue, currentValue),
       key,
     });
+    return this;
+  }
+
+  setIfNull<T extends string = string>(key: StorageKeys, value: T): this {
+    if (this.get(key) === null) {
+      this.set(key, value);
+    }
     return this;
   }
 
