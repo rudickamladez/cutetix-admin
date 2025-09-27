@@ -117,7 +117,17 @@ export class AuthService implements OnDestroy {
             error: (err: HttpErrorResponse) => {
                 this.#logging.log("auth", "User login failed.", err);
                 console.error(err);
-                this.#toastr.error(err.statusText);
+                if (err.error.detail) {
+                    this.#toastr.error(
+                        err.error.detail,
+                        'Login'
+                    );
+                    return;
+                }
+                this.#toastr.error(
+                    err.statusText,
+                    'Login'
+                );
             }
         });
     }
