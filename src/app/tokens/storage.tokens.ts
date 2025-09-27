@@ -1,3 +1,5 @@
+import { environment } from "src/environments/environment";
+
 export const StorageKeys = {
   ACCESS_TOKEN: "access_token",
   REFRESH_TOKEN: "refresh_token",
@@ -5,5 +7,10 @@ export const StorageKeys = {
   THEME: "theme",
   BROWSER_CORE_CHECK: "browser_core_check"
 } as const;
+
+// TODO
+// export const StorageKeysToENV = {
+//   API_URL: environment.backend.api,
+// }
 
 export type StorageKeys = typeof StorageKeys[keyof typeof StorageKeys];

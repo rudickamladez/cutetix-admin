@@ -1,11 +1,20 @@
-<label class="lsf-label">
-    <span class="lsf-title">{{ label }}</span>
-    <input class="lsf-input" [type]="type" [placeholder]="placeholder || ''" [formControl]="ctrl"
-        [attr.autocomplete]="autocomplete" />
-</label>
+<div class="info" [class.has-checkbox]="isCheckbox" [attr.label]="label">
+    <ng-container *ngIf="!isCheckbox; else checkboxTpl">
+        <input class="lsf-input" [type]="type" [formControl]="ctrl" [placeholder]="placeholder || ''"
+            [autocomplete]="autocomplete" />
+    </ng-container>
 
-<div class="lsf-actions">
-    <button type="button" (click)="saveNow()" [disabled]="!dirty" *ngIf="!autosave">Save</button>
-    <button type="button" (click)="resetToStored()" *ngIf="!autosave">Reset</button>
+    <ng-template #checkboxTpl>
+        <div class="checkbox-row">
+            <input type="checkbox" [id]="cid" [formControl]="ctrl" />
+            <label [for]="cid">{{ label }}</label>
+        </div>
+    </ng-template>
+
+    <div class="actions">
+        <button type="button" (click)="saveNow()" [disabled]="!dirty" *ngIf="!autosave">Save</button>
+        <button type="button" (click)="resetToStored()" *ngIf="!autosave">Reset</button>
+    </div>
+
+    <span class="status" *ngIf="status">{{ status }}</span>
 </div>
-<span class="lsf-status" *ngIf="status">{{ status }}</span>

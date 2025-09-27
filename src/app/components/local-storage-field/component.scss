@@ -1,44 +1,83 @@
 @import "../../administration/common/styles.scss";
 
-.lsf-label {
+.info {
     display: flex;
     flex-direction: column;
     gap: .25rem;
     margin: .5rem 0;
+
+    &::before {
+        content: attr(label);
+        font-size: 20px;
+        display: block;
+        font-weight: 600;
+    }
+
+    /* Skryj titulek nad polem, když je to checkbox řádek */
+    &:has(> .checkbox-row)::before {
+        content: none;
+    }
 }
 
-.lsf-title {
-    font-weight: 600;
-}
+/* Fallback místo :has(), kdyby bylo potřeba:
+.info.has-checkbox::before { content: none; }
+*/
 
-.lsf-input {
+.info>input:not([type="checkbox"]) {
     border: 2px solid black;
     font-size: 1.5rem;
     line-height: 1rem;
     padding: .5rem .75rem;
     min-height: 15px;
-    margin: .25rem;
+    margin: .25rem 0;
     outline: none;
 
-    &:focus-within {
-        border: 2px solid rgba($color: black, $alpha: .75);
-        background-color: rgba($color: black, $alpha: .25);
+    &:focus-within,
+    &:focus {
+        border: 2px solid rgba(0, 0, 0, .75);
+        background-color: rgba(0, 0, 0, .25);
         color: $foreColor;
 
         &::placeholder {
             color: $foreColor;
         }
     }
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
-.lsf-actions {
+/* Checkbox MDN řádek */
+.checkbox-row {
     display: flex;
     align-items: center;
     gap: .5rem;
-    font-size: .875rem;
+    margin: .25rem 0;
 }
 
-.lsf-status {
+.checkbox-row>input[type="checkbox"] {
+    display: block;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin: 0;
+    accent-color: currentColor;
+}
+
+.checkbox-row>label {
+    display: inline-block;
+    line-height: 1.125rem;
+    /* přesně jako výška checkboxu = perfektní zarovnání */
+    user-select: none;
+    cursor: pointer;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.status {
     display: block;
     opacity: .8;
     margin: 5px;
