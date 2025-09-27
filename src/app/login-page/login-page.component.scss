@@ -76,6 +76,7 @@ h2 {
     width: 100%;
     grid-area: "error";
     text-align: center;
+
     p {
         background-color: rgba($color: red, $alpha: 0.15);
         max-width: 55%;
@@ -85,12 +86,23 @@ h2 {
 
 button.config {
     position: fixed;
+    right: 0px;
     bottom: 0px;
     width: 100%;
-    color: transparent;
+    padding: 0px;
+    padding-right: 15px;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
     background-color: transparent;
     border-color: transparent;
     box-shadow: inset 0px 0px 0px transparent;
+
+    i {
+        margin: 0;
+    }
 }
 
 .window {
@@ -114,36 +126,36 @@ button.config {
     form {
         display: flex;
         flex-direction: column;
-        max-width: 80%;
-        margin: 0px auto 24px auto;
-        margin-bottom: 24px;
+        margin: 0px auto;
 
         input {
             border: 2px solid black;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             line-height: 1rem;
             padding: .5rem .75rem;
-            min-height: 15px;
-            min-width: 250px;
-            margin: .25rem;
+            width: 100%;
+            margin: .25rem 0px;
             text-align: center;
             outline: none;
 
             // sudo mode
             &.password {
                 color: transparent;
+
                 &:focus-within {
                     color: transparent;
+
                     &::selection {
                         color: transparent;
                     }
                 }
             }
-            
+
             &:focus-within {
                 border: 2px solid rgba($color: black, $alpha: .75);
                 background-color: rgba($color: black, $alpha: .25);
                 color: $foreColor;
+
                 &::placeholder {
                     color: $foreColor;
                 }
@@ -151,8 +163,7 @@ button.config {
         }
 
         button {
-            max-width: 99%;
-            margin: 10px 0px;
+            margin-top: 10px;
         }
     }
 }
