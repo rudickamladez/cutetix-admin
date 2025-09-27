@@ -70,7 +70,17 @@ export class UserInfoComponent implements OnDestroy {
     }
 
     get scopes(): string {
-        return Object(this.#auth.getDecodedAccessToken())?.scope || "undefined";
+        const scope = Object(this.#auth.getDecodedAccessToken())?.scope as string | undefined;
+
+        const ss = (scope ?? '')
+            .toString()
+            .split(',')
+            .map(s => s.trim())
+            .filter(Boolean)
+            .join(', ') || 'undefined';
+
+        return ss;
+
     }
 
     get access_token_expire() {
