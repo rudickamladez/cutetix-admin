@@ -63,6 +63,9 @@ export class LoginPageComponent {
       this.loginForm.value.username ?? '',
       this.loginForm.value.password ?? ''
     );
+
+    // Hide loading spinner
+    this.loggingIn = false;
   }
 
   public toggleConfigVisibility() {
