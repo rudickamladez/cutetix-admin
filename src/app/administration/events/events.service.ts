@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Event } from './events.types';
+import { Event, EventCapacitySummary } from './events.types';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { StorageService } from 'src/app/services/storage.service';
 
@@ -107,4 +107,18 @@ export class EventService {
   //     )
   //   )
   // }
+
+  public capacitySummaryById(
+    id: string
+  ): Observable<EventCapacitySummary> {
+    return this.httpClient.get(
+      new URL(`${this.API_PATH}/capacity_summary/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+    ).pipe(
+      map(
+        (res: any) => {
+          return <EventCapacitySummary>res;
+        }
+      )
+    )
+  }
 }
