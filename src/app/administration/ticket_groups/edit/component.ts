@@ -62,12 +62,10 @@ export class TicketGroupsEditComponent {
             progressBar: true
           }
         )
-        console.log(ticket_group)
         this.form.setValue({
           name: ticket_group.name,
           capacity: ticket_group.capacity,
-          // TODO: Fix depends on backend response
-          eventId: 0 // ticket_group.event_id,
+          eventId: ticket_group.event_id,
         });
       },
       // Error
@@ -100,7 +98,8 @@ export class TicketGroupsEditComponent {
       this.id || '',
       {
         name: this.form.value.name || '',
-        capacity: this.form.value.capacity || 0
+        capacity: this.form.value.capacity || 0,
+        event_id: this.form.value.eventId || 0
       }
     ).subscribe({
       next: (ticket_group) => {

@@ -2,7 +2,7 @@
 <div>
     <div *ngIf="this.errorLoading.enabled" class="error">
         <p>
-            There's problem loading table.<br/>
+            There's problem loading table.<br />
             {{ this.errorLoading.text }}
         </p>
     </div>
@@ -11,8 +11,11 @@
             <tr>
                 <th>Last Name</th>
                 <th>First Name</th>
-                <th style="display: none;">ID</th>
+                <th>ID</th>
                 <th>E-mail</th>
+                <th style="display: none;">Description</th>
+                <th>Group</th>
+                <th>Event</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -22,11 +25,38 @@
                 <!-- Datatables should sort by first column -->
                 <td>{{ ticket.lastname }}</td>
                 <td>{{ ticket.firstname }}</td>
-                <!-- so hidden column with IDs is second -->
-                <td style="display: none;">{{ ticket.id }}</td>
-                <td>{{ ticket.email }}</td>
-                <!-- TODO: Enum -->
-                <td>{{ ticket.status }}</td>
+                <td>{{ ticket.id }}</td>
+                <td>
+                    <a href="mailto:{{ ticket.email }}">
+                        {{ ticket.email }}
+                    </a>
+                </td>
+                <td style="display: none;">{{ ticket.description }}</td>
+                <td>
+                    <a *ngIf="ticket.group != null" [routerLink]="'/ticket_groups/detail/' + ticket.group.id">
+                        {{ ticket.group.name}}
+                    </a>
+                    <span *ngIf="ticket.group == null">
+                        No group
+                    </span>
+                </td>
+                <td>
+                    <a *ngIf="ticket.group?.event != null" [routerLink]="'/events/detail/' + ticket.group?.event?.id">
+                        {{ ticket.group?.event?.name}}
+                    </a>
+                    <span *ngIf="ticket.group?.event == null">
+                        No event for group
+                    </span>
+                </td>
+
+                <!-- <td *ngSwitch="ticket.status"> -->
+                <td>
+                    <!-- <span *ngSwitchCase="ticketStatusEnum.new"></span> -->
+                    <span *ngIf="ticket.status == 0" class="new">New</span>
+                    <span *ngIf="ticket.status == 1" class="confirmed">Confirmed</span>
+                    <span *ngIf="ticket.status == 2" class="paid">Paid</span>
+                    <span *ngIf="ticket.status == 3" class="cancelled">Cancelled</span>
+                </td>
                 <td>
                     <button class="destructive" (click)="cancel(ticket)">
                         <fa-icon [icon]="cancelIcon"></fa-icon>

@@ -5,6 +5,11 @@ tr.odd {
     background-color: $backColorMediumDarkTran;
 }
 
+table {
+    margin: 0px !important;
+    width: 100% !important;
+}
+
 td {
     button {
         min-width: 0px !important;
@@ -19,6 +24,24 @@ td {
 
         &.edit {
             background-color: #BF40BF;
+        }
+    }
+
+    span {
+        &.new {
+            color: green;
+        }
+
+        &.confirmed {
+            color: $foreColorMediumLight;
+        }
+
+        &.paid {
+            color: greenyellow;
+        }
+
+        &.cancelled {
+            color: red;
         }
     }
 }

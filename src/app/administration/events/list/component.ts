@@ -20,7 +20,11 @@ export class EventsListComponent implements OnInit, OnDestroy {
     enabled: false,
     text: '',
   };
-  dtOptions: DataTables.Settings = {};
+  dtOptions: DataTables.Settings = {
+    pagingType: 'full_numbers',
+    pageLength: 25,
+    responsive: true,
+  };
   // We use this trigger because fetching the list can be quite long,
   // thus we ensure the data is fetched before rendering
   dtTrigger: Subject<any> = new Subject<any>();
@@ -32,10 +36,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.dtOptions = {
-      pagingType: 'full_numbers',
-      pageLength: 25,
-    };
 
     this.eventsService.get().subscribe({
       next: (events) => {
@@ -50,7 +50,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
         this.errorLoading.text = err.message;
         this.loadingState--;
       },
-      complete: () => console.info('complete')
     });
 
     this.eventsService.deleteAsObservable().subscribe(

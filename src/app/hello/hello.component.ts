@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { AuthService } from '../services/auth.service';
+
 
 @Component({
   selector: 'app-hello',
@@ -8,22 +9,14 @@ import { OAuthService } from 'angular-oauth2-oidc';
   styleUrls: ['./hello.component.scss']
 })
 export class HelloComponent implements OnInit {
-  login: boolean = false;
+  readonly #auth = inject(AuthService);
+  readonly #router = inject(Router);
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private oauthService: OAuthService
-  ) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.route.params.subscribe((p) => {
-      this.login = p['login'];
-      if (this.login) {
-        this.router.navigate(['/login']);
-      } else if (this.oauthService.hasValidAccessToken()) {
-        this.router.navigate(['/dashboard']);
-      }
-    });
+    if (this.#auth.isLoggedIn()) {
+      this.#router.navigate(['/dashboard']);
+    }
   }
 }

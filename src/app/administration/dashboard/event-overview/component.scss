@@ -1,0 +1,71 @@
+@import "../../../../styles/colors";
+
+div.container {
+    display: flex;
+    height: 100%;
+    justify-content: flex-start;
+    align-items: stretch;
+    flex-direction: column;
+    margin-bottom: 10px;
+
+    .title {
+        margin: 0px 5px 10px 5px;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+
+        @media screen and (max-width: 666px) {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media screen and (max-width: 333px) {
+            grid-template-columns: 1fr;
+        }
+
+        .card {
+            background-color: $backColorMedium;
+            color: black;
+            max-height: 100px;
+            margin: 0px 5px 10px 5px;
+            padding: 15px 10px;
+
+            display: grid;
+            grid-template-areas:
+                "title title"
+                "icon value";
+
+            p {
+                grid-area: title;
+                text-align: center;
+            }
+
+            fa-icon {
+                grid-area: icon;
+                text-align: right;
+                margin: .5rem;
+                font-size: 1.25rem;
+            }
+
+            span {
+                grid-area: value;
+                text-align: left;
+                margin: .5rem;
+                font-size: 1.25rem;
+            }
+
+            &.cancelled {
+                background-color: $dangerColorDark;
+            }
+
+            &.paid {
+                background-color: $successColor;
+            }
+
+            &.disabled {
+                background-color: rgba($color: #FFFFFF, $alpha: .33) !important;
+            }
+        }
+    }
+}

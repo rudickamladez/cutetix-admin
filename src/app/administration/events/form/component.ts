@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../events.service';
 import { ToastrService } from 'ngx-toastr';
@@ -68,7 +68,6 @@ export class EventsFormComponent {
               progressBar: true
             }
           )
-          console.log(event)
           this.form.setValue({
             name: event.name,
             ticketsSalesStart: event.tickets_sales_start,

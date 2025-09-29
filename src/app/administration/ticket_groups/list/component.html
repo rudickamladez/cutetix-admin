@@ -12,6 +12,7 @@
                 <th>Name</th>
                 <th style="display: none;">ID</th>
                 <th>Capacity</th>
+                <th>Event</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -22,6 +23,14 @@
                 <!-- so hidden column with IDs is second -->
                 <td style="display: none;">{{ ticket_group.id }}</td>
                 <td>{{ ticket_group.capacity }}</td>
+                <td>
+                    <a *ngIf="ticket_group.event != null" [routerLink]="'/events/detail/' + ticket_group.event.id">
+                        {{ ticket_group.event.name}}
+                    </a>
+                    <span *ngIf="ticket_group.event == null">
+                        No event
+                    </span>
+                </td>
                 <td>
                     <button class="edit" (click)="edit(ticket_group)">
                         <fa-icon [icon]="faPen"></fa-icon>

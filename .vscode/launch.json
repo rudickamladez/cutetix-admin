@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "preLaunchTask": "npm: start",
       "name": "Open Webapp in Chrome",
       "type": "chrome",
       "request": "launch",

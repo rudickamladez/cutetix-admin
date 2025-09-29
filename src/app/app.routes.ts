@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { HelloComponent } from './hello/hello.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { AuthGuard } from './auth.guard';
 import { DashboardComponent } from './administration/dashboard/dashboard.component';
 import { AdministrationLayoutComponent } from './administration/layout/layout.component';
 import { TicketGroupsListComponent } from './administration/ticket_groups/list/component';
@@ -13,6 +12,8 @@ import { EventsListComponent } from './administration/events/list/component';
 import { TicketsListComponent } from './administration/tickets/list/component';
 import { TicketsNewComponent } from './administration/tickets/new/component';
 import { EventsFormComponent } from './administration/events/form/component';
+import { authGuard } from './guards/auth.guard';
+import { logoutGuard } from './guards/logout.guard';
 
 export let APP_ROUTES: Routes = [
   {
@@ -29,9 +30,14 @@ export let APP_ROUTES: Routes = [
     component: LoginPageComponent,
   },
   {
+    path: 'logout',
+    canActivate: [logoutGuard],
+    component: LoginPageComponent,
+  },
+  {
     path: '',
     component: AdministrationLayoutComponent,
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     children: [
       {
         path: '',

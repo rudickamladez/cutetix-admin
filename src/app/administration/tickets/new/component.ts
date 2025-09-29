@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { TicketGroupService } from '../../ticket_groups/ticket_groups.service';
 import { TicketGroup } from '../../ticket_groups/ticket_groups.types';
+import { TicketStatusEnum } from '../tickets.types';
 
 @Component({
   selector: 'app-tickets-new',
@@ -17,8 +18,7 @@ export class TicketsNewComponent {
     lastname: new FormControl('', Validators.required),
     email: new FormControl('', Validators.required),
     description: new FormControl(''),
-    // TODO: Enum
-    status: new FormControl(0, Validators.required),
+    status: new FormControl(TicketStatusEnum.new, Validators.required),
     groupId: new FormControl(0, Validators.required)
   });
   public groups: Array<TicketGroup> = [];
@@ -43,8 +43,7 @@ export class TicketsNewComponent {
       firstname: this.form.value.firstname || '',
       lastname: this.form.value.lastname || '',
       email: this.form.value.email || '',
-      // TODO: Enum
-      status: this.form.value.status || 0,
+      status: this.form.value.status || TicketStatusEnum.new,
       group_id: this.form.value.groupId || 0
     }).subscribe({
       next: (ticket) => {

@@ -32,6 +32,7 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   dtOptions: DataTables.Settings = {
     pagingType: 'full_numbers',
     pageLength: 25,
+    responsive: true,
   };
 
   constructor(
@@ -69,7 +70,6 @@ export class TicketsListComponent implements OnInit, OnDestroy {
         this.errorLoading.text = err.message;
         this.loadingState--;
       },
-      complete: () => console.info('complete')
     });
   }
 

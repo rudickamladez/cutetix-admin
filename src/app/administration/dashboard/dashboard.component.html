@@ -1,39 +1,7 @@
 <div class="container">
-    <div class="cards">
-        <div class="card">
-            <p>Free tickets</p>
-            <fa-icon [icon]="freeTicketsIcon"></fa-icon>
-            <span>
-                {{ freeTickets }}
-            </span>
-        </div>
-        <div class="card paid">
-            <p>Reserved tickets</p>
-            <fa-icon [icon]="reservedTicketsIcon"></fa-icon>
-            <span>
-                {{ reservedTickets }}
-            </span>
-        </div>
-        <div class="card cancelled">
-            <p>Cancelled tickets</p>
-            <fa-icon [icon]="cancelledTicketsIcon"></fa-icon>
-            <span>
-                {{ cancelledTickets }}
-            </span>
-        </div>
-        <div class="card">
-            <p>Total tickets</p>
-            <fa-icon [icon]="totalTicketsIcon"></fa-icon>
-            <span>
-                {{ totalTickets }}
-            </span>
-        </div>
-        <div class="card disabled paid">
-            <p>Paid tickets</p>
-            <fa-icon [icon]="paidTicketsIcon"></fa-icon>
-            <span>
-                {{ paidTickets }}
-            </span>
-        </div>
-    </div>
+    <!-- TODO: Favourite events by user -->
+    <app-dashboard-event-overview event_id="1"></app-dashboard-event-overview>
+    <app-dashboard-event-overview event_id="2"></app-dashboard-event-overview>
+    <app-dashboard-event-overview event_id="3"></app-dashboard-event-overview>
+    <app-dashboard-event-overview event_id="4"></app-dashboard-event-overview>
 </div>

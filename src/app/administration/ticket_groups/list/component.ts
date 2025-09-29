@@ -20,7 +20,11 @@ export class TicketGroupsListComponent implements OnInit, OnDestroy {
     enabled: false,
     text: '',
   };
-  dtOptions: DataTables.Settings = {};
+  dtOptions: DataTables.Settings = {
+    pagingType: 'full_numbers',
+    pageLength: 25,
+    responsive: true,
+  };
   // We use this trigger because fetching the list can be quite long,
   // thus we ensure the data is fetched before rendering
   dtTrigger: Subject<any> = new Subject<any>();
@@ -32,11 +36,6 @@ export class TicketGroupsListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.dtOptions = {
-      pagingType: 'full_numbers',
-      pageLength: 25,
-    };
-
     this.ticket_groupService.get().subscribe({
       next: (ticket_groups) => {
         this.ticket_groups = ticket_groups;
@@ -50,7 +49,6 @@ export class TicketGroupsListComponent implements OnInit, OnDestroy {
         this.errorLoading.text = err.message;
         this.loadingState--;
       },
-      complete: () => console.info('complete')
     });
 
     this.ticket_groupService.deleteAsObservable().subscribe(

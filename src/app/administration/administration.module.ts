@@ -20,6 +20,8 @@ import { EventsListComponent } from './events/list/component';
 import { TicketsListComponent } from './tickets/list/component';
 import { TicketsNewComponent } from './tickets/new/component';
 import { EventsFormComponent } from './events/form/component';
+import { SharedModule } from '../shared/shared.module';
+import { DashboardEventOverviewComponent } from './dashboard/event-overview/component';
 
 @NgModule({
     declarations: [
@@ -29,6 +31,7 @@ import { EventsFormComponent } from './events/form/component';
         LoggedUserComponent,
         NavBarSubitemComponent,
         DashboardComponent,
+        DashboardEventOverviewComponent,
         LoadingComponent,
         TicketGroupsListComponent,
         TicketGroupsEditComponent,
@@ -45,7 +48,8 @@ import { EventsFormComponent } from './events/form/component';
         FontAwesomeModule,
         BrowserAnimationsModule,
         ToastrModule.forRoot(),
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        SharedModule,
     ]
 })
 export class AdministrationModule { }
