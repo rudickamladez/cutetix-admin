@@ -13,3 +13,11 @@ export interface Event {
 
     ticket_groups?: [TicketGroup]
 }
+
+export interface EventCapacitySummary {
+    paid: number;
+    free: number;
+    reserved: number;
+    total: number;
+    cancelled: number;
+}

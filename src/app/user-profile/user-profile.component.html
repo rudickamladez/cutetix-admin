@@ -1,6 +1,9 @@
 <div class="details">
-    <div class="info" label="Name">{{name}}</div>
-    <div class="info" label="Username">{{username}}</div>
-    <div class="info" label="E-mail">{{email}}</div>
-    <div class="info" label="E-mail verified">{{email_verified}}</div>
+  <h1>User details</h1>
+  <app-user-info></app-user-info>
+</div>
+
+<div class="details">
+  <h1>Settings</h1>
+  <app-local-storage-field [key]="keys.API_URL" label="API URL" type="url" />
 </div>

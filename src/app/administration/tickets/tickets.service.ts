@@ -1,14 +1,16 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Ticket } from './tickets.types';
-import { environment } from 'src/environments/environment';
+import { StorageKeys } from 'src/app/tokens/storage.tokens';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TicketService {
+  readonly #storageService = inject(StorageService);
   private API_PATH: string = 'tickets';
 
   private ticketSource = new Subject<Ticket>();
@@ -38,7 +40,9 @@ export class TicketService {
   }
 
   public get(): Observable<Ticket[]> {
-    return this.httpClient.get(`${environment.backend.api}/${this.API_PATH}`).pipe(
+    return this.httpClient.get(
+      new URL(`${this.API_PATH}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+    ).pipe(
       map(
         (res: any) => {
           return res.map(
@@ -52,9 +56,8 @@ export class TicketService {
   public getById(
     id: string
   ): Observable<Ticket> {
-    console.log(`${environment.backend.api}/${this.API_PATH}/${id}`)
     return this.httpClient.get(
-      `${environment.backend.api}/${this.API_PATH}/${id}`
+      new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
     ).pipe(
       map(
         (res: any) => {
@@ -66,7 +69,7 @@ export class TicketService {
 
   public create(ticket: Ticket): Observable<Ticket> {
     return this.httpClient.post(
-      `${environment.backend.api}/${this.API_PATH}`,
+      new URL(`${this.API_PATH}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
       ticket
     ).pipe(
       map(
@@ -82,7 +85,7 @@ export class TicketService {
   //   body: Ticket
   // ): Observable<Ticket> {
   //   return this.httpClient.patch(
-  //     `${environment.backend.api}/${this.API_PATH}/${id}`,
+  //     new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
   //     body
   //   ).pipe(
   //     map(
@@ -94,7 +97,9 @@ export class TicketService {
   // }
 
   public delete(id: string): Observable<Ticket> {
-    return this.httpClient.delete(`${environment.backend.api}/${this.API_PATH}/${id}`).pipe(
+    return this.httpClient.delete(
+      new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+    ).pipe(
       map(
         (res: any) => {
           return <Ticket>res;
@@ -105,7 +110,7 @@ export class TicketService {
 
   public cancel(ticket: Ticket): Observable<Ticket> {
     return this.httpClient.post(
-      `${environment.backend.api}/${this.API_PATH}/cancel`,
+      new URL(`${this.API_PATH}/cancel/`, this.#storageService.get(StorageKeys.API_URL)!).href,
       {
         id: ticket.id,
         email: ticket.email,

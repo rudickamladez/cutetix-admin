@@ -70,7 +70,6 @@ export class TicketsListComponent implements OnInit, OnDestroy {
         this.errorLoading.text = err.message;
         this.loadingState--;
       },
-      complete: () => console.info('complete')
     });
   }
 

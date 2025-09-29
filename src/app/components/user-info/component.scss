@@ -1,0 +1,16 @@
+.info {
+    &:before {
+        content: attr(label);
+        font-size: 14px;
+        display: block;
+        font-weight: 400;
+    }
+
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 16px;
+    margin-bottom: 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}

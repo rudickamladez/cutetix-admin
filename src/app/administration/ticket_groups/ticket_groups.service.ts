@@ -1,14 +1,16 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TicketGroup, TicketGroupSum, TicketGroupUpdate } from './ticket_groups.types';
-import { environment } from 'src/environments/environment';
+import { StorageService } from 'src/app/services/storage.service';
+import { StorageKeys } from 'src/app/tokens/storage.tokens';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TicketGroupService {
+  readonly #storageService = inject(StorageService);
   private API_PATH: string = 'ticket_groups';
 
   private ticket_groupSource = new Subject<TicketGroup>();
@@ -38,7 +40,9 @@ export class TicketGroupService {
   }
 
   public get(): Observable<TicketGroup[]> {
-    return this.httpClient.get(`${environment.backend.api}/${this.API_PATH}`).pipe(
+    return this.httpClient.get(
+      new URL(`${this.API_PATH}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+    ).pipe(
       map(
         (res: any) => {
           return res.map(
@@ -52,9 +56,8 @@ export class TicketGroupService {
   public getById(
     id: string
   ): Observable<TicketGroup> {
-    console.log(`${environment.backend.api}/${this.API_PATH}/${id}`)
     return this.httpClient.get(
-      `${environment.backend.api}/${this.API_PATH}/${id}`
+      new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
     ).pipe(
       map(
         (res: any) => {
@@ -66,7 +69,7 @@ export class TicketGroupService {
 
   public create(ticket_group: TicketGroup): Observable<TicketGroup> {
     return this.httpClient.post(
-      `${environment.backend.api}/${this.API_PATH}`,
+      new URL(`${this.API_PATH}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
       ticket_group
     ).pipe(
       map(
@@ -82,7 +85,7 @@ export class TicketGroupService {
     body: TicketGroupUpdate
   ): Observable<TicketGroup> {
     return this.httpClient.put(
-      `${environment.backend.api}/${this.API_PATH}/${id}`,
+      new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
       body
     ).pipe(
       map(
@@ -94,7 +97,9 @@ export class TicketGroupService {
   }
 
   public delete(id: string): Observable<TicketGroup> {
-    return this.httpClient.delete(`${environment.backend.api}/${this.API_PATH}/${id}`).pipe(
+    return this.httpClient.delete(
+      new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+    ).pipe(
       map(
         (res: any) => {
           return <TicketGroup>res;
@@ -104,7 +109,9 @@ export class TicketGroupService {
   }
 
   public getActiveSum(): Observable<TicketGroupSum> {
-    return this.httpClient.get(`${environment.backend.api}/${this.API_PATH}/active/sum`).pipe(
+    return this.httpClient.get(
+      new URL(`${this.API_PATH}/active/sum/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+    ).pipe(
       map(
         (ticket_groupSum: any) => <TicketGroupSum>ticket_groupSum
       )
