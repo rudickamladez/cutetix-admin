@@ -1,38 +1,46 @@
-<app-loading *ngIf="this.loadingState > 0"></app-loading>
+@if (this.loadingState > 0) {
+  <app-loading></app-loading>
+}
 <div>
-    <div *ngIf="this.errorLoading.enabled" class="error">
-        <p>
-            There's problem loading table.<br/>
-            {{ this.errorLoading.text }}
-        </p>
+  @if (this.errorLoading.enabled) {
+    <div class="error">
+      <p>
+        There's problem loading table.<br/>
+        {{ this.errorLoading.text }}
+      </p>
     </div>
-    <table *ngIf="!this.errorLoading.enabled" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th style="display: none;">ID</th>
-                <th>Ticket sales start</th>
-                <th>Ticket sales end</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let event of events">
-                <!-- Datatables should sort by first column -->
-                <td>{{ event.name }}</td>
-                <!-- so hidden column with IDs is second -->
-                <td style="display: none;">{{ event.id }}</td>
-                <td>{{ event.tickets_sales_start }}</td>
-                <td>{{ event.tickets_sales_end }}</td>
-                <td>
-                    <button class="edit" (click)="edit(event)">
-                        <fa-icon [icon]="faPen"></fa-icon>
-                    </button>
-                    <button class="delete" (click)="delete(event)" [disabled]="true">
-                        <fa-icon [icon]="faTrash"></fa-icon>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
+  }
+  @if (!this.errorLoading.enabled) {
+    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th style="display: none;">ID</th>
+          <th>Ticket sales start</th>
+          <th>Ticket sales end</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (event of events; track event) {
+          <tr>
+            <!-- Datatables should sort by first column -->
+            <td>{{ event.name }}</td>
+            <!-- so hidden column with IDs is second -->
+            <td style="display: none;">{{ event.id }}</td>
+            <td>{{ event.tickets_sales_start }}</td>
+            <td>{{ event.tickets_sales_end }}</td>
+            <td>
+              <button class="edit" (click)="edit(event)">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </button>
+              <button class="delete" (click)="delete(event)" [disabled]="true">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
     </table>
+  }
 </div>

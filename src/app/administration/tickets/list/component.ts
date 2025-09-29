@@ -6,11 +6,14 @@ import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { DataTableDirective } from 'angular-datatables';
+import { ADTSettings } from 'angular-datatables/src/models/settings';
+import { Api } from 'datatables.net';
 
 @Component({
-  selector: 'app-tickets-list',
-  templateUrl: './component.html',
-  styleUrls: ['./component.scss']
+    selector: 'app-tickets-list',
+    templateUrl: './component.html',
+    styleUrls: ['./component.scss'],
+    standalone: false
 })
 export class TicketsListComponent implements OnInit, OnDestroy {
   public faPen = faPen;
@@ -29,10 +32,9 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   dtTrigger: Subject<any> = new Subject<any>();
   @ViewChild(DataTableDirective, {static: false})
   dtElement: DataTableDirective;
-  dtOptions: DataTables.Settings = {
+  dtOptions: ADTSettings = {
     pagingType: 'full_numbers',
     pageLength: 25,
-    responsive: true,
   };
 
   constructor(
@@ -55,7 +57,7 @@ export class TicketsListComponent implements OnInit, OnDestroy {
           // Render it without destroy
           this.dtTrigger.next(null);
         } else {
-          this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+          this.dtElement.dtInstance.then((dtInstance: Api) => {
             // Destroy the table first
             dtInstance.destroy();
             // Call the dtTrigger to rerender again

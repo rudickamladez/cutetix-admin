@@ -5,11 +5,13 @@ import { Event } from '../events.types';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { ADTSettings } from 'angular-datatables/src/models/settings';
 
 @Component({
-  selector: 'app-events-list',
-  templateUrl: './component.html',
-  styleUrls: ['./component.scss']
+    selector: 'app-events-list',
+    templateUrl: './component.html',
+    styleUrls: ['./component.scss'],
+    standalone: false
 })
 export class EventsListComponent implements OnInit, OnDestroy {
   public faPen = faPen;
@@ -20,10 +22,9 @@ export class EventsListComponent implements OnInit, OnDestroy {
     enabled: false,
     text: '',
   };
-  dtOptions: DataTables.Settings = {
+  dtOptions: ADTSettings = {
     pagingType: 'full_numbers',
     pageLength: 25,
-    responsive: true,
   };
   // We use this trigger because fetching the list can be quite long,
   // thus we ensure the data is fetched before rendering

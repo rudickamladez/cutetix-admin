@@ -1,45 +1,57 @@
-<app-loading *ngIf="this.loadingState > 0"></app-loading>
+@if (this.loadingState > 0) {
+  <app-loading></app-loading>
+}
 <div>
-    <div *ngIf="this.errorLoading.enabled" class="error">
-        <p>
-            There's problem loading table.<br/>
-            {{ this.errorLoading.text }}
-        </p>
+  @if (this.errorLoading.enabled) {
+    <div class="error">
+      <p>
+        There's problem loading table.<br/>
+        {{ this.errorLoading.text }}
+      </p>
     </div>
-    <table *ngIf="!this.errorLoading.enabled" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th style="display: none;">ID</th>
-                <th>Capacity</th>
-                <th>Event</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let ticket_group of ticket_groups">
-                <!-- Datatables should sort by first column -->
-                <td>{{ ticket_group.name }}</td>
-                <!-- so hidden column with IDs is second -->
-                <td style="display: none;">{{ ticket_group.id }}</td>
-                <td>{{ ticket_group.capacity }}</td>
-                <td>
-                    <a *ngIf="ticket_group.event != null" [routerLink]="'/events/detail/' + ticket_group.event.id">
-                        {{ ticket_group.event.name}}
-                    </a>
-                    <span *ngIf="ticket_group.event == null">
-                        No event
-                    </span>
-                </td>
-                <td>
-                    <button class="edit" (click)="edit(ticket_group)">
-                        <fa-icon [icon]="faPen"></fa-icon>
-                    </button>
-                    <button class="delete" (click)="delete(ticket_group)">
-                        <fa-icon [icon]="faTrash"></fa-icon>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
+  }
+  @if (!this.errorLoading.enabled) {
+    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th style="display: none;">ID</th>
+          <th>Capacity</th>
+          <th>Event</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (ticket_group of ticket_groups; track ticket_group) {
+          <tr>
+            <!-- Datatables should sort by first column -->
+            <td>{{ ticket_group.name }}</td>
+            <!-- so hidden column with IDs is second -->
+            <td style="display: none;">{{ ticket_group.id }}</td>
+            <td>{{ ticket_group.capacity }}</td>
+            <td>
+              @if (ticket_group.event != null) {
+                <a [routerLink]="'/events/detail/' + ticket_group.event.id">
+                  {{ ticket_group.event.name}}
+                </a>
+              }
+              @if (ticket_group.event == null) {
+                <span>
+                  No event
+                </span>
+              }
+            </td>
+            <td>
+              <button class="edit" (click)="edit(ticket_group)">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </button>
+              <button class="delete" (click)="delete(ticket_group)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
     </table>
+  }
 </div>

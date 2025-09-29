@@ -1,74 +1,97 @@
-<app-loading *ngIf="this.loadingState > 0"></app-loading>
+@if (this.loadingState > 0) {
+  <app-loading></app-loading>
+}
 <div>
-    <div *ngIf="this.errorLoading.enabled" class="error">
-        <p>
-            There's problem loading table.<br />
-            {{ this.errorLoading.text }}
-        </p>
+  @if (this.errorLoading.enabled) {
+    <div class="error">
+      <p>
+        There's problem loading table.<br />
+        {{ this.errorLoading.text }}
+      </p>
     </div>
-    <table *ngIf="!this.errorLoading.enabled" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
-        <thead>
-            <tr>
-                <th>Last Name</th>
-                <th>First Name</th>
-                <th>ID</th>
-                <th>E-mail</th>
-                <th style="display: none;">Description</th>
-                <th>Group</th>
-                <th>Event</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let ticket of tickets">
-                <!-- Datatables should sort by first column -->
-                <td>{{ ticket.lastname }}</td>
-                <td>{{ ticket.firstname }}</td>
-                <td>{{ ticket.id }}</td>
-                <td>
-                    <a href="mailto:{{ ticket.email }}">
-                        {{ ticket.email }}
-                    </a>
-                </td>
-                <td style="display: none;">{{ ticket.description }}</td>
-                <td>
-                    <a *ngIf="ticket.group != null" [routerLink]="'/ticket_groups/detail/' + ticket.group.id">
-                        {{ ticket.group.name}}
-                    </a>
-                    <span *ngIf="ticket.group == null">
-                        No group
-                    </span>
-                </td>
-                <td>
-                    <a *ngIf="ticket.group?.event != null" [routerLink]="'/events/detail/' + ticket.group?.event?.id">
-                        {{ ticket.group?.event?.name}}
-                    </a>
-                    <span *ngIf="ticket.group?.event == null">
-                        No event for group
-                    </span>
-                </td>
-
-                <!-- <td *ngSwitch="ticket.status"> -->
-                <td>
-                    <!-- <span *ngSwitchCase="ticketStatusEnum.new"></span> -->
-                    <span *ngIf="ticket.status == 0" class="new">New</span>
-                    <span *ngIf="ticket.status == 1" class="confirmed">Confirmed</span>
-                    <span *ngIf="ticket.status == 2" class="paid">Paid</span>
-                    <span *ngIf="ticket.status == 3" class="cancelled">Cancelled</span>
-                </td>
-                <td>
-                    <button class="destructive" (click)="cancel(ticket)">
-                        <fa-icon [icon]="cancelIcon"></fa-icon>
-                    </button>
-                    <button class="edit" (click)="edit(ticket)" disabled>
-                        <fa-icon [icon]="faPen"></fa-icon>
-                    </button>
-                    <button class="delete" (click)="delete(ticket)">
-                        <fa-icon [icon]="faTrash"></fa-icon>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
+  }
+  @if (!this.errorLoading.enabled) {
+    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+      <thead>
+        <tr>
+          <th>Last Name</th>
+          <th>First Name</th>
+          <th>ID</th>
+          <th>E-mail</th>
+          <th style="display: none;">Description</th>
+          <th>Group</th>
+          <th>Event</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (ticket of tickets; track ticket) {
+          <tr>
+            <!-- Datatables should sort by first column -->
+            <td>{{ ticket.lastname }}</td>
+            <td>{{ ticket.firstname }}</td>
+            <td>{{ ticket.id }}</td>
+            <td>
+              <a href="mailto:{{ ticket.email }}">
+                {{ ticket.email }}
+              </a>
+            </td>
+            <td style="display: none;">{{ ticket.description }}</td>
+            <td>
+              @if (ticket.group != null) {
+                <a [routerLink]="'/ticket_groups/detail/' + ticket.group.id">
+                  {{ ticket.group.name}}
+                </a>
+              }
+              @if (ticket.group == null) {
+                <span>
+                  No group
+                </span>
+              }
+            </td>
+            <td>
+              @if (ticket.group?.event != null) {
+                <a [routerLink]="'/events/detail/' + ticket.group?.event?.id">
+                  {{ ticket.group?.event?.name}}
+                </a>
+              }
+              @if (ticket.group?.event == null) {
+                <span>
+                  No event for group
+                </span>
+              }
+            </td>
+            <!-- <td *ngSwitch="ticket.status"> -->
+            <td>
+              <!-- <span *ngSwitchCase="ticketStatusEnum.new"></span> -->
+              @if (ticket.status == 0) {
+                <span class="new">New</span>
+              }
+              @if (ticket.status == 1) {
+                <span class="confirmed">Confirmed</span>
+              }
+              @if (ticket.status == 2) {
+                <span class="paid">Paid</span>
+              }
+              @if (ticket.status == 3) {
+                <span class="cancelled">Cancelled</span>
+              }
+            </td>
+            <td>
+              <button class="destructive" (click)="cancel(ticket)">
+                <fa-icon [icon]="cancelIcon"></fa-icon>
+              </button>
+              <button class="edit" (click)="edit(ticket)" disabled>
+                <fa-icon [icon]="faPen"></fa-icon>
+              </button>
+              <button class="delete" (click)="delete(ticket)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
     </table>
+  }
 </div>

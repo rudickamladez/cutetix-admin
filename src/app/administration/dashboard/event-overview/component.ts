@@ -8,6 +8,7 @@ import { Event, EventCapacitySummary } from "../../events/events.types";
     selector: 'app-dashboard-event-overview',
     templateUrl: './component.html',
     styleUrls: ['./component.scss'],
+    standalone: false,
 })
 export class DashboardEventOverviewComponent implements OnInit {
     readonly #eventService = inject(EventService);

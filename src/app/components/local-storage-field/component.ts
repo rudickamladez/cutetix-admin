@@ -8,6 +8,7 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
   selector: 'app-local-storage-field',
   templateUrl: './component.html',
   styleUrls: ['./component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LocalStorageFieldComponent implements OnInit, OnDestroy {

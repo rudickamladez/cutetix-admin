@@ -1,17 +1,19 @@
 <form [formGroup]="form" (submit)="newTicketGroup()">
-    <h1>New ticket group</h1>
-    <label for="name">Name</label>
-    <input type="text" name="name" formControlName="name" required>
+  <h1>New ticket group</h1>
+  <label for="name">Name</label>
+  <input type="text" name="name" formControlName="name" required>
 
-    <label for="capacity">Capacity</label>
-    <input type="number" name="capacity" formControlName="capacity" required>
+  <label for="capacity">Capacity</label>
+  <input type="number" name="capacity" formControlName="capacity" required>
 
-    <label for="eventId">Count of tickets</label>
-    <select name="eventId" formControlName="eventId">
-        <option *ngFor="let event of events" [ngValue]="event.id">{{ event.name }}</option>
-    </select>
+  <label for="eventId">Count of tickets</label>
+  <select name="eventId" formControlName="eventId">
+    @for (event of events; track event) {
+      <option [ngValue]="event.id">{{ event.name }}</option>
+    }
+  </select>
 
-    <button class="alt">
-        Create
-    </button>
+  <button class="alt">
+    Create
+  </button>
 </form>

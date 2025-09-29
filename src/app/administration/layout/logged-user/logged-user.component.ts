@@ -4,9 +4,10 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
-  selector: 'app-logged-user',
-  templateUrl: './logged-user.component.html',
-  styleUrls: ['./logged-user.component.scss']
+    selector: 'app-logged-user',
+    templateUrl: './logged-user.component.html',
+    styleUrls: ['./logged-user.component.scss'],
+    standalone: false
 })
 export class LoggedUserComponent {
   readonly #auth = inject(AuthService);

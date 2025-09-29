@@ -5,6 +5,7 @@ import { AuthService } from "src/app/services/auth.service";
     selector: 'app-user-info',
     templateUrl: './component.html',
     styleUrls: ['./component.scss'],
+    standalone: false,
 })
 export class UserInfoComponent implements OnDestroy {
     readonly #auth = inject(AuthService);

@@ -5,9 +5,10 @@ import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-events-edit',
-  templateUrl: './component.html',
-  styleUrls: ['./component.scss']
+    selector: 'app-events-edit',
+    templateUrl: './component.html',
+    styleUrls: ['./component.scss'],
+    standalone: false
 })
 export class EventsFormComponent {
   public id: string | null;

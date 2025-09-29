@@ -1,15 +1,17 @@
-@import "../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
-@import "../node_modules/@fortawesome/fontawesome-free/scss/regular.scss";
-@import "../node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
-@import 'ngx-toastr/toastr';
+@use "../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@use "../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+@use "../node_modules/@fortawesome/fontawesome-free/scss/regular.scss";
+@use "../node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
+@use "ngx-toastr/toastr";
 
 /**
  * Global styles
  */
 
-@import "styles/colors";
-@import "styles/fonts";
+@use "./styles/colors" as *;
+@use "styles/fonts" as *;
+@use "styles/typography";
+@use "styles/button";
 
 *,
 *::before,
@@ -43,8 +45,6 @@ body.alt-font {
 }
 
 // @import "styles/filters";
-@import "styles/typography";
-@import "styles/button";
 // @import "styles/table";
 // @import "styles/form";
 
