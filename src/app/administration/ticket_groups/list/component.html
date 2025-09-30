@@ -24,7 +24,6 @@
     <tbody>
       @for (ticket_group of ticket_groups; track ticket_group) {
       <tr>
-        <!-- Should sort by first column -->
         <td>{{ ticket_group.name }}</td>
         <!-- so hidden column with IDs is second -->
         <td style="display: none;">{{ ticket_group.id }}</td>
