@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from "@angular/core";
+import { Component, inject, Input, OnDestroy } from "@angular/core";
 import { AuthService } from "src/app/services/auth.service";
 
 @Component({
@@ -11,6 +11,7 @@ export class UserInfoComponent implements OnDestroy {
     time_to_access_token_expire: string = "";
     time_to_refresh_token_expire: string = "";
     #refreshingInterval: number | null = null;
+    @Input() date_format: string = 'medium';
 
     constructor() {
         this.#refreshingInterval = window.setInterval(() => { this.#updateCountdown(); }, 1_000)
@@ -86,28 +87,12 @@ export class UserInfoComponent implements OnDestroy {
     get access_token_expire() {
         const exp = this.#auth.getDecodedAccessToken()?.exp;
         if (!exp) return 'undefined';
-
-        const userLocale = navigator.languages?.[0] || navigator.language || 'cs-CZ';
-        return new Intl.DateTimeFormat(
-            userLocale,
-            {
-                dateStyle: 'short',
-                timeStyle: 'medium'
-            }
-        ).format(new Date(exp * 1000));
+        return new Date(exp * 1000);
     }
 
     get refresh_token_expire() {
         const exp = this.#auth.getDecodedRefreshToken()?.exp;
         if (!exp) return 'undefined';
-
-        const userLocale = navigator.languages?.[0] || navigator.language || 'cs-CZ';
-        return new Intl.DateTimeFormat(
-            userLocale,
-            {
-                dateStyle: 'short',
-                timeStyle: 'medium'
-            }
-        ).format(new Date(exp * 1000));
+        return new Date(exp * 1000);
     }
 }
