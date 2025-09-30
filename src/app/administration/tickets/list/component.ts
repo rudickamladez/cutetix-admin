@@ -1,5 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { TicketService } from '../tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -27,7 +26,7 @@ export class TicketsListComponent implements OnInit {
   constructor(
     private readonly ticketsService: TicketService,
     private readonly toastr: ToastrService,
-    private readonly router: Router
+    private readonly router: Router,
   ) { }
 
   private updateTickets() {
