@@ -9,7 +9,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { APP_ROUTES } from './app.routes';
 import { AdministrationModule } from './administration/administration.module';
-import { DataTablesModule } from 'angular-datatables';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { provideHttpClient, withFetch, withInterceptors } from "@angular/common/http";
@@ -36,14 +35,13 @@ import { ServiceWorkerModule } from '@angular/service-worker';
         CommonModule,
         ReactiveFormsModule,
         RouterModule.forRoot(APP_ROUTES, { useHash: false }),
-        DataTablesModule,
         FontAwesomeModule,
         SharedModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
-          enabled: !isDevMode(),
-          // Register the ServiceWorker as soon as the application is stable
-          // or after 30 seconds (whichever comes first).
-          registrationStrategy: 'registerWhenStable:30000'
+            enabled: !isDevMode(),
+            // Register the ServiceWorker as soon as the application is stable
+            // or after 30 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:30000'
         }),
     ],
     providers: [

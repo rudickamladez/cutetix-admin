@@ -7,7 +7,6 @@ import { LoggedUserComponent } from './layout/logged-user/logged-user.component'
 import { NavBarSubitemComponent } from './layout/nav-bar-subitem/nav-bar-subitem.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RouterModule } from '@angular/router';
-import { DataTablesModule } from 'angular-datatables';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -44,7 +43,6 @@ import { DashboardEventOverviewComponent } from './dashboard/event-overview/comp
     imports: [
         CommonModule,
         RouterModule,
-        DataTablesModule,
         FontAwesomeModule,
         BrowserAnimationsModule,
         ToastrModule.forRoot(),

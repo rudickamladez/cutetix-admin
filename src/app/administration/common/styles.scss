@@ -1,6 +1,5 @@
 @use '../../../styles/colors' as *;
 
-.dataTables_wrapper,
 tr.odd {
     background-color: $backColorMediumDarkTran;
 }
@@ -8,6 +7,10 @@ tr.odd {
 table {
     margin: 0px !important;
     width: 100% !important;
+
+    th {
+        text-align: left;
+    }
 }
 
 td {

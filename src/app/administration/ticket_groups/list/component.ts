@@ -5,13 +5,12 @@ import { TicketGroup } from '../ticket_groups.types';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
-import { ADTSettings } from 'angular-datatables/src/models/settings';
 
 @Component({
-    selector: 'app-ticket_groups-list',
-    templateUrl: './component.html',
-    styleUrls: ['./component.scss'],
-    standalone: false
+  selector: 'app-ticket_groups-list',
+  templateUrl: './component.html',
+  styleUrls: ['./component.scss'],
+  standalone: false
 })
 export class TicketGroupsListComponent implements OnInit, OnDestroy {
   public faPen = faPen;
@@ -21,10 +20,6 @@ export class TicketGroupsListComponent implements OnInit, OnDestroy {
   public errorLoading = {
     enabled: false,
     text: '',
-  };
-  dtOptions: ADTSettings = {
-    pagingType: 'full_numbers',
-    pageLength: 25,
   };
   // We use this trigger because fetching the list can be quite long,
   // thus we ensure the data is fetched before rendering

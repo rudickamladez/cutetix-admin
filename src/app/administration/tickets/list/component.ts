@@ -5,17 +5,14 @@ import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
-import { DataTableDirective } from 'angular-datatables';
-import { ADTSettings } from 'angular-datatables/src/models/settings';
-import { Api } from 'datatables.net';
 
 @Component({
-    selector: 'app-tickets-list',
-    templateUrl: './component.html',
-    styleUrls: ['./component.scss'],
-    standalone: false
+  selector: 'app-tickets-list',
+  templateUrl: './component.html',
+  styleUrls: ['./component.scss'],
+  standalone: false
 })
-export class TicketsListComponent implements OnInit, OnDestroy {
+export class TicketsListComponent implements OnInit {
   public faPen = faPen;
   public faTrash = faTrash;
   public cancelIcon = faBan;
@@ -26,16 +23,6 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     text: '',
   };
   private startup = true;
-
-  // We use this trigger because fetching the list can be quite long,
-  // thus we ensure the data is fetched before rendering
-  dtTrigger: Subject<any> = new Subject<any>();
-  @ViewChild(DataTableDirective, {static: false})
-  dtElement: DataTableDirective;
-  dtOptions: ADTSettings = {
-    pagingType: 'full_numbers',
-    pageLength: 25,
-  };
 
   constructor(
     private readonly ticketsService: TicketService,
@@ -54,15 +41,6 @@ export class TicketsListComponent implements OnInit, OnDestroy {
         this.tickets = tickets;
         if (this.startup) {
           this.startup = false;
-          // Render it without destroy
-          this.dtTrigger.next(null);
-        } else {
-          this.dtElement.dtInstance.then((dtInstance: Api) => {
-            // Destroy the table first
-            dtInstance.destroy();
-            // Call the dtTrigger to rerender again
-            this.dtTrigger.next(null);
-          });
         }
         this.loadingState--;
       },
@@ -83,11 +61,6 @@ export class TicketsListComponent implements OnInit, OnDestroy {
         this.tickets.splice(this.tickets.indexOf(ticket), 1);
       }
     );
-  }
-
-  ngOnDestroy(): void {
-    // Do not forget to unsubscribe the table trigger
-    this.dtTrigger.unsubscribe();
   }
 
   private notCancelledTicketToastr(ticket: Ticket) {
