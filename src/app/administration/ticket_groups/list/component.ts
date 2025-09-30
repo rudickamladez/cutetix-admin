@@ -9,7 +9,8 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-ticket_groups-list',
   templateUrl: './component.html',
-  styleUrls: ['./component.scss']
+  styleUrls: ['./component.scss'],
+  standalone: false
 })
 export class TicketGroupsListComponent implements OnInit, OnDestroy {
   public faPen = faPen;
@@ -19,11 +20,6 @@ export class TicketGroupsListComponent implements OnInit, OnDestroy {
   public errorLoading = {
     enabled: false,
     text: '',
-  };
-  dtOptions: DataTables.Settings = {
-    pagingType: 'full_numbers',
-    pageLength: 25,
-    responsive: true,
   };
   // We use this trigger because fetching the list can be quite long,
   // thus we ensure the data is fetched before rendering

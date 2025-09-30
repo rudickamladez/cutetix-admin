@@ -1,31 +1,41 @@
 <h1 class="title">CuteTix admin interface</h1>
 
-<div class="error" *ngIf="loginFailed || !canRun()">
-    <p>
-        {{ errorText }}
-    </p>
+@if (loginFailed || !canRun()) {
+<div class="error">
+  <p>
+    {{ errorText }}
+  </p>
 </div>
+}
 
-<div class="window" *ngIf="canRun() && !showConfig()">
-    <h2 class="ignore-mobile">Login</h2>
-    <p>You must be logged in to enter the system.</p>
-    <form [formGroup]="loginForm" (submit)="loginWithPassword()">
-        <input type="text" formControlName="username" placeholder="Username">
-        <input type="password" formControlName="password" placeholder="Password" class="password">
-        <button class="alt" [disabled]="(!loginForm.value.username) || (!loginForm.value.password) || loggingIn">
-            <i class="fa-icon fas fa-sign-in-alt" *ngIf="!loggingIn"></i>
-            <span *ngIf="!loggingIn">Log in</span>
-            <i class="fa-icon fas fa-circle-notch fa-spin" *ngIf="loggingIn"></i>
-        </button>
-    </form>
+@if (canRun() && !showConfig()) {
+<div class="window">
+  <h2 class="ignore-mobile">Login</h2>
+  <p>You must be logged in to enter the system.</p>
+  <form [formGroup]="loginForm" (submit)="loginWithPassword()">
+    <input type="text" formControlName="username" placeholder="Username">
+    <input type="password" formControlName="password" placeholder="Password" class="password">
+    <button class="alt" [disabled]="(!loginForm.value.username) || (!loginForm.value.password) || loggingIn">
+      @if (!loggingIn) {
+      <i class="fa-icon fas fa-sign-in-alt"></i>
+      }
+      @if (!loggingIn) {
+      <span>Log in</span>
+      }
+      @if (loggingIn) {
+      <i class="fa-icon fas fa-circle-notch fa-spin"></i>
+      }
+    </button>
+  </form>
 </div>
+}
 
 <button class="config" (click)="toggleConfigVisibility()">
-    <i class="fa-icon fas fa-cog"></i>
+  <i class="fa-icon fas fa-cog"></i>
 </button>
 
 <div class="window" *ngIf="showConfig()">
-    <h2 class="ignore-mobile">Config</h2>
-    <app-local-storage-field [key]="keys.API_URL" label="API URL" type="url" />
-    <app-local-storage-field [key]="keys.BROWSER_CORE_CHECK" label="BROWSER_CORE_CHECK" type="checkbox" />
+  <h2 class="ignore-mobile">Config</h2>
+  <app-local-storage-field [key]="keys.API_URL" label="API URL" type="url" />
+  <app-local-storage-field [key]="keys.BROWSER_CORE_CHECK" label="BROWSER_CORE_CHECK" type="checkbox" />
 </div>

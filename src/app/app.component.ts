@@ -6,8 +6,9 @@ import { StorageKeys } from './tokens/storage.tokens';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html'
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    standalone: false
 })
 export class AppComponent implements OnInit {
   readonly #storageService = inject(StorageService);

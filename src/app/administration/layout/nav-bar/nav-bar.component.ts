@@ -6,7 +6,8 @@ import { AuthService } from 'src/app/services/auth.service';
 @Component({
     selector: 'app-nav-bar',
     templateUrl: './nav-bar.component.html',
-    styleUrls: ['./nav-bar.component.scss']
+    styleUrls: ['./nav-bar.component.scss'],
+    standalone: false
 })
 export class NavBarComponent implements OnInit {
     dashboardItem = new MenuItem('Dashboard', 'dashboard', 'fa-chart-line');

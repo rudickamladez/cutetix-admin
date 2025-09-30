@@ -1,11 +1,15 @@
-<a *ngIf="item.customFunc == null" [routerLink]="item.link" [state]="{navBarVisible: true}" routerLinkActive="active">
+@if (item.customFunc == null) {
+  <a [routerLink]="item.link" [state]="{navBarVisible: true}" routerLinkActive="active">
     <i class="fas {{item.icon}} fa-icon"></i>
     {{item.name}}
-</a>
-<a *ngIf="item.customFunc != null" (click)="item.customFunc()">
+  </a>
+}
+@if (item.customFunc != null) {
+  <a (click)="item.customFunc()">
     <i class="fas {{item.icon}} fa-icon"></i>
     {{item.name}}
-</a>
+  </a>
+}
 <div class="subitems">
-    <ng-content></ng-content>
+  <ng-content></ng-content>
 </div>

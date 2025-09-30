@@ -1,17 +1,25 @@
 <button class="default-style toggle-button" (click)="toggle()">
-    <i *ngIf="!visible" class="fas fa-bars"></i>
-    <i *ngIf="visible" class="fas fa-times"></i>
+  @if (!visible) {
+    <i class="fas fa-bars"></i>
+  }
+  @if (visible) {
+    <i class="fas fa-times"></i>
+  }
 </button>
 <div class="hide-nav-bar {{visible ? 'visible' : ''}}" (click)="hide()"></div>
 <div class="wrapper {{visible ? 'visible' : ''}}">
-    <h1>
-        <div>CuteTix</div>
-        <div>Admin</div>
-    </h1>
-    <nav>
-        <app-nav-bar-item *ngFor="let item of availableItems" [item]="item">
-            <app-nav-bar-subitem *ngFor="let subItem of item.subItems" [name]="subItem.name" [link]="subItem.link" (click)="hide()">
-            </app-nav-bar-subitem>
-        </app-nav-bar-item>
-    </nav>
+  <h1>
+    <div>CuteTix</div>
+    <div>Admin</div>
+  </h1>
+  <nav>
+    @for (item of availableItems; track item) {
+      <app-nav-bar-item [item]="item">
+        @for (subItem of item.subItems; track subItem) {
+          <app-nav-bar-subitem [name]="subItem.name" [link]="subItem.link" (click)="hide()">
+          </app-nav-bar-subitem>
+        }
+      </app-nav-bar-item>
+    }
+  </nav>
 </div>

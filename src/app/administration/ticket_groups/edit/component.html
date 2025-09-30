@@ -1,20 +1,22 @@
 <form [formGroup]="form" (submit)="editTicketGroup()">
-    <h1>{{ showDetail ? 'Ticket group detail' : 'Edit ticket group' }}</h1>
+  <h1>{{ showDetail ? 'Ticket group detail' : 'Edit ticket group' }}</h1>
 
-    <p>This form doesn't work due to missing backend implentation.</p>
+  <p>This form doesn't work due to missing backend implentation.</p>
 
-    <label for="name">Name</label>
-    <input type="text" name="name" formControlName="name" required>
+  <label for="name">Name</label>
+  <input type="text" name="name" formControlName="name" required>
 
-    <label for="capacity">Capacity</label>
-    <input type="number" name="capacity" formControlName="capacity" required>
+  <label for="capacity">Capacity</label>
+  <input type="number" name="capacity" formControlName="capacity" required>
 
-    <label for="eventId">Event</label>
-    <select name="eventId" formControlName="eventId">
-        <option *ngFor="let event of events" [ngValue]="event.id">{{ event.name }}</option>
-    </select>
+  <label for="eventId">Event</label>
+  <select name="eventId" formControlName="eventId">
+    @for (event of events; track event) {
+      <option [ngValue]="event.id">{{ event.name }}</option>
+    }
+  </select>
 
-    <button class="alt">
-        Edit
-    </button>
+  <button class="alt">
+    Edit
+  </button>
 </form>
