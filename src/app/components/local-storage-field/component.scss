@@ -1,4 +1,5 @@
-@import "../../administration/common/styles.scss";
+@use '../../../styles/colors' as *;
+@use "../../administration/common/styles.scss" as *;
 
 .info {
     display: flex;
