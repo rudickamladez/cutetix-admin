@@ -13,7 +13,8 @@ export class LoggedUserComponent {
   readonly #auth = inject(AuthService);
 
   constructor(
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    private readonly router: Router,
   ) {
   }
 
@@ -21,11 +22,15 @@ export class LoggedUserComponent {
     return this.#auth.getDecodedAccessToken()?.sub || "undefined";
   }
 
+  openProfile() {
+    this.router.navigate(['/profile']);
+  }
+
   logout() {
     this.#auth.logout();
   }
 
-  public toggleTheme() {
+  toggleTheme() {
     this.document.body.classList.toggle('light');
     this.document.body.classList.toggle('alt-font');
   }
