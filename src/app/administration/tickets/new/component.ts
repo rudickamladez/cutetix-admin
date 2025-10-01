@@ -8,9 +8,10 @@ import { TicketGroup } from '../../ticket_groups/ticket_groups.types';
 import { TicketStatusEnum } from '../tickets.types';
 
 @Component({
-  selector: 'app-tickets-new',
-  templateUrl: './component.html',
-  styleUrls: ['./component.scss']
+    selector: 'app-tickets-new',
+    templateUrl: './component.html',
+    styleUrls: ['./component.scss'],
+    standalone: false
 })
 export class TicketsNewComponent {
   public form = new FormGroup({

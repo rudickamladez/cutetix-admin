@@ -7,9 +7,10 @@ import { EventService } from '../../events/events.service';
 import { Event } from '../../events/events.types';
 
 @Component({
-  selector: 'app-ticket_groups-new',
-  templateUrl: './component.html',
-  styleUrls: ['./component.scss']
+    selector: 'app-ticket_groups-new',
+    templateUrl: './component.html',
+    styleUrls: ['./component.scss'],
+    standalone: false
 })
 export class TicketGroupsNewComponent {
   public form = new FormGroup({

@@ -1,31 +1,33 @@
 <form [formGroup]="form" (submit)="formMethod()">
-    <h1>{{ title }}</h1>
+  <h1>{{ title }}</h1>
 
-    <label for="name">Name</label>
-    <input type="text" name="name" formControlName="name" required>
+  <label for="name">Name</label>
+  <input type="text" name="name" formControlName="name" required>
 
-    <label for="ticketsSalesStart">Ticket sales start</label>
-    <input type="datetime-local" name="ticketsSalesStart" formControlName="ticketsSalesStart">
+  <label for="ticketsSalesStart">Ticket sales start</label>
+  <input type="datetime-local" name="ticketsSalesStart" formControlName="ticketsSalesStart">
 
-    <label for="ticketsSalesEnd">Ticket sales end</label>
-    <input type="datetime-local" name="ticketsSalesEnd" formControlName="ticketsSalesEnd">
+  <label for="ticketsSalesEnd">Ticket sales end</label>
+  <input type="datetime-local" name="ticketsSalesEnd" formControlName="ticketsSalesEnd">
 
-    <label for="smtpMailFrom">SMTP MAIL FROM</label>
-    <input type="text" name="smtpMailFrom" formControlName="smtpMailFrom">
+  <label for="smtpMailFrom">SMTP MAIL FROM</label>
+  <input type="text" name="smtpMailFrom" formControlName="smtpMailFrom">
 
-    <label for="mailTextNewTicket">Text for new ticket</label>
-    <textarea name="mailTextNewTicket" formControlName="mailTextNewTicket" rows="5" cols="2"></textarea>
+  <label for="mailTextNewTicket">Text for new ticket</label>
+  <textarea name="mailTextNewTicket" formControlName="mailTextNewTicket" rows="5" cols="2"></textarea>
 
-    <label for="mailHtmlNewTicket">HTML for new ticket</label>
-    <textarea name="mailHtmlNewTicket" formControlName="mailHtmlNewTicket" rows="10" cols="2"></textarea>
+  <label for="mailHtmlNewTicket">HTML for new ticket</label>
+  <textarea name="mailHtmlNewTicket" formControlName="mailHtmlNewTicket" rows="10" cols="2"></textarea>
 
-    <label for="mailTextCancelledTicket">Text for cancelled ticket</label>
-    <textarea name="mailTextCancelledTicket" formControlName="mailTextCancelledTicket" rows="5" cols="10"></textarea>
+  <label for="mailTextCancelledTicket">Text for cancelled ticket</label>
+  <textarea name="mailTextCancelledTicket" formControlName="mailTextCancelledTicket" rows="5" cols="10"></textarea>
 
-    <label for="mailHtmlCancelledTicket">HTML for cancelled ticket</label>
-    <textarea name="mailHtmlCancelledTicket" formControlName="mailHtmlCancelledTicket" rows="10" cols="5"></textarea>
+  <label for="mailHtmlCancelledTicket">HTML for cancelled ticket</label>
+  <textarea name="mailHtmlCancelledTicket" formControlName="mailHtmlCancelledTicket" rows="10" cols="5"></textarea>
 
-    <button class="alt" *ngIf="editButtonEnabled">
-        {{ editButtonText }}
+  @if (editButtonEnabled) {
+    <button class="alt">
+      {{ editButtonText }}
     </button>
+  }
 </form>

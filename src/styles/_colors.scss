@@ -1,3 +1,5 @@
+@use "sass:color";
+
 /**
  * Global color styles
  */
@@ -36,7 +38,7 @@ body.light {
 $foreColor: var(--color-foreground);
 $foreColorMedium: var(--color-foreground-medium);
 // $foreColorMediumLight: lighten($foreColorMedium, 20%);
-$foreColorMediumLight: lighten(rgb(60, 60, 60), 20%);
+$foreColorMediumLight: color.adjust(rgb(60, 60, 60), $lightness: 20%);
 $foreColorDark: var(--color-foreground-dark);
 
 // Background color
@@ -56,10 +58,10 @@ $successColorDark: rgb(30, 130, 76);
 
 // Warning action color
 $warningColor: goldenrod;
-$warningColorLight: saturate(lighten($warningColor, 20%), 40%);
-$warningColorDark: darken($warningColor, 30%);
+$warningColorLight: color.adjust($warningColor, $lightness: 20%, $saturation: 40%);
+$warningColorDark: color.adjust($warningColor, $lightness: -30%);
 
 // Cherry color
 $accentColor: #49DD5D;
-$accentColorLight: saturate(lighten($accentColor, 20%), 40%);
-$accentColorDark: darken($accentColor, 10%);
+$accentColorLight: color.adjust($accentColor, $lightness: 20%, $saturation: 40%);
+$accentColorDark: color.adjust($accentColor, $lightness: -30%);

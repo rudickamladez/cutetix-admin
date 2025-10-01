@@ -7,8 +7,9 @@ import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
 
 @Component({
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.scss']
+    templateUrl: './login-page.component.html',
+    styleUrls: ['./login-page.component.scss'],
+    standalone: false
 })
 export class LoginPageComponent {
   readonly #auth = inject(AuthService);

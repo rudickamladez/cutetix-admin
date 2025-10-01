@@ -4,9 +4,10 @@ import { AuthService } from '../services/auth.service';
 
 
 @Component({
-  selector: 'app-hello',
-  templateUrl: './hello.component.html',
-  styleUrls: ['./hello.component.scss']
+    selector: 'app-hello',
+    templateUrl: './hello.component.html',
+    styleUrls: ['./hello.component.scss'],
+    standalone: false
 })
 export class HelloComponent implements OnInit {
   readonly #auth = inject(AuthService);
