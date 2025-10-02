@@ -8,9 +8,11 @@
 
     font-size: 18px;
     font-weight: 500;
-    margin: 0 16px;
-    margin-bottom: 12px;
+    margin: 10px 0px;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     word-break: break-word;
+    &:last-child {
+        margin-bottom: 0px;
+    }
 }

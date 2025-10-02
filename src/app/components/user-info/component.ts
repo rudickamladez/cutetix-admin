@@ -1,5 +1,9 @@
-import { Component, inject, OnDestroy } from "@angular/core";
+import { Component, inject, Input, OnDestroy, OnInit } from "@angular/core";
+import { ToastrService } from "ngx-toastr";
 import { AuthService } from "src/app/services/auth.service";
+import { LoggingService } from "src/app/services/logging.service";
+import { UsersService } from "src/app/services/users.service";
+import { User } from "src/app/types/auth.types";
 
 @Component({
     selector: 'app-user-info',
@@ -7,14 +11,32 @@ import { AuthService } from "src/app/services/auth.service";
     styleUrls: ['./component.scss'],
     standalone: false,
 })
-export class UserInfoComponent implements OnDestroy {
+export class UserInfoComponent implements OnInit, OnDestroy {
     readonly #auth = inject(AuthService);
+    readonly #users = inject(UsersService);
+    readonly #toastr = inject(ToastrService);
+    readonly #logging = inject(LoggingService);
     time_to_access_token_expire: string = "";
     time_to_refresh_token_expire: string = "";
     #refreshingInterval: number | null = null;
 
-    constructor() {
+    user: User = this.#users.user()!;
+
+    @Input() show_favorite_events: boolean = true;
+
+    ngOnInit(): void {
         this.#refreshingInterval = window.setInterval(() => { this.#updateCountdown(); }, 1_000)
+        this.#users.getMe().subscribe({
+            next: (user) => {
+                this.user = user;
+                this.#logging.log("userInfo", "User info loaded", user);
+                
+            },
+            error: (err) => {
+                this.#logging.error("userInfo", "Failed to get user info", err);
+                this.#toastr.error("Failed to get user info", err.message || err.statusText || "Unknown error");
+            }
+        });
     }
 
     ngOnDestroy(): void {
@@ -110,5 +132,11 @@ export class UserInfoComponent implements OnDestroy {
                 timeStyle: 'medium'
             }
         ).format(new Date(exp * 1000));
+    }
+
+    get show_user_dependended_info(): boolean {
+        if (!this.user) return false;
+        if (!this.show_favorite_events) return false;
+        return true
     }
 }

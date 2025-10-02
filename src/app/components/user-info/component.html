@@ -2,3 +2,21 @@
 <div class="info" label="Scopes">{{scopes}}</div>
 <div class="info" label="Access token expires on">{{access_token_expire}} ‒ {{time_to_access_token_expire}}</div>
 <div class="info" label="Refresh token expires on">{{refresh_token_expire}} ‒ {{time_to_refresh_token_expire}}</div>
+
+@if (show_user_dependended_info) {
+<hr />
+@if (show_favorite_events) {
+<div class="info" label="Favorite Events">
+    @if (user.favorite_events && user.favorite_events.length > 0) {
+    <ul>
+        @for (event of user.favorite_events; track $index) {
+        <li>{{ event.name }}</li>s
+        }
+    </ul>
+
+    } @else {
+    <span>No favorite events.</span>
+    }
+</div>
+}
+}
