@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
 import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
+import { faCircleNotch, faCog, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     templateUrl: './login-page.component.html',
@@ -27,6 +28,12 @@ export class LoginPageComponent {
   protected readonly canRun = signal(false);
   protected readonly showConfig = signal(false);
   readonly keys = StorageKeys;
+
+  // icons
+  loginIcon = faSignInAlt;
+  loadingIcon = faCircleNotch;
+  settingsIcon = faCog;
+
 
   constructor() {
     // Check if browser is chromium based and version >= 132

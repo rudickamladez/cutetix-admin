@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { faPersonRunning } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -12,6 +13,9 @@ import { AuthService } from '../services/auth.service';
 export class HelloComponent implements OnInit {
   readonly #auth = inject(AuthService);
   readonly #router = inject(Router);
+
+  // icons
+  enterIcon = faPersonRunning;
 
   constructor() { }
 

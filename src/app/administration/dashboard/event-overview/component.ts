@@ -3,6 +3,7 @@ import { faCoins, faPlus, faTicket, faTicketAlt, faTimes } from '@fortawesome/fr
 import { ToastrService } from "ngx-toastr";
 import { EventService } from "../../events/events.service";
 import { Event, EventCapacitySummary } from "../../events/events.types";
+import { LoggingService } from "src/app/services/logging.service";
 
 @Component({
     selector: 'app-dashboard-event-overview',
@@ -13,6 +14,7 @@ import { Event, EventCapacitySummary } from "../../events/events.types";
 export class DashboardEventOverviewComponent implements OnInit {
     readonly #eventService = inject(EventService);
     readonly #toastr = inject(ToastrService);
+    readonly #logging = inject(LoggingService)
 
     event?: Event;
     eventCapacitySummary?: EventCapacitySummary;
@@ -40,16 +42,17 @@ export class DashboardEventOverviewComponent implements OnInit {
                     // success
                     next: (eventCapacitySum) => {
                         this.eventCapacitySummary = eventCapacitySum;
-                        this.#toastr.info(
-                            'Loaded successfully',
-                            'Capacity summary for ' + this.event?.name,
-                            {
-                                progressBar: true,
-                            }
+                        this.#logging.log(
+                            "dashboardEventLoad",
+                            `Loaded successfully capacity summary for ${this.event?.name}`,
                         );
                     },
                     // error
                     error: (err) => {
+                        this.#logging.error(
+                            "dashboardEventLoad",
+                            `Cannot load event capacity summary for ${this.event?.name}`,
+                        );
                         this.#toastr.error(
                             err.message,
                             'Cannot load event capacity summary',
@@ -63,6 +66,10 @@ export class DashboardEventOverviewComponent implements OnInit {
             },
             // error
             error: (err) => {
+                this.#logging.error(
+                    "dashboardEventLoad",
+                    `Cannot load event capacity summary for event with ID: ${this.event_id}`,
+                );
                 this.#toastr.error(
                     err.message,
                     'Cannot load event',

@@ -1,13 +1,13 @@
 <button class="default-style toggle-button" (click)="toggle()">
-  @if (!visible) {
-    <i class="fas fa-bars"></i>
+  @if (!menuOpen) {
+    <fa-icon [icon]="menuClosedIcon"></fa-icon>
   }
-  @if (visible) {
-    <i class="fas fa-times"></i>
+  @if (menuOpen) {
+    <fa-icon [icon]="menuOpenIcon"></fa-icon>
   }
 </button>
-<div class="hide-nav-bar {{visible ? 'visible' : ''}}" (click)="hide()"></div>
-<div class="wrapper {{visible ? 'visible' : ''}}">
+<div class="hide-nav-bar {{menuOpen ? 'visible' : ''}}" (click)="hide()"></div>
+<div class="wrapper {{menuOpen ? 'visible' : ''}}">
   <h1>
     <div>CuteTix</div>
     <div>Admin</div>

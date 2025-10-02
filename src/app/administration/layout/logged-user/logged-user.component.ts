@@ -1,16 +1,22 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, inject, Inject } from '@angular/core';
+import { Component, inject, Inject, DOCUMENT } from '@angular/core';
 import { Router } from '@angular/router';
+import { faRepeat, faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
-    selector: 'app-logged-user',
-    templateUrl: './logged-user.component.html',
-    styleUrls: ['./logged-user.component.scss'],
-    standalone: false
+  selector: 'app-logged-user',
+  templateUrl: './logged-user.component.html',
+  styleUrls: ['./logged-user.component.scss'],
+  standalone: false
 })
 export class LoggedUserComponent {
   readonly #auth = inject(AuthService);
+
+  // icons
+  userIcon = faUser;
+  switchThemeIcon = faRepeat;
+  logoutIcon = faSignOutAlt;
+  myProfileIcon = faUser;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
