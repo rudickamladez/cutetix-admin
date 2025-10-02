@@ -62,9 +62,8 @@ table {
 form {
     display: flex;
     flex-direction: column;
-    max-width: 80%;
     padding: 1rem 1.5rem;
-    margin: auto;
+    margin: 0px auto 15px auto;
     background-color: $foreColorMediumLight;
 
     label {
@@ -75,12 +74,25 @@ form {
     select,
     textarea {
         border: 2px solid black;
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         line-height: 1rem;
         padding: .5rem .75rem;
-        min-height: 15px;
-        margin: .25rem;
+        width: 100%;
+        margin: .25rem 0px;
         outline: none;
+
+        // sudo mode
+        &.password {
+            color: transparent;
+
+            &:focus-within {
+                color: transparent;
+
+                &::selection {
+                    color: transparent;
+                }
+            }
+        }
 
         &:focus-within {
             border: 2px solid rgba($color: black, $alpha: .75);
@@ -94,7 +106,10 @@ form {
     }
 
     button {
-        max-width: 99%;
-        margin: 10px 0px;
+        margin-top: 10px;
+
+        fa-icon {
+            margin-right: 5px;
+        }
     }
 }
