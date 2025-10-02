@@ -3,7 +3,7 @@
 // import { Injectable, isDevMode } from "@angular/core";
 import { Injectable } from "@angular/core";
 
-const interestedFields = ["auth", "ws", "swUpdate", "user"] as const;
+const interestedFields = ["auth", "ws", "swUpdate", "user", "dashboardEventLoad"] as const;
 
 export type Fields = typeof interestedFields[number];
 
@@ -13,7 +13,7 @@ export type Fields = typeof interestedFields[number];
 export class LoggingService {
     readonly #output = true;
     // readonly #output = !isDevMode();
-    readonly #interestedFields = new Set<Fields>(["auth", "ws", "swUpdate", "user"]);
+    readonly #interestedFields = new Set<Fields>(["auth", "ws", "swUpdate", "user", "dashboardEventLoad"]);
 
     log(field: Fields, message?: any, ...optionalParams: any[]) {
         if (this.#output && this.#interestedFields.has(field)) {
