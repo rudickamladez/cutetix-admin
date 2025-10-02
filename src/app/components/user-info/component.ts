@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnDestroy } from "@angular/core";
+import { Component, inject, Input, OnDestroy, OnInit } from "@angular/core";
 import { AuthService } from "src/app/services/auth.service";
 
 @Component({
@@ -7,15 +7,16 @@ import { AuthService } from "src/app/services/auth.service";
     styleUrls: ['./component.scss'],
     standalone: false,
 })
-export class UserInfoComponent implements OnDestroy {
+export class UserInfoComponent implements OnInit, OnDestroy {
     readonly #auth = inject(AuthService);
-    time_to_access_token_expire: string = "";
-    time_to_refresh_token_expire: string = "";
+    time_to_access_token_expire: Date = new Date();
+    time_to_refresh_token_expire: Date = new Date();
     #refreshingInterval: number | null = null;
     @Input() date_format: string = 'medium';
-
-    constructor() {
-        this.#refreshingInterval = window.setInterval(() => { this.#updateCountdown(); }, 1_000)
+    
+    ngOnInit(): void {
+        this.#refreshingInterval = window.setInterval(() => { this.#updateCountdown(); }, 1_000);
+        this.#updateCountdown();
     }
 
     ngOnDestroy(): void {
@@ -26,45 +27,31 @@ export class UserInfoComponent implements OnDestroy {
         const at_exp = this.#auth.getDecodedAccessToken()?.exp as number | undefined;
         const rt_exp = this.#auth.getDecodedRefreshToken()?.exp as number | undefined;
         if (!at_exp) {
-            this.time_to_access_token_expire = 'exp is not defined';
+            this.time_to_access_token_expire = new Date();
             return;
         }
         if (!rt_exp) {
-            this.time_to_refresh_token_expire = 'exp is not defined';
+            this.time_to_refresh_token_expire = new Date();
             return;
         }
 
-        const now = Math.floor(Date.now() / 1000);
-        const at_diff = at_exp - now;
-        const rt_diff = rt_exp - now;
+        const now = Date.now();
+        const at_diff = (at_exp * 1_000) - now;
+        const rt_diff = (rt_exp * 1_000) - now;
 
         if (at_diff <= 0) {
-            this.time_to_access_token_expire = 'EXPIRED';
+            this.time_to_access_token_expire = new Date();
             return;
         }
 
         if (rt_diff <= 0) {
-            this.time_to_refresh_token_expire = 'EXPIRED';
+            this.time_to_refresh_token_expire = new Date();
             return;
         }
 
-        this.time_to_access_token_expire = this.#formatCountdown(at_diff);
-        this.time_to_refresh_token_expire = this.#formatCountdown(rt_diff);
-    }
-
-    #formatCountdown(totalSeconds: number): string {
-        const s = totalSeconds % 60;
-        const mTotal = (totalSeconds - s) / 60;
-        const m = mTotal % 60;
-        const hTotal = (mTotal - m) / 60;
-        const h = hTotal % 24;
-        const d = (hTotal - h) / 24;
-
-        const pad = (n: number) => n.toString().padStart(2, '0');
-
-        if (d > 0) return `${d} d ${h}:${pad(m)}:${pad(s)}`;
-        if (h > 0) return `${h}:${pad(m)}:${pad(s)}`;
-        return `${m}:${pad(s)}`;
+        this.time_to_access_token_expire = new Date(at_diff);
+        this.time_to_refresh_token_expire = new Date(rt_diff);
+        console.log(this.time_to_refresh_token_expire, rt_exp, rt_diff);
     }
 
     get username(): string {
