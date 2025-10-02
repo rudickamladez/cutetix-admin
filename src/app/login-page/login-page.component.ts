@@ -72,7 +72,7 @@ export class LoginPageComponent {
   }
 
   public toggleConfigVisibility() {
-    this.showConfig.set(!this.showConfig());
+    this.showConfig.update(value => !value);
   }
 
 }

@@ -26,7 +26,7 @@
     color: $foreColor;
     font-size: 56px;
     z-index: 1;
-    grid-area: "title";
+    grid-area: title;
     text-align: center;
     margin: auto;
 
@@ -74,7 +74,7 @@ h2 {
     margin-top: auto;
     z-index: 1;
     width: 100%;
-    grid-area: "error";
+    grid-area: error;
     text-align: center;
 
     p {
@@ -88,21 +88,20 @@ button.config {
     position: fixed;
     right: 0px;
     bottom: 0px;
-    width: 100%;
-    padding: 0px;
-    padding-right: 15px;
+    min-width: auto;
+    width: auto;
+    padding: 0px 15px;
+
+    z-index: 1000; // more than window
+    pointer-events: auto;
 
     display: flex;
     justify-content: flex-end;
     align-items: center;
 
     background-color: transparent;
-    border-color: transparent;
-    box-shadow: inset 0px 0px 0px transparent;
-
-    i {
-        margin: 0;
-    }
+    border: none;
+    box-shadow: none;
 }
 
 .window {
@@ -115,7 +114,7 @@ button.config {
     background: $backColorMedium;
     box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 0.15);
     text-align: center;
-    grid-area: "window";
+    grid-area: window;
     margin: auto;
     animation-delay: 350ms;
 
