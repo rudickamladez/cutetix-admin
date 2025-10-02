@@ -47,6 +47,12 @@
         margin-top: 32px;
         min-width: 300px;
 
+        button {
+            fa-icon {
+                margin-right: 5px;
+            }
+        }
+
         a:hover {
             color: $foreColorMediumLight;
         }
