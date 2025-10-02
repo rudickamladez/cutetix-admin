@@ -1,8 +1,5 @@
 @use '../../../styles/colors' as *;
 
-tr.odd {
-    background-color: $backColorMediumDarkTran;
-}
 
 table {
     margin: 0px !important;
@@ -11,40 +8,45 @@ table {
     th {
         text-align: left;
     }
-}
 
-td {
-    button {
-        min-width: 0px !important;
-        max-width: 100px !important;
-        box-shadow: none;
-        padding: 10px;
-        margin: auto 2.5px;
-
-        &.delete {
-            background-color: tomato;
-        }
-
-        &.edit {
-            background-color: #BF40BF;
-        }
+    tr:nth-child(2n) {
+        background-color: $backColorMediumDarkTran;
     }
 
-    span {
-        &.new {
-            color: green;
+
+    td {
+        button {
+            min-width: 0px !important;
+            max-width: 100px !important;
+            box-shadow: none;
+            padding: 10px;
+            margin: auto 2.5px;
+
+            &.delete {
+                background-color: tomato;
+            }
+
+            &.edit {
+                background-color: #BF40BF;
+            }
         }
 
-        &.confirmed {
-            color: $foreColorMediumLight;
-        }
+        span {
+            &.new {
+                color: green;
+            }
 
-        &.paid {
-            color: greenyellow;
-        }
+            &.confirmed {
+                color: $foreColorMediumLight;
+            }
 
-        &.cancelled {
-            color: red;
+            &.paid {
+                color: greenyellow;
+            }
+
+            &.cancelled {
+                color: red;
+            }
         }
     }
 }
