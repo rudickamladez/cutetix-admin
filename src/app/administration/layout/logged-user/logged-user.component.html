@@ -1,19 +1,23 @@
 <div class="user">
     <p class="name">{{username}}</p>
     <div class="picture">
-        <i class="fas fa-user fa-icon"></i>
+        <fa-icon [icon]="userIcon"></fa-icon>
     </div>
 </div>
 
 <div class="details">
     <app-user-info></app-user-info>
     <div class="button-container">
-        <button (click)="toggleTheme()">Switch theme</button>
+        <button (click)="toggleTheme()">
+            <fa-icon [icon]="switchThemeIcon"></fa-icon>
+            Switch theme
+        </button>
         <button (click)="logout()">
-            <i class="fas fa-sign-out-alt fa-icon"></i>
+            <fa-icon [icon]="logoutIcon"></fa-icon>
             Log out
         </button>
         <button (click)="openProfile()">
+            <fa-icon [icon]="myProfileIcon"></fa-icon>
             My profile
         </button>
     </div>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MenuItem } from './menu-items';
 import { MenuBuilder } from './menu-builder';
 import { AuthService } from 'src/app/services/auth.service';
+import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-nav-bar',
@@ -15,14 +16,18 @@ export class NavBarComponent implements OnInit {
     logoutItem =  new MenuItem('Log out', '', 'fa-sign-out-alt', () => this.logout());
     builder = new MenuBuilder()
     availableItems: MenuItem[] = [];
-    visible = false;
+    menuOpen = false;
+
+    // icons
+    menuClosedIcon = faBars;
+    menuOpenIcon = faTimes;
 
     constructor(
         private authService: AuthService,
     ) { }
 
     ngOnInit(): void {
-        this.visible = history.state.navBarVisible ?? false;
+        this.menuOpen = history.state.navBarVisible ?? false;
         this.availableItems = this.builder.build()
         this.availableItems.unshift(this.dashboardItem);
         this.availableItems.push(
@@ -32,11 +37,11 @@ export class NavBarComponent implements OnInit {
     }
 
     toggle(): void {
-        this.visible = !this.visible;
+        this.menuOpen = !this.menuOpen;
     }
 
     hide(): void {
-        this.visible = false;
+        this.menuOpen = false;
     }
 
     logout(): void {

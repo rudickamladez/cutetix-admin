@@ -17,13 +17,13 @@
     <input type="password" formControlName="password" placeholder="Password" class="password">
     <button class="alt" [disabled]="(!loginForm.value.username) || (!loginForm.value.password) || loggingIn">
       @if (!loggingIn) {
-      <i class="fa-icon fas fa-sign-in-alt"></i>
+      <fa-icon [icon]="loginIcon"></fa-icon>
       }
       @if (!loggingIn) {
       <span>Log in</span>
       }
       @if (loggingIn) {
-      <i class="fa-icon fas fa-circle-notch fa-spin"></i>
+      <fa-icon [icon]="loadingIcon"></fa-icon>
       }
     </button>
   </form>
@@ -31,7 +31,7 @@
 }
 
 <button class="config" (click)="toggleConfigVisibility()">
-  <i class="fa-icon fas fa-cog"></i>
+  <fa-icon [icon]="settingsIcon"></fa-icon>
 </button>
 
 @if (showConfig()) {
