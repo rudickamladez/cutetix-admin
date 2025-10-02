@@ -2,11 +2,14 @@
 
 
 table {
-    margin: 0px !important;
-    width: 100% !important;
+    margin: 0px;
+    width: 100%;
+    border-collapse: collapse;
+    --padding-left-for-cells: 10px;
 
     th {
         text-align: left;
+        padding-left: var(--padding-left-for-cells);
     }
 
     tr:nth-child(2n) {
@@ -15,12 +18,14 @@ table {
 
 
     td {
+        padding-left: var(--padding-left-for-cells);
+
         button {
-            min-width: 0px !important;
-            max-width: 100px !important;
+            min-width: 0px;
+            max-width: 100px;
             box-shadow: none;
             padding: 10px;
-            margin: auto 2.5px;
+            margin: 2.5px;
 
             &.delete {
                 background-color: tomato;
