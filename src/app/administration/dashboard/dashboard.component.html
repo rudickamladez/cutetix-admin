@@ -1,7 +1,14 @@
 <div class="container">
     <!-- TODO: Favourite events by user -->
-    <app-dashboard-event-overview event_id="1"></app-dashboard-event-overview>
-    <app-dashboard-event-overview event_id="2"></app-dashboard-event-overview>
-    <app-dashboard-event-overview event_id="3"></app-dashboard-event-overview>
-    <app-dashboard-event-overview event_id="4"></app-dashboard-event-overview>
+    @if (user) {
+    @if (user.favorite_events) {
+    @for (event of user.favorite_events; track $index) {
+    <app-dashboard-event-overview [event_id]="event.id"></app-dashboard-event-overview>
+    }
+    } @else {
+    <p>No favorite events found.</p>
+    }
+    } @else {
+    <p>Loading user information...</p>
+    }
 </div>
