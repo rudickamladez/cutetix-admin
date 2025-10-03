@@ -1,6 +1,6 @@
 {
-  "name": "cutetix-admin",
-  "short_name": "cutetix-admin",
+  "name": "CuteTix Administration",
+  "short_name": "CuteTix Admin",
   "theme_color": "#000000",
   "background_color": "#4c4c4c",
   "display": "standalone",
