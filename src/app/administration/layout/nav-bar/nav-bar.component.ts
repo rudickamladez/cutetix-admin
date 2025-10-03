@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MenuItem } from './menu-items';
 import { MenuBuilder } from './menu-builder';
 import { AuthService } from 'src/app/services/auth.service';
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faChartLine, faSignOutAlt, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-nav-bar',
@@ -11,9 +11,9 @@ import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
     standalone: false
 })
 export class NavBarComponent implements OnInit {
-    dashboardItem = new MenuItem('Dashboard', 'dashboard', 'fa-chart-line');
-    userProfileItem = new MenuItem('My profile', 'profile', 'fa-user');
-    logoutItem =  new MenuItem('Log out', '', 'fa-sign-out-alt', () => this.logout());
+    dashboardItem = new MenuItem('Dashboard', 'dashboard', faChartLine);
+    userProfileItem = new MenuItem('My profile', 'profile', faUser);
+    logoutItem =  new MenuItem('Log out', '', faSignOutAlt, () => this.logout());
     builder = new MenuBuilder()
     availableItems: MenuItem[] = [];
     menuOpen = false;
