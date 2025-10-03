@@ -27,8 +27,8 @@
         <td>{{ event.name }}</td>
         <!-- so hidden column with IDs is second -->
         <td style="display: none;">{{ event.id }}</td>
-        <td>{{ event.tickets_sales_start }}</td>
-        <td>{{ event.tickets_sales_end }}</td>
+        <td>{{ event.tickets_sales_start | date : "medium" }}</td>
+        <td>{{ event.tickets_sales_end | date : "medium" }}</td>
         <td>
           <button class="edit" (click)="edit(event)">
             <fa-icon [icon]="faPen"></fa-icon>
