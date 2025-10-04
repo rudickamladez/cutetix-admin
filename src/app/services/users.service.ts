@@ -28,7 +28,14 @@ export class UsersService {
 
   constructor() {
     effect(() => {
-      this.#logging.log("auth", "User changed:", this.user.value());
+      this.#logging.log("user", "User changed:", this.user.value());
+    });
+
+    effect(() => {
+      if (this.user.error()) {
+        this.#logging.error("user", "Failed to fetch user data:", this.user.error());
+        this.#toastr.error("Failed to fetch user data", "Error");
+      }
     });
   }
 }

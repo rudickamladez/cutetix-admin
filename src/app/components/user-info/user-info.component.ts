@@ -1,11 +1,11 @@
-import { Component, inject, input, OnDestroy, OnInit } from "@angular/core";
+import { Component, computed, inject, input, OnDestroy, OnInit } from "@angular/core";
 import { AuthService } from "src/app/services/auth.service";
 import { UsersService } from "src/app/services/users.service";
 
 @Component({
   selector: 'app-user-info',
-  templateUrl: './component.html',
-  styleUrls: ['./component.scss'],
+  templateUrl: './user-info.component.html',
+  styleUrls: ['./user-info.component.scss'],
   standalone: false,
 })
 export class UserInfoComponent implements OnInit, OnDestroy {
@@ -120,9 +120,9 @@ export class UserInfoComponent implements OnInit, OnDestroy {
       ).format(new Date(exp * 1000));
     }
 
-    get show_user_dependended_info(): boolean {
-      if (!this.usersService.user.value()) return false;
-      if (!this.show_favorite_events) return false;
-      return true
-    }
+    protected readonly show_user_dependended_info = computed<boolean>(() => {
+      if (!this.usersService.user.value()) { return false };
+      if (!this.show_favorite_events()) { return false };
+      return true;
+    });
 }
