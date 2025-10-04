@@ -1,5 +1,6 @@
 <div class="container">
     <!-- TODO: Favourite events by user -->
+    @let user = usersService.user.value()!;
     @if (user) {
     @if (user.favorite_events) {
     @for (event of user.favorite_events; track $index) {
