@@ -18,7 +18,7 @@
   @if (user.favorite_events && user.favorite_events.length > 0) {
   <ul>
     @for (event of user!.favorite_events; track event.id) {
-    <li>{{ event.name }}</li>s
+    <li>{{ event.name }}</li>
     }
   </ul>
 
