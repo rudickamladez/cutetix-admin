@@ -12,7 +12,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoadingComponent } from './loading/loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TicketGroupsListComponent } from './ticket_groups/list/component';
+import { TicketGroupsListComponent } from './ticket_groups/list/ticket_groups-list.component';
 import { TicketGroupsEditComponent } from './ticket_groups/edit/component';
 import { TicketGroupsNewComponent } from './ticket_groups/new/component';
 import { EventsListComponent } from './events/list/component';

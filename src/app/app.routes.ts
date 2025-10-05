@@ -4,7 +4,7 @@ import { LoginPageComponent } from './login-page/login-page.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { DashboardComponent } from './administration/dashboard/dashboard.component';
 import { AdministrationLayoutComponent } from './administration/layout/layout.component';
-import { TicketGroupsListComponent } from './administration/ticket_groups/list/component';
+import { TicketGroupsListComponent } from './administration/ticket_groups/list/ticket_groups-list.component';
 import { TicketGroupsNewComponent } from './administration/ticket_groups/new/component';
 import { TicketGroupsEditComponent } from './administration/ticket_groups/edit/component';
 import { UserProfileComponent } from './user-profile/user-profile.component';

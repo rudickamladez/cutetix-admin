@@ -1,5 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { TicketGroupService } from '../ticket_groups.service';
 import { TicketGroup } from '../ticket_groups.types';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -8,11 +7,11 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ticket_groups-list',
-  templateUrl: './component.html',
-  styleUrls: ['./component.scss'],
+  templateUrl: './ticket_groups-list.component.html',
+  styleUrls: ['./ticket_groups-list.component.scss'],
   standalone: false
 })
-export class TicketGroupsListComponent implements OnInit, OnDestroy {
+export class TicketGroupsListComponent implements OnInit {
   public faPen = faPen;
   public faTrash = faTrash;
   public ticket_groups: TicketGroup[] = [];
@@ -21,9 +20,6 @@ export class TicketGroupsListComponent implements OnInit, OnDestroy {
     enabled: false,
     text: '',
   };
-  // We use this trigger because fetching the list can be quite long,
-  // thus we ensure the data is fetched before rendering
-  dtTrigger: Subject<any> = new Subject<any>();
 
   constructor(
     private readonly ticket_groupService: TicketGroupService,
@@ -35,8 +31,6 @@ export class TicketGroupsListComponent implements OnInit, OnDestroy {
     this.ticket_groupService.get().subscribe({
       next: (ticket_groups) => {
         this.ticket_groups = ticket_groups;
-        // Calling the DT trigger to manually render the table
-        this.dtTrigger.next(null);
         this.loadingState--;
       },
       error: (err) => {
@@ -52,11 +46,6 @@ export class TicketGroupsListComponent implements OnInit, OnDestroy {
         this.ticket_groups.splice(this.ticket_groups.indexOf(ticket_group), 1);
       }
     );
-  }
-
-  ngOnDestroy(): void {
-    // Do not forget to unsubscribe the event
-    this.dtTrigger.unsubscribe();
   }
 
   public edit(ticket_group: TicketGroup) {
