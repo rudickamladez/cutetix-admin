@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Component, inject, OnInit } from '@angular/core';
 import { EventService } from '../events.service';
 import { Event } from '../events.types';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faStar, faStarHalf, faStarHalfStroke, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { UsersService } from 'src/app/services/users.service';
 
 @Component({
   selector: 'app-events-list',
@@ -12,32 +12,25 @@ import { Router } from '@angular/router';
   styleUrls: ['./event-list.component.scss'],
   standalone: false
 })
-export class EventsListComponent implements OnInit, OnDestroy {
-  public faPen = faPen;
-  public faTrash = faTrash;
+export class EventsListComponent implements OnInit {
+  readonly eventsService = inject(EventService);
+  readonly usersService = inject(UsersService);
+  readonly toastr = inject(ToastrService);
+  readonly router = inject(Router);
+  public editIcon = faPen;
+  public deleteIcon = faTrash;
   public events: Event[] = [];
   public loadingState = 1;
   public errorLoading = {
     enabled: false,
     text: '',
   };
-  // We use this trigger because fetching the list can be quite long,
-  // thus we ensure the data is fetched before rendering
-  dtTrigger: Subject<any> = new Subject<any>();
-
-  constructor(
-    private readonly eventsService: EventService,
-    private readonly toastr: ToastrService,
-    private readonly router: Router
-  ) { }
 
   ngOnInit(): void {
-
     this.eventsService.get().subscribe({
       next: (events) => {
+        this.errorLoading.enabled = false;
         this.events = events;
-        // Calling the DT trigger to manually render the table
-        this.dtTrigger.next(null);
         this.loadingState--;
       },
       error: (err) => {
@@ -55,9 +48,21 @@ export class EventsListComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
-    // Do not forget to unsubscribe the event
-    this.dtTrigger.unsubscribe();
+  favoriteIcon(eventId: string) {
+    if (this.usersService.isEventFavorited(eventId)) {
+      return faStarHalfStroke; // icon for removal
+    }
+    return faStar; // icon for adding
+  }
+
+  favorite(eventId: string) {
+    if (this.usersService.isEventFavorited(eventId)) {
+      this.usersService.removeEventFavorite(eventId);
+      window.location.reload();
+      return;
+    }
+    this.usersService.addEventFavorite(eventId);
+    window.location.reload();
   }
 
   public edit(event: Event) {

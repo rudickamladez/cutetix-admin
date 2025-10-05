@@ -30,11 +30,14 @@
         <td>{{ event.tickets_sales_start | date : "medium" }}</td>
         <td>{{ event.tickets_sales_end | date : "medium" }}</td>
         <td>
+          <button class="favorite" (click)="favorite(event.id!)">
+            <fa-icon [icon]="favoriteIcon(event.id!)"></fa-icon>
+          </button>
           <button class="edit" (click)="edit(event)">
-            <fa-icon [icon]="faPen"></fa-icon>
+            <fa-icon [icon]="editIcon"></fa-icon>
           </button>
           <button class="delete" (click)="delete(event)" [disabled]="true">
-            <fa-icon [icon]="faTrash"></fa-icon>
+            <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
         </td>
       </tr>
