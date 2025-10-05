@@ -49,6 +49,14 @@ export class UsersService {
     return user.favorite_events.some(e => e.id == eventId);
   }
 
+  toggleEventFavorite(eventId: string) {
+    if (this.isEventFavorited(eventId)) {
+      this.removeEventFavorite(eventId);
+    } else {
+      this.addEventFavorite(eventId);
+    }
+  }
+
   addEventFavorite(eventId: string) {
     const baseUrl = this.#storageService.get(StorageKeys.API_URL)!;
     const url = new URL(`${API_PATH}/me/favorite_events/`, baseUrl);

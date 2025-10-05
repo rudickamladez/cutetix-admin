@@ -56,12 +56,7 @@ export class EventsListComponent implements OnInit {
   }
 
   favorite(eventId: string) {
-    if (this.usersService.isEventFavorited(eventId)) {
-      this.usersService.removeEventFavorite(eventId);
-      window.location.reload();
-      return;
-    }
-    this.usersService.addEventFavorite(eventId);
+    this.usersService.toggleEventFavorite(eventId);
     window.location.reload();
   }
 
