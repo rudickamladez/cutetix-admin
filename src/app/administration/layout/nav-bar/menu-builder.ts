@@ -1,4 +1,6 @@
+import { faCalendarDays, faClock, faTicket } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem, MenuSubItem } from './menu-items';
+import { IconDefinition } from '@fortawesome/angular-fontawesome';
 
 export class MenuBuilder {
     constructor() { }
@@ -6,9 +8,9 @@ export class MenuBuilder {
     build(): MenuItem[] {
 
         return [
-            this.getMenuItem('Tickets', 'tickets', 'fa-ticket', () => this.getTicketsSubItems()),
-            this.getMenuItem('Ticket groups', 'ticket_groups', 'fa-clock', () => this.getSubItemsByPath('ticket_groups')),
-            this.getMenuItem('Events', 'events', 'fa-calendar-days', () => this.getSubItemsByPath('events')),
+            this.getMenuItem('Tickets', 'tickets', faTicket, () => this.getTicketsSubItems()),
+            this.getMenuItem('Ticket groups', 'ticket_groups', faClock, () => this.getSubItemsByPath('ticket_groups')),
+            this.getMenuItem('Events', 'events', faCalendarDays, () => this.getSubItemsByPath('events')),
         ].filter(o => o);
     }
 
@@ -29,7 +31,7 @@ export class MenuBuilder {
     }
 
     private getMenuItem(
-        name: string, defaultLink: string, icon: string, getSubItems: () => MenuSubItem[]
+        name: string, defaultLink: string, icon: IconDefinition, getSubItems: () => MenuSubItem[]
     ): MenuItem {
         const menuItem = new MenuItem(name, defaultLink, icon);
         menuItem.subItems.push(...getSubItems());

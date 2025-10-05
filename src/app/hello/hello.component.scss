@@ -12,11 +12,12 @@
     grid-template-areas:
         "title"
         "window"
-        ".";
+        "."
+        "copyright";
     align-items: center;
 
     @media (max-width: 650px) {
-        grid-template-rows: auto auto;
+        grid-template-rows: 1fr 0.5fr 1fr;
         align-items: initial;
     }
 }
@@ -75,6 +76,10 @@
             margin-right: 5px;
         }
     }
+}
+
+app-copyright {
+    grid-area: copyright;
 }
 
 p {

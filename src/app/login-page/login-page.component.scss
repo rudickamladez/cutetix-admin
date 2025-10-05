@@ -15,10 +15,11 @@
         "title"
         "error"
         "window"
-        ".";
+        "."
+        "copyright";
 
     @media (max-width: 650px) {
-        grid-template-rows: auto auto;
+        grid-template-rows: 1fr 0.5fr 1fr 1fr;
         align-items: initial;
     }
 }
@@ -186,4 +187,8 @@ button.large {
             display: block;
         }
     }
+}
+
+app-copyright {
+    grid-area: copyright;
 }
