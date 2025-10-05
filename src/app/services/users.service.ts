@@ -73,9 +73,9 @@ export class UsersService {
         this.#logging.error("user", "Failed to favorite event:", err);
         this.#toastr.error("Failed to favorite event", "Error");
       },
-      // complete: () => {
-      //   this.user.refresh();
-      // }
+      complete: () => {
+        this.user.reload();
+      }
     });
   }
 
@@ -94,9 +94,9 @@ export class UsersService {
         this.#logging.error("user", "Failed to remove favorite event:", err);
         this.#toastr.error("Failed to remove favorite event", "Error");
       },
-      // complete: () => {
-      //   this.user.refresh();
-      // }
+      complete: () => {
+        this.user.reload();
+      }
     });
   }
 }
