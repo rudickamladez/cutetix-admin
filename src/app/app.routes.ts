@@ -8,7 +8,7 @@ import { TicketGroupsListComponent } from './administration/ticket_groups/list/c
 import { TicketGroupsNewComponent } from './administration/ticket_groups/new/component';
 import { TicketGroupsEditComponent } from './administration/ticket_groups/edit/component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
-import { EventsListComponent } from './administration/events/list/component';
+import { EventsListComponent } from './administration/events/list/event-list.component';
 import { TicketsListComponent } from './administration/tickets/list/component';
 import { TicketsNewComponent } from './administration/tickets/new/component';
 import { EventsFormComponent } from './administration/events/form/component';

@@ -15,7 +15,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TicketGroupsListComponent } from './ticket_groups/list/component';
 import { TicketGroupsEditComponent } from './ticket_groups/edit/component';
 import { TicketGroupsNewComponent } from './ticket_groups/new/component';
-import { EventsListComponent } from './events/list/component';
+import { EventsListComponent } from './events/list/event-list.component';
 import { TicketsListComponent } from './tickets/list/component';
 import { TicketsNewComponent } from './tickets/new/component';
 import { EventsFormComponent } from './events/form/component';
