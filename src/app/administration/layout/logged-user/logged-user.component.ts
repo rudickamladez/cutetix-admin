@@ -2,6 +2,7 @@ import { Component, inject, Inject, DOCUMENT } from '@angular/core';
 import { Router } from '@angular/router';
 import { faRepeat, faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from 'src/app/services/auth.service';
+import { UsersService } from 'src/app/services/users.service';
 
 @Component({
   selector: 'app-logged-user',
@@ -10,7 +11,8 @@ import { AuthService } from 'src/app/services/auth.service';
   standalone: false
 })
 export class LoggedUserComponent {
-  readonly #auth = inject(AuthService);
+  readonly authService = inject(AuthService);
+  readonly usersService = inject(UsersService);
 
   // icons
   userIcon = faUser;
@@ -24,16 +26,12 @@ export class LoggedUserComponent {
   ) {
   }
 
-  get username(): string {
-    return this.#auth.getDecodedAccessToken()?.sub || "undefined";
-  }
-
   openProfile() {
     this.router.navigate(['/profile']);
   }
 
   logout() {
-    this.#auth.logout();
+    this.authService.logout();
   }
 
   toggleTheme() {

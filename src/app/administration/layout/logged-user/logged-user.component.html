@@ -1,5 +1,12 @@
 <div class="user">
-    <p class="name">{{username}}</p>
+    @if (usersService.user.isLoading()) {
+    <p class="name">{{authService.getUsername()}}</p>
+    } @else {
+    <!-- User is loaded -->
+    @let user = usersService.user.value()!;
+    <p class="name">{{ user.full_name }}</p>
+    }
+
     <div class="picture">
         <fa-icon [icon]="userIcon"></fa-icon>
     </div>
