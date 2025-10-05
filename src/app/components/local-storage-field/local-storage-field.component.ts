@@ -6,8 +6,8 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
 
 @Component({
   selector: 'app-local-storage-field',
-  templateUrl: './component.html',
-  styleUrls: ['./component.scss'],
+  templateUrl: './local-storage-field.component.html',
+  styleUrls: ['./local-storage-field.component.scss'],
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

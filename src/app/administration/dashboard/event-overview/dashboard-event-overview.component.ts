@@ -7,8 +7,8 @@ import { LoggingService } from "src/app/services/logging.service";
 
 @Component({
     selector: 'app-dashboard-event-overview',
-    templateUrl: './component.html',
-    styleUrls: ['./component.scss'],
+    templateUrl: './dashboard-event-overview.component.html',
+    styleUrls: ['./dashboard-event-overview.component.scss'],
     standalone: false,
 })
 export class DashboardEventOverviewComponent implements OnInit {

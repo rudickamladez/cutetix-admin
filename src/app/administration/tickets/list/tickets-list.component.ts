@@ -7,8 +7,8 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tickets-list',
-  templateUrl: './component.html',
-  styleUrls: ['./component.scss'],
+  templateUrl: './tickets-list.component.html',
+  styleUrls: ['./tickets-list.component.scss'],
   standalone: false
 })
 export class TicketsListComponent implements OnInit {

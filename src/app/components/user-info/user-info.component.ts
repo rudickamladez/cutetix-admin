@@ -3,8 +3,8 @@ import { AuthService } from "src/app/services/auth.service";
 
 @Component({
     selector: 'app-user-info',
-    templateUrl: './component.html',
-    styleUrls: ['./component.scss'],
+    templateUrl: './user-info.component.html',
+    styleUrls: ['./user-info.component.scss'],
     standalone: false,
 })
 export class UserInfoComponent implements OnDestroy {

@@ -8,8 +8,8 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-events-list',
-  templateUrl: './component.html',
-  styleUrls: ['./component.scss'],
+  templateUrl: './events-list.component.html',
+  styleUrls: ['./events-list.component.scss'],
   standalone: false
 })
 export class EventsListComponent implements OnInit, OnDestroy {
