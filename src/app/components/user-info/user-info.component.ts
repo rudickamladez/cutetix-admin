@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnDestroy, OnInit } from "@angular/core";
+import { Component, computed, booleanAttribute, inject, input, OnDestroy, OnInit} from "@angular/core";
 import { AuthService } from "src/app/services/auth.service";
 import { UsersService } from "src/app/services/users.service";
 
@@ -12,10 +12,12 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     readonly #auth = inject(AuthService);
     readonly usersService = inject(UsersService);
 
-    readonly show_favorite_events = input(true);
+    readonly show_favorite_events = input(true, {
+       transform: booleanAttribute,
+    });
 
-    time_to_access_token_expire = "";
-    time_to_refresh_token_expire = "";
+    protected time_to_access_token_expire = "";
+    protected time_to_refresh_token_expire = "";
     #refreshingInterval?: number;
 
 

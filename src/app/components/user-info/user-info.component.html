@@ -3,8 +3,7 @@
 <div class="info" label="Access token expires on">{{ access_token_expire }} ‒ {{ time_to_access_token_expire }}</div>
 <div class="info" label="Refresh token expires on">{{ refresh_token_expire }} ‒ {{ time_to_refresh_token_expire }}</div>
 
-@let userLoading = usersService.user.isLoading();
-@if (userLoading) {
+@if (usersService.user.isLoading()) {
 <span>Loading user data...</span>
 } @else {
 <!-- User is loaded -->

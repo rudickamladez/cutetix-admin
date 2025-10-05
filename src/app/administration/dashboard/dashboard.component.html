@@ -1,6 +1,5 @@
 <div class="container">
-    @let userLoading = usersService.user.isLoading();
-    @if (userLoading) {
+    @if (usersService.user.isLoading()) {
     <p>Loading user data...</p>
     } @else {
     <!-- User is loaded -->
@@ -8,7 +7,7 @@
 
     @if (user.favorite_events && user.favorite_events.length > 0) {
     @for (event of user.favorite_events; track event.id) {
-    <app-dashboard-event-overview [event_id]="event.id"></app-dashboard-event-overview>
+    <app-dashboard-event-overview [event_id]="event.id"/>
     }
     } @else {
     <p>No favorite events found.</p>

@@ -8,5 +8,5 @@ import { UsersService } from 'src/app/services/users.service';
   standalone: false
 })
 export class DashboardComponent {
-  readonly usersService = inject(UsersService);
+  protected readonly usersService = inject(UsersService);
 }
