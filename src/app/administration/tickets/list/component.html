@@ -18,10 +18,10 @@
         <th>First Name</th>
         <th>ID</th>
         <th>E-mail</th>
-        <th style="display: none;">Description</th>
+        <th class="d-none">Description</th>
         <th>Group</th>
         <th>Event</th>
-        <th>Status</th>
+        <th class="d-md-none">Status</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -36,7 +36,7 @@
             {{ ticket.email }}
           </a>
         </td>
-        <td style="display: none;">{{ ticket.description }}</td>
+        <td class="d-none">{{ ticket.description }}</td>
         <td>
           @if (ticket.group != null) {
           <a [routerLink]="'/ticket_groups/detail/' + ticket.group.id">
@@ -62,7 +62,7 @@
           }
         </td>
         <!-- <td *ngSwitch="ticket.status"> -->
-        <td>
+        <td class="d-md-none">
           <!-- <span *ngSwitchCase="ticketStatusEnum.new"></span> -->
           @if (ticket.status == 0) {
           <span class="new">New</span>
@@ -77,7 +77,7 @@
           <span class="cancelled">Cancelled</span>
           }
         </td>
-        <td>
+        <td class="actions">
           <button class="destructive" (click)="cancel(ticket)">
             <fa-icon [icon]="cancelIcon"></fa-icon>
           </button>

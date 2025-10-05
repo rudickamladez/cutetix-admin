@@ -15,9 +15,9 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th style="display: none;">ID</th>
-        <th>Ticket sales start</th>
-        <th>Ticket sales end</th>
+        <th class="d-none">ID</th>
+        <th class="d-sm-none">Ticket sales start</th>
+        <th class="d-sm-none">Ticket sales end</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -26,10 +26,10 @@
       <tr>
         <td>{{ event.name }}</td>
         <!-- so hidden column with IDs is second -->
-        <td style="display: none;">{{ event.id }}</td>
-        <td>{{ event.tickets_sales_start | date : "medium" }}</td>
-        <td>{{ event.tickets_sales_end | date : "medium" }}</td>
-        <td>
+        <td class="d-none">{{ event.id }}</td>
+        <td class="d-sm-none">{{ event.tickets_sales_start | date : "medium" }}</td>
+        <td class="d-sm-none">{{ event.tickets_sales_end | date : "medium" }}</td>
+        <td class="actions">
           <button class="favorite" (click)="favorite(event.id!)">
             <fa-icon [icon]="favoriteIcon(event.id!)"></fa-icon>
           </button>

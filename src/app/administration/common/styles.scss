@@ -20,6 +20,10 @@ table {
     td {
         padding-left: var(--padding-left-for-cells);
 
+        &.actions {
+            display: inline-flex;
+        }
+
         button {
             min-width: 0px;
             max-width: 100px;
