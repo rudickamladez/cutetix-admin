@@ -295,6 +295,23 @@ export class AuthService implements OnDestroy {
         }
     }
 
+    getUsername(): string {
+        return this.getDecodedAccessToken()?.sub || "undefined";
+    }
+
+    getScopes(): string {
+        const scope = Object(this.getDecodedAccessToken())?.scope as string | undefined;
+
+        const ss = (scope ?? '')
+            .toString()
+            .split(',')
+            .map(s => s.trim())
+            .filter(Boolean)
+            .join(', ') || 'undefined';
+
+        return ss;
+    }
+
     getRefreshToken(): string | null {
         return this.#storageService.get(StorageKeys.REFRESH_TOKEN);
     }
