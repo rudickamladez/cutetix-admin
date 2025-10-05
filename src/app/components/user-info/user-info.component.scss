@@ -15,4 +15,20 @@
     &:last-child {
         margin-bottom: 0px;
     }
+
+    ul {
+        display: inline-flex;
+        li {
+            list-style: none;
+            &::after {
+                content: ', ';
+                display: inline-block;
+                margin-right: 2.5px;
+            }
+
+            &:last-child::after {
+                display: none;
+            }
+        }
+    }
 }

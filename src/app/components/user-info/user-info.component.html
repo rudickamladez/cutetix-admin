@@ -13,7 +13,7 @@
 <hr />
 @if (show_favorite_events()) {
 
-<div class="info" label="Favorite Events">
+<div class="info" label="Favorite events">
   @if (user.favorite_events && user.favorite_events.length > 0) {
   <ul>
     @for (event of user!.favorite_events; track event.id) {
