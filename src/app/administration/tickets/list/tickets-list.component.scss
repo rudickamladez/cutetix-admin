@@ -1,1 +1,43 @@
 @use '../../common/styles';
+
+.toolbar {
+    margin-bottom: 0.75rem;
+}
+
+
+.filters {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    flex-wrap: wrap;
+
+    div {
+        &:before {
+            content: attr(label);
+            font-size: 14px;
+            display: block;
+            font-weight: 400;
+        }
+    }
+
+    input[type="search"] {
+        min-width: 22rem;
+        padding: .4rem .6rem;
+    }
+
+    select {
+        padding: .4rem .6rem;
+    }
+    
+    button {
+        min-width: 0px;
+        padding: .4rem .6rem;
+        align-self: flex-end;
+    }
+    
+    .count {
+        margin-left: .5rem;
+        opacity: .8;
+        font-size: .9rem;
+    }
+}

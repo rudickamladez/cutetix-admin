@@ -1,6 +1,48 @@
 @if (this.loadingState > 0) {
 <app-loading></app-loading>
 }
+<div class="toolbar">
+  <div class="filters">
+    <div label="Search">
+      <input type="search" (input)="onQueryChange($event)" [value]="filter.query" aria-label="Hledat" />
+    </div>
+
+    <div label="Status">
+      <select (change)="onStatusChange($event)" [value]="filter.status">
+        <option value="any">Any</option>
+        <option value="0">New</option>
+        <option value="1">Confirmed</option>
+        <option value="2">Paid</option>
+        <option value="3">Cancelled</option>
+      </select>
+    </div>
+
+    <!--
+    TODO: Load groups and events for filtering
+    <div label="Group">
+      <select (change)="onGroupChange($event)" [value]="filter.group">
+        <option value="any">Any</option>
+      </select>
+    </div>
+
+    <div label="Event">
+      <select (change)="onEventChange($event)" [value]="filter.event">
+        <option value="any">Any</option>
+      </select>
+    </div> -->
+
+    <button type="button" (click)="clearFilters()" [disabled]="!hasActiveFilters()">
+      <fa-icon [icon]="cleaningIcon"></fa-icon>
+    </button>
+
+    <!-- @if (filteredTickets.length !== tickets.length || filter.query || filter.status !== 'any') { -->
+    <span class="count">
+      Showing {{ filteredTickets.length }} / {{ tickets.length }}
+    </span>
+    <!-- } -->
+  </div>
+</div>
+
 <div>
   @if (this.errorLoading.enabled) {
   <div class="error">
@@ -26,7 +68,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (ticket of tickets; track ticket) {
+      @for (ticket of filteredTickets; track ticket.id) {
       <tr>
         <td>{{ ticket.lastname }}</td>
         <td>{{ ticket.firstname }}</td>
@@ -44,9 +86,7 @@
           </a>
           }
           @if (ticket.group == null) {
-          <span>
-            No group
-          </span>
+          <span>No group</span>
           }
         </td>
         <td>
@@ -56,26 +96,14 @@
           </a>
           }
           @if (ticket.group?.event == null) {
-          <span>
-            No event for group
-          </span>
+          <span>No event for group</span>
           }
         </td>
-        <!-- <td *ngSwitch="ticket.status"> -->
         <td class="d-md-none">
-          <!-- <span *ngSwitchCase="ticketStatusEnum.new"></span> -->
-          @if (ticket.status == 0) {
-          <span class="new">New</span>
-          }
-          @if (ticket.status == 1) {
-          <span class="confirmed">Confirmed</span>
-          }
-          @if (ticket.status == 2) {
-          <span class="paid">Paid</span>
-          }
-          @if (ticket.status == 3) {
-          <span class="cancelled">Cancelled</span>
-          }
+          @if (ticket.status == 0) { <span class="new">New</span> }
+          @if (ticket.status == 1) { <span class="confirmed">Confirmed</span> }
+          @if (ticket.status == 2) { <span class="paid">Paid</span> }
+          @if (ticket.status == 3) { <span class="cancelled">Cancelled</span> }
         </td>
         <td class="actions">
           <button class="destructive" (click)="cancel(ticket)">
