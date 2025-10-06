@@ -8,8 +8,8 @@ import { UsersService } from 'src/app/services/users.service';
 
 @Component({
   selector: 'app-events-list',
-  templateUrl: './event-list.component.html',
-  styleUrls: ['./event-list.component.scss'],
+  templateUrl: './events-list.component.html',
+  styleUrls: ['./events-list.component.scss'],
   standalone: false
 })
 export class EventsListComponent implements OnInit {

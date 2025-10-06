@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { TicketService } from '../../tickets/tickets.service';
+import { TicketService } from '../tickets.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { TicketGroupService } from '../../ticket_groups/ticket_groups.service';
@@ -9,8 +9,8 @@ import { TicketStatusEnum } from '../tickets.types';
 
 @Component({
     selector: 'app-tickets-new',
-    templateUrl: './component.html',
-    styleUrls: ['./component.scss'],
+    templateUrl: './tickets-new.component.html',
+    styleUrls: ['./tickets-new.component.scss'],
     standalone: false
 })
 export class TicketsNewComponent {

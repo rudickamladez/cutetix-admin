@@ -8,8 +8,8 @@ import { Event } from '../../events/events.types';
 
 @Component({
     selector: 'app-ticket_groups-new',
-    templateUrl: './component.html',
-    styleUrls: ['./component.scss'],
+    templateUrl: './ticket_groups-new.component.html',
+    styleUrls: ['./ticket_groups-new.component.scss'],
     standalone: false
 })
 export class TicketGroupsNewComponent {
