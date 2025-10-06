@@ -94,8 +94,7 @@ form {
         margin: .25rem 0px;
         outline: none;
 
-        // sudo mode
-        &.password {
+        &.sudo-mode {
             color: transparent;
 
             &:focus-within {
