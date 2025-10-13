@@ -1,24 +1,49 @@
-<form [formGroup]="form" (submit)="newTicket()">
+<form
+  [formGroup]="form"
+  (submit)="newTicket()"
+>
   <h1>New ticket</h1>
   <label for="firstname">Firstname</label>
-  <input type="text" formControlName="firstname" required>
+  <input
+    type="text"
+    formControlName="firstname"
+    required
+  />
 
   <label for="lastname">Lastname</label>
-  <input type="text" formControlName="lastname" required>
+  <input
+    type="text"
+    formControlName="lastname"
+    required
+  />
 
   <label for="email">E-Mail</label>
-  <input type="email" formControlName="email" required>
+  <input
+    type="email"
+    formControlName="email"
+    required
+  />
 
   <label for="description">Description</label>
-  <input type="text" formControlName="description" required>
+  <input
+    type="text"
+    formControlName="description"
+    required
+  />
 
   <label for="status">Status</label>
-  <select name="status" formControlName="status">
+  <select
+    name="status"
+    formControlName="status"
+  >
     <option value="0">New</option>
   </select>
 
   <label for="groupId">Group</label>
-  <select name="groupId" formControlName="groupId">
+  <select
+    name="groupId"
+    formControlName="groupId"
+  >
     @for (group of groups; track group) {
       <option [ngValue]="group.id">{{ group.event?.name }} ‒ {{ group.name }}</option>
     }
@@ -27,7 +52,5 @@
   <label for="send_mail">Send e-mail</label>
   <input type="checkbox" name="send_mail" formControlName="send_mail">
 
-  <button class="alt">
-    Create
-  </button>
+  <button class="alt">Create</button>
 </form>

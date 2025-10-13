@@ -1,14 +1,17 @@
-import { Component, inject, isDevMode, OnInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
-import { UpdateService } from './services/update.service';
-import { StorageService } from './services/storage.service';
-import { StorageKeys } from './tokens/storage.tokens';
-import { environment } from 'src/environments/environment';
+import type { OnInit } from "@angular/core";
+import { Component, inject, isDevMode } from "@angular/core";
+import { Title } from "@angular/platform-browser";
+
+import { environment } from "src/environments/environment";
+
+import { StorageService } from "./services/storage.service";
+import { UpdateService } from "./services/update.service";
+import { StorageKeys } from "./tokens/storage.tokens";
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    standalone: false
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  standalone: false,
 })
 export class AppComponent implements OnInit {
   readonly #storageService = inject(StorageService);
@@ -17,7 +20,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     if (isDevMode()) {
-      this.#titleService.setTitle(`DEV ${this.#titleService.getTitle()}`)
+      this.#titleService.setTitle(`DEV ${this.#titleService.getTitle()}`);
     }
 
     this.#storageService.setIfNull(StorageKeys.API_URL, environment.backend.api);

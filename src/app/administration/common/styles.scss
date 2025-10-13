@@ -1,123 +1,121 @@
-@use '../../../styles/colors' as *;
-
+@use "../../../styles/colors" as *;
 
 table {
-    margin: 0px;
-    width: 100%;
-    border-collapse: collapse;
-    --padding-left-for-cells: 10px;
+  margin: 0px;
+  width: 100%;
+  border-collapse: collapse;
+  --padding-left-for-cells: 10px;
 
-    th {
-        text-align: left;
-        padding-left: var(--padding-left-for-cells);
-    }
+  th {
+    text-align: left;
+    padding-left: var(--padding-left-for-cells);
+  }
 
-    tr:nth-child(2n) {
-        background-color: $backColorMediumDarkTran;
-    }
+  tr:nth-child(2n) {
+    background-color: $backColorMediumDarkTran;
+  }
 
+  td {
+    padding-left: var(--padding-left-for-cells);
 
-    td {
-        padding-left: var(--padding-left-for-cells);
-
-        &.actions {
-            display: inline-flex;
-        }
-
-        button {
-            min-width: 0px;
-            max-width: 100px;
-            box-shadow: none;
-            padding: 10px;
-            margin: 2.5px;
-
-            &.delete {
-                background-color: tomato;
-            }
-
-            &.edit {
-                background-color: #BF40BF;
-            }
-        }
-
-        span {
-            &.new {
-                color: green;
-            }
-
-            &.confirmed {
-                color: $foreColorMediumLight;
-            }
-
-            &.paid {
-                color: greenyellow;
-            }
-
-            &.cancelled {
-                color: red;
-            }
-        }
-    }
-}
-
-.error {
-    animation: 500ms fadeIn;
-    animation-delay: 300ms;
-    animation-fill-mode: backwards;
-    background-color: rgba($color: red, $alpha: 0.15);
-    padding: 1.5rem;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    padding: 1rem 1.5rem;
-    margin: 0px auto 15px auto;
-    background-color: $foreColorMediumLight;
-
-    label {
-        margin-top: .5rem;
-    }
-
-    input,
-    select,
-    textarea {
-        border: 2px solid black;
-        font-size: 1.25rem;
-        line-height: 1rem;
-        padding: .5rem .75rem;
-        width: 100%;
-        margin: .25rem 0px;
-        outline: none;
-
-        &.sudo-mode {
-            color: transparent;
-
-            &:focus-within {
-                color: transparent;
-
-                &::selection {
-                    color: transparent;
-                }
-            }
-        }
-
-        &:focus-within {
-            border: 2px solid rgba($color: black, $alpha: .75);
-            background-color: rgba($color: black, $alpha: .25);
-            color: $foreColor;
-
-            &::placeholder {
-                color: $foreColor;
-            }
-        }
+    &.actions {
+      display: inline-flex;
     }
 
     button {
-        margin-top: 10px;
+      min-width: 0px;
+      max-width: 100px;
+      box-shadow: none;
+      padding: 10px;
+      margin: 2.5px;
 
-        fa-icon {
-            margin-right: 5px;
-        }
+      &.delete {
+        background-color: tomato;
+      }
+
+      &.edit {
+        background-color: #bf40bf;
+      }
     }
+
+    span {
+      &.new {
+        color: green;
+      }
+
+      &.confirmed {
+        color: $foreColorMediumLight;
+      }
+
+      &.paid {
+        color: greenyellow;
+      }
+
+      &.cancelled {
+        color: red;
+      }
+    }
+  }
+}
+
+.error {
+  animation: 500ms fadeIn;
+  animation-delay: 300ms;
+  animation-fill-mode: backwards;
+  background-color: rgba($color: red, $alpha: 0.15);
+  padding: 1.5rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.5rem;
+  margin: 0px auto 15px auto;
+  background-color: $foreColorMediumLight;
+
+  label {
+    margin-top: 0.5rem;
+  }
+
+  input,
+  select,
+  textarea {
+    border: 2px solid black;
+    font-size: 1.25rem;
+    line-height: 1rem;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    margin: 0.25rem 0px;
+    outline: none;
+
+    &.sudo-mode {
+      color: transparent;
+
+      &:focus-within {
+        color: transparent;
+
+        &::selection {
+          color: transparent;
+        }
+      }
+    }
+
+    &:focus-within {
+      border: 2px solid rgba($color: black, $alpha: 0.75);
+      background-color: rgba($color: black, $alpha: 0.25);
+      color: $foreColor;
+
+      &::placeholder {
+        color: $foreColor;
+      }
+    }
+  }
+
+  button {
+    margin-top: 10px;
+
+    fa-icon {
+      margin-right: 5px;
+    }
+  }
 }

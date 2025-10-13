@@ -1,10 +1,7 @@
-import { 
-  Injectable,
-  signal 
-} from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class VisibilityService {
   readonly #visible = signal(!document.hidden);

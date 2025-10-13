@@ -1,4 +1,7 @@
-<button class="default-style toggle-button" (click)="toggle()">
+<button
+  class="default-style toggle-button"
+  (click)="toggle()"
+>
   @if (!menuOpen) {
     <fa-icon [icon]="menuClosedIcon"></fa-icon>
   }
@@ -6,8 +9,11 @@
     <fa-icon [icon]="menuOpenIcon"></fa-icon>
   }
 </button>
-<div class="hide-nav-bar {{menuOpen ? 'visible' : ''}}" (click)="hide()"></div>
-<div class="wrapper {{menuOpen ? 'visible' : ''}}">
+<div
+  class="hide-nav-bar {{ menuOpen ? 'visible' : '' }}"
+  (click)="hide()"
+></div>
+<div class="wrapper {{ menuOpen ? 'visible' : '' }}">
   <h1>
     <div>CuteTix</div>
     <div>Admin</div>
@@ -16,7 +22,11 @@
     @for (item of availableItems; track item) {
       <app-nav-bar-item [item]="item">
         @for (subItem of item.subItems; track subItem) {
-          <app-nav-bar-subitem [name]="subItem.name" [link]="subItem.link" (click)="hide()">
+          <app-nav-bar-subitem
+            [name]="subItem.name"
+            [link]="subItem.link"
+            (click)="hide()"
+          >
           </app-nav-bar-subitem>
         }
       </app-nav-bar-item>

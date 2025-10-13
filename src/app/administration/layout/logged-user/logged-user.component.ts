@@ -1,13 +1,14 @@
-import { Component, inject, Inject, DOCUMENT } from '@angular/core';
-import { Router } from '@angular/router';
-import { faRepeat, faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
-import { AuthService } from 'src/app/services/auth.service';
+import { Component, DOCUMENT, Inject, inject } from "@angular/core";
+import type { Router } from "@angular/router";
+
+import { faRepeat, faSignOutAlt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { AuthService } from "src/app/services/auth.service";
 
 @Component({
-  selector: 'app-logged-user',
-  templateUrl: './logged-user.component.html',
-  styleUrls: ['./logged-user.component.scss'],
-  standalone: false
+  selector: "app-logged-user",
+  templateUrl: "./logged-user.component.html",
+  styleUrls: ["./logged-user.component.scss"],
+  standalone: false,
 })
 export class LoggedUserComponent {
   readonly #auth = inject(AuthService);
@@ -20,16 +21,15 @@ export class LoggedUserComponent {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private readonly router: Router,
-  ) {
-  }
+    private readonly router: Router
+  ) {}
 
   get username(): string {
     return this.#auth.getDecodedAccessToken()?.sub || "undefined";
   }
 
   openProfile() {
-    this.router.navigate(['/profile']);
+    this.router.navigate(["/profile"]);
   }
 
   logout() {
@@ -37,8 +37,7 @@ export class LoggedUserComponent {
   }
 
   toggleTheme() {
-    this.document.body.classList.toggle('light');
-    this.document.body.classList.toggle('alt-font');
+    this.document.body.classList.toggle("light");
+    this.document.body.classList.toggle("alt-font");
   }
-
 }

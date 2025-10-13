@@ -1,16 +1,19 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { EventService } from '../events.service';
-import { Event } from '../events.types';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import type { OnDestroy, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
+import type { Router } from "@angular/router";
+
+import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import type { ToastrService } from "ngx-toastr";
+import { Subject } from "rxjs";
+
+import type { EventService } from "../events.service";
+import type { Event } from "../events.types";
 
 @Component({
-  selector: 'app-events-list',
-  templateUrl: './events-list.component.html',
-  styleUrls: ['./events-list.component.scss'],
-  standalone: false
+  selector: "app-events-list",
+  templateUrl: "./events-list.component.html",
+  styleUrls: ["./events-list.component.scss"],
+  standalone: false,
 })
 export class EventsListComponent implements OnInit, OnDestroy {
   public faPen = faPen;
@@ -19,7 +22,7 @@ export class EventsListComponent implements OnInit, OnDestroy {
   public loadingState = 1;
   public errorLoading = {
     enabled: false,
-    text: '',
+    text: "",
   };
   // We use this trigger because fetching the list can be quite long,
   // thus we ensure the data is fetched before rendering
@@ -29,18 +32,17 @@ export class EventsListComponent implements OnInit, OnDestroy {
     private readonly eventsService: EventService,
     private readonly toastr: ToastrService,
     private readonly router: Router
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-
     this.eventsService.get().subscribe({
-      next: (events) => {
+      next: events => {
         this.events = events;
         // Calling the DT trigger to manually render the table
         this.dtTrigger.next(null);
         this.loadingState--;
       },
-      error: (err) => {
+      error: err => {
         console.error(err);
         this.errorLoading.enabled = true;
         this.errorLoading.text = err.message;
@@ -48,11 +50,9 @@ export class EventsListComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.eventsService.deleteAsObservable().subscribe(
-      (event) => {
-        this.events.splice(this.events.indexOf(event), 1);
-      }
-    );
+    this.eventsService.deleteAsObservable().subscribe(event => {
+      this.events.splice(this.events.indexOf(event), 1);
+    });
   }
 
   ngOnDestroy(): void {
@@ -61,19 +61,15 @@ export class EventsListComponent implements OnInit, OnDestroy {
   }
 
   public edit(event: Event) {
-    this.router.navigate(['/events/edit/' + event.id])
+    this.router.navigate(["/events/edit/" + event.id]);
   }
 
   public delete(event: Event) {
     if (!event.id) {
-      this.toastr.error(
-        `<div><b>Event DIDN'T deleted!</b><br/>Can't delete! Didn't receive event id.</div>`,
-        '',
-        {
-          enableHtml: true,
-          progressBar: true,
-        }
-      );
+      this.toastr.error(`<div><b>Event DIDN'T deleted!</b><br/>Can't delete! Didn't receive event id.</div>`, "", {
+        enableHtml: true,
+        progressBar: true,
+      });
       return;
     }
     // this.eventsService.delete(event.id).subscribe(

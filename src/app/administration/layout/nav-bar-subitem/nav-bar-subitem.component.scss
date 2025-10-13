@@ -1,54 +1,54 @@
-@use  "../../../../styles/colors" as *;
+@use "../../../../styles/colors" as *;
 
 :host {
-    display: flex;
-    font-weight: 400;
-    font-size: 14px;
-    margin-top: -8px;
-    margin-bottom: 8px;
-    margin-left: 52px;
+  display: flex;
+  font-weight: 400;
+  font-size: 14px;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  margin-left: 52px;
+
+  @media (pointer: coarse) {
+    font-size: 16px;
+  }
+
+  &:last-of-type {
+    margin-bottom: 16px;
 
     @media (pointer: coarse) {
-        font-size: 16px;
+      margin-bottom: 8px;
     }
-
-    &:last-of-type {
-        margin-bottom: 16px;
-
-        @media (pointer: coarse) {
-            margin-bottom: 8px;
-        }
-    }
+  }
 }
 
 a {
-    flex-grow: 1;
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    cursor: default;
-    opacity: 0.8;
-    transition: all 150ms;
-    padding: 4px;
+  flex-grow: 1;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: default;
+  opacity: 0.8;
+  transition: all 150ms;
+  padding: 4px;
 
-    &:not(.active) {
-        cursor: pointer;
-    }
+  &:not(.active) {
+    cursor: pointer;
+  }
 
-    &:hover {
-        opacity: 1;
-    }
+  &:hover {
+    opacity: 1;
+  }
 
-    @media (min-width: 1199px) {
-        &.active {
-            opacity: 1;
-            font-weight: 500;
-            color: $accentColorLight;
-        }
+  @media (min-width: 1199px) {
+    &.active {
+      opacity: 1;
+      font-weight: 500;
+      color: $accentColorLight;
     }
+  }
 
-    @media (pointer: coarse) {
-        padding-top: 8px;
-        padding-bottom: 8px;
-    }
+  @media (pointer: coarse) {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
 }
