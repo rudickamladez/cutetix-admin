@@ -11,11 +11,11 @@ import { UsersService } from 'src/app/services/users.service';
   standalone: false
 })
 export class LoggedUserComponent {
-  readonly authService = inject(AuthService);
-  readonly usersService = inject(UsersService);
+  protected readonly authService = inject(AuthService);
+  protected readonly usersService = inject(UsersService);
 
   // icons
-  userIcon = faUser;
+  protected readonly userIcon = faUser;
   switchThemeIcon = faRepeat;
   logoutIcon = faSignOutAlt;
   myProfileIcon = faUser;
@@ -34,7 +34,7 @@ export class LoggedUserComponent {
     this.authService.logout();
   }
 
-  toggleTheme() {
+  protected toggleTheme() {
     this.document.body.classList.toggle('light');
     this.document.body.classList.toggle('alt-font');
   }
