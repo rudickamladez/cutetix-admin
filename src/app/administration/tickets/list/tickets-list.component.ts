@@ -204,6 +204,7 @@ export class TicketsListComponent implements OnInit {
       this.notDeletedTicketToastr(ticket);
       return;
     }
+    // TODO: try catch?
     this.ticketsService.delete(ticket.id).subscribe((t) => {
       if (!t) {
         this.notDeletedTicketToastr(ticket);
