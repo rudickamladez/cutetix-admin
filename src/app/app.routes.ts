@@ -1,21 +1,22 @@
-import { Routes } from "@angular/router";
+import type { Routes } from "@angular/router";
+
+import { DashboardComponent } from "./administration/dashboard/dashboard.component";
+import { EventsFormComponent } from "./administration/events/form/events-form.component";
+import { EventsListComponent } from "./administration/events/list/events-list.component";
+import { AdministrationLayoutComponent } from "./administration/layout/layout.component";
+import { TicketGroupsEditComponent } from "./administration/ticket_groups/edit/events-edit.component";
+import { TicketGroupsListComponent } from "./administration/ticket_groups/list/ticket_groups-list.component";
+import { TicketGroupsNewComponent } from "./administration/ticket_groups/new/ticket_groups-new.component";
+import { TicketsListComponent } from "./administration/tickets/list/tickets-list.component";
+import { TicketsNewComponent } from "./administration/tickets/new/tickets-new.component";
+import { authGuard } from "./guards/auth.guard";
+import { logoutGuard } from "./guards/logout.guard";
 import { HelloComponent } from "./hello/hello.component";
 import { LoginPageComponent } from "./login-page/login-page.component";
 import { NotFoundComponent } from "./not-found/not-found.component";
-import { DashboardComponent } from "./administration/dashboard/dashboard.component";
-import { AdministrationLayoutComponent } from "./administration/layout/layout.component";
-import { TicketGroupsListComponent } from "./administration/ticket_groups/list/ticket_groups-list.component";
-import { TicketGroupsNewComponent } from "./administration/ticket_groups/new/ticket_groups-new.component";
-import { TicketGroupsEditComponent } from "./administration/ticket_groups/edit/events-edit.component";
 import { UserProfileComponent } from "./user-profile/user-profile.component";
-import { EventsListComponent } from "./administration/events/list/events-list.component";
-import { TicketsListComponent } from "./administration/tickets/list/tickets-list.component";
-import { TicketsNewComponent } from "./administration/tickets/new/tickets-new.component";
-import { EventsFormComponent } from "./administration/events/form/events-form.component";
-import { authGuard } from "./guards/auth.guard";
-import { logoutGuard } from "./guards/logout.guard";
 
-export let APP_ROUTES: Routes = [
+export const APP_ROUTES: Routes = [
   {
     path: "",
     redirectTo: "home",

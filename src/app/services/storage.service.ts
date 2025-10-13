@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 
-import { fromEvent, filter, map, type Observable, merge, Subject } from "rxjs";
-import { StorageKeys } from "../tokens/storage.tokens";
+import { filter, fromEvent, map, merge, type Observable, Subject } from "rxjs";
+
+import type { StorageKeys } from "../tokens/storage.tokens";
 
 type CustomStorageEvent = {
   readonly currentValue: string | null;
@@ -49,12 +50,20 @@ export class StorageService {
 
   getBoolean(key: StorageKeys, fallback = false): boolean {
     const v = this.get<any>(key);
-    if (typeof v === "boolean") return v;
-    if (typeof v === "number") return v !== 0;
+    if (typeof v === "boolean") {
+      return v;
+    }
+    if (typeof v === "number") {
+      return v !== 0;
+    }
     if (typeof v === "string") {
       const s = v.trim().toLowerCase();
-      if (["true", "1", "yes", "y", "on"].includes(s)) return true;
-      if (["false", "0", "no", "n", "off", ""].includes(s)) return false;
+      if (["true", "1", "yes", "y", "on"].includes(s)) {
+        return true;
+      }
+      if (["false", "0", "no", "n", "off", ""].includes(s)) {
+        return false;
+      }
     }
     return fallback;
   }

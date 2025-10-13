@@ -1,10 +1,13 @@
+import type { OnInit } from "@angular/core";
 import { Component } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { TicketService } from "../tickets.service";
-import { ToastrService } from "ngx-toastr";
-import { Router } from "@angular/router";
-import { TicketGroupService } from "../../ticket_groups/ticket_groups.service";
-import { TicketGroup } from "../../ticket_groups/ticket_groups.types";
+import type { Router } from "@angular/router";
+
+import type { ToastrService } from "ngx-toastr";
+
+import type { TicketGroupService } from "../../ticket_groups/ticket_groups.service";
+import type { TicketGroup } from "../../ticket_groups/ticket_groups.types";
+import type { TicketService } from "../tickets.service";
 import { TicketStatusEnum } from "../tickets.types";
 
 @Component({
@@ -13,7 +16,7 @@ import { TicketStatusEnum } from "../tickets.types";
   styleUrls: ["./tickets-new.component.scss"],
   standalone: false,
 })
-export class TicketsNewComponent {
+export class TicketsNewComponent implements OnInit {
   public form = new FormGroup({
     firstname: new FormControl("", Validators.required),
     lastname: new FormControl("", Validators.required),
@@ -22,7 +25,7 @@ export class TicketsNewComponent {
     status: new FormControl(TicketStatusEnum.new, Validators.required),
     groupId: new FormControl(0, Validators.required),
   });
-  public groups: Array<TicketGroup> = [];
+  public groups: TicketGroup[] = [];
 
   constructor(
     private router: Router,

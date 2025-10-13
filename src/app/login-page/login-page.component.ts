@@ -1,11 +1,13 @@
 import { Component, effect, inject, OnDestroy, signal } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
+
+import { faCircleNotch, faCog, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+
 import { environment } from "../../environments/environment";
 import { AuthService } from "../services/auth.service";
-import { StorageKeys } from "../tokens/storage.tokens";
 import { StorageService } from "../services/storage.service";
-import { faCircleNotch, faCog, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import { StorageKeys } from "../tokens/storage.tokens";
 
 @Component({
   templateUrl: "./login-page.component.html",

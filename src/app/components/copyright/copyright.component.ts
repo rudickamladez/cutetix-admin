@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 @Component({

@@ -1,4 +1,5 @@
-import { HttpInterceptorFn } from "@angular/common/http";
+import type { HttpInterceptorFn } from "@angular/common/http";
+
 import { StorageKeys } from "../tokens/storage.tokens";
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {

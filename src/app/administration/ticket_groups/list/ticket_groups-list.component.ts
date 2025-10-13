@@ -1,9 +1,12 @@
-import { Component, OnInit } from "@angular/core";
-import { TicketGroupService } from "../ticket_groups.service";
-import { TicketGroup } from "../ticket_groups.types";
+import type { OnInit } from "@angular/core";
+import { Component } from "@angular/core";
+import type { Router } from "@angular/router";
+
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { ToastrService } from "ngx-toastr";
-import { Router } from "@angular/router";
+import type { ToastrService } from "ngx-toastr";
+
+import type { TicketGroupService } from "../ticket_groups.service";
+import type { TicketGroup } from "../ticket_groups.types";
 
 @Component({
   selector: "app-ticket_groups-list",

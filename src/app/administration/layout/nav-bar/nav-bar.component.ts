@@ -1,8 +1,11 @@
-import { Component, OnInit } from "@angular/core";
-import { MenuItem } from "./menu-items";
-import { MenuBuilder } from "./menu-builder";
-import { AuthService } from "src/app/services/auth.service";
+import type { OnInit } from "@angular/core";
+import { Component } from "@angular/core";
+
 import { faBars, faChartLine, faSignOutAlt, faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
+import type { AuthService } from "src/app/services/auth.service";
+
+import { MenuBuilder } from "./menu-builder";
+import { MenuItem } from "./menu-items";
 
 @Component({
   selector: "app-nav-bar",

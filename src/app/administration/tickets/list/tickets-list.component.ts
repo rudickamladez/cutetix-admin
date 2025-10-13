@@ -1,9 +1,12 @@
-import { Component, OnInit } from "@angular/core";
-import { TicketService } from "../tickets.service";
-import { Ticket } from "../tickets.types";
+import type { OnInit } from "@angular/core";
+import { Component } from "@angular/core";
+import type { Router } from "@angular/router";
+
 import { faBan, faBroom, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { ToastrService } from "ngx-toastr";
-import { Router } from "@angular/router";
+import type { ToastrService } from "ngx-toastr";
+
+import type { TicketService } from "../tickets.service";
+import type { Ticket } from "../tickets.types";
 
 type FilterState = {
   query: string;
@@ -66,7 +69,9 @@ export class TicketsListComponent implements OnInit {
     this.ticketsService.get().subscribe({
       next: tickets => {
         this.tickets = tickets ?? [];
-        if (this.startup) this.startup = false;
+        if (this.startup) {
+          this.startup = false;
+        }
         this.applyFilter();
         this.loadingState--;
       },
@@ -84,7 +89,9 @@ export class TicketsListComponent implements OnInit {
   }
 
   private matchesQuery(ticket: Ticket, q: string): boolean {
-    if (!q) return true;
+    if (!q) {
+      return true;
+    }
 
     const fields: string[] = [
       ticket.firstname,
@@ -100,17 +107,23 @@ export class TicketsListComponent implements OnInit {
   }
 
   private matchesStatus(ticket: Ticket, status: FilterState["status"]): boolean {
-    if (status === "any") return true;
+    if (status === "any") {
+      return true;
+    }
     return String(ticket.status) === status;
   }
 
   private matchesGroup(ticket: Ticket, group: FilterState["group"]): boolean {
-    if (group === "any") return true;
+    if (group === "any") {
+      return true;
+    }
     return group == ticket.group?.id;
   }
 
   private matchesEvent(ticket: Ticket, eventF: FilterState["event"]): boolean {
-    if (eventF === "any") return true;
+    if (eventF === "any") {
+      return true;
+    }
     return eventF == ticket.group?.event?.id;
   }
 
@@ -128,7 +141,10 @@ export class TicketsListComponent implements OnInit {
 
   public hasActiveFilters(): boolean {
     return (
-      !!this.filter.query || this.filter.status !== "any" || this.filter.group !== "any" || this.filter.event !== "any"
+      Boolean(this.filter.query) ||
+      this.filter.status !== "any" ||
+      this.filter.group !== "any" ||
+      this.filter.event !== "any"
     );
   }
 
@@ -142,19 +158,21 @@ export class TicketsListComponent implements OnInit {
     // jednoduchý debounce ~250ms
     const value = (ev.target as HTMLInputElement)?.value ?? "";
     this.filter.query = value;
-    if (this.queryDebounce) window.clearTimeout(this.queryDebounce);
+    if (this.queryDebounce) {
+      window.clearTimeout(this.queryDebounce);
+    }
     this.queryDebounce = window.setTimeout(() => this.applyFilter(), 250);
   }
   public onStatusChange(ev: Event) {
-    this.filter.status = (ev.target as HTMLSelectElement).value as FilterState["status"];
+    this.filter.status = (ev.target as HTMLSelectElement).value;
     this.applyFilter();
   }
   public onGroupChange(ev: Event) {
-    this.filter.group = (ev.target as HTMLSelectElement).value as FilterState["group"];
+    this.filter.group = (ev.target as HTMLSelectElement).value;
     this.applyFilter();
   }
   public onEventChange(ev: Event) {
-    this.filter.event = (ev.target as HTMLSelectElement).value as FilterState["event"];
+    this.filter.event = (ev.target as HTMLSelectElement).value;
     this.applyFilter();
   }
 

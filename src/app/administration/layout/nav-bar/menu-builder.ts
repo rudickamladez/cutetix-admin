@@ -1,6 +1,7 @@
+import type { IconDefinition } from "@fortawesome/angular-fontawesome";
 import { faCalendarDays, faClock, faTicket } from "@fortawesome/free-solid-svg-icons";
+
 import { MenuItem, MenuSubItem } from "./menu-items";
-import { IconDefinition } from "@fortawesome/angular-fontawesome";
 
 export class MenuBuilder {
   constructor() {}

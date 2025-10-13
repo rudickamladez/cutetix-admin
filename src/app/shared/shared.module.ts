@@ -1,9 +1,11 @@
 // shared/shared.module.ts
-import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { UserInfoComponent } from "../components/user-info/user-info.component";
-import { CopyrightComponent } from "../components/copyright/copyright.component";
+import { NgModule } from "@angular/core";
+
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+
+import { CopyrightComponent } from "../components/copyright/copyright.component";
+import { UserInfoComponent } from "../components/user-info/user-info.component";
 
 @NgModule({
   declarations: [UserInfoComponent, CopyrightComponent],

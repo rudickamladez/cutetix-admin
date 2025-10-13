@@ -1,10 +1,13 @@
+import type { OnInit } from "@angular/core";
 import { Component } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { TicketGroupService } from "../ticket_groups.service";
-import { ToastrService } from "ngx-toastr";
-import { Router } from "@angular/router";
-import { EventService } from "../../events/events.service";
-import { Event } from "../../events/events.types";
+import type { Router } from "@angular/router";
+
+import type { ToastrService } from "ngx-toastr";
+
+import type { EventService } from "../../events/events.service";
+import type { Event } from "../../events/events.types";
+import type { TicketGroupService } from "../ticket_groups.service";
 
 @Component({
   selector: "app-ticket_groups-new",
@@ -12,13 +15,13 @@ import { Event } from "../../events/events.types";
   styleUrls: ["./ticket_groups-new.component.scss"],
   standalone: false,
 })
-export class TicketGroupsNewComponent {
+export class TicketGroupsNewComponent implements OnInit {
   public form = new FormGroup({
     name: new FormControl("", Validators.required),
     capacity: new FormControl(0, Validators.required),
     eventId: new FormControl(1, Validators.required),
   });
-  public events: Array<Event> = [];
+  public events: Event[] = [];
 
   constructor(
     private router: Router,

@@ -1,5 +1,6 @@
-import { Component, inject, Inject, DOCUMENT } from "@angular/core";
-import { Router } from "@angular/router";
+import { Component, DOCUMENT, Inject, inject } from "@angular/core";
+import type { Router } from "@angular/router";
+
 import { faRepeat, faSignOutAlt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { AuthService } from "src/app/services/auth.service";
 

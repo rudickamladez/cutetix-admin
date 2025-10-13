@@ -1,9 +1,12 @@
-import { Component, inject, Input, OnInit } from "@angular/core";
+import type { OnInit } from "@angular/core";
+import { Component, inject, Input } from "@angular/core";
+
 import { faCoins, faPlus, faTicket, faTicketAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { ToastrService } from "ngx-toastr";
-import { EventService } from "../../events/events.service";
-import { Event, EventCapacitySummary } from "../../events/events.types";
 import { LoggingService } from "src/app/services/logging.service";
+
+import { EventService } from "../../events/events.service";
+import type { Event, EventCapacitySummary } from "../../events/events.types";
 
 @Component({
   selector: "app-dashboard-event-overview",

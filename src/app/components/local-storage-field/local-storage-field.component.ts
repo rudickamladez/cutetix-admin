@@ -1,8 +1,11 @@
-import { Component, Input, OnDestroy, ChangeDetectionStrategy, inject, OnInit } from "@angular/core";
+import type { OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject, Input } from "@angular/core";
 import { FormControl } from "@angular/forms";
+
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from "rxjs";
+import type { StorageKeys } from "src/app/tokens/storage.tokens";
+
 import { StorageService } from "../../services/storage.service";
-import { StorageKeys } from "src/app/tokens/storage.tokens";
 
 @Component({
   selector: "app-local-storage-field",
@@ -46,7 +49,9 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
       .pipe(debounceTime(delay), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(val => {
         this.dirty = true;
-        if (!this.autosave) return;
+        if (!this.autosave) {
+          return;
+        }
         this.write(val);
       });
 
@@ -100,12 +105,20 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   }
 
   #toBool(v: unknown): boolean {
-    if (typeof v === "boolean") return v;
-    if (typeof v === "number") return v !== 0;
+    if (typeof v === "boolean") {
+      return v;
+    }
+    if (typeof v === "number") {
+      return v !== 0;
+    }
     if (typeof v === "string") {
       const s = v.trim().toLowerCase();
-      if (["true", "1", "yes", "y", "on"].includes(s)) return true;
-      if (["false", "0", "no", "n", "off", ""].includes(s)) return false;
+      if (["true", "1", "yes", "y", "on"].includes(s)) {
+        return true;
+      }
+      if (["false", "0", "no", "n", "off", ""].includes(s)) {
+        return false;
+      }
     }
     return false;
   }

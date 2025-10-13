@@ -1,23 +1,23 @@
-import { Event } from "../events/events.types";
+import type { Event } from "../events/events.types";
 
-export interface TicketGroup {
+export type TicketGroup = {
   id?: string;
   name: string;
   capacity: number;
   event_id: number;
   event?: Event;
-}
+};
 
-export interface TicketGroupUpdate {
+export type TicketGroupUpdate = {
   name?: string;
   capacity?: number;
   event_id?: number;
-}
+};
 
-export interface TicketGroupSum {
+export type TicketGroupSum = {
   paid: number;
   free: number;
   reserved: number;
   total: number;
   cancelled: number;
-}
+};

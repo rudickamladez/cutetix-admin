@@ -1,7 +1,10 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { SwUpdate } from "@angular/service-worker";
-import { ActiveToast, ToastrService } from "ngx-toastr";
+
+import type { ActiveToast } from "ngx-toastr";
+import { ToastrService } from "ngx-toastr";
 import { filter, interval } from "rxjs";
+
 import { LoggingService } from "./logging.service";
 
 @Injectable({

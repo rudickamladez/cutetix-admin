@@ -1,9 +1,12 @@
-import { Component, inject, isDevMode, OnInit } from "@angular/core";
+import type { OnInit } from "@angular/core";
+import { Component, inject, isDevMode } from "@angular/core";
 import { Title } from "@angular/platform-browser";
-import { UpdateService } from "./services/update.service";
-import { StorageService } from "./services/storage.service";
-import { StorageKeys } from "./tokens/storage.tokens";
+
 import { environment } from "src/environments/environment";
+
+import { StorageService } from "./services/storage.service";
+import { UpdateService } from "./services/update.service";
+import { StorageKeys } from "./tokens/storage.tokens";
 
 @Component({
   selector: "app-root",

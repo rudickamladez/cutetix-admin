@@ -1,8 +1,11 @@
+import type { OnInit } from "@angular/core";
 import { Component } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { EventService } from "../events.service";
-import { ToastrService } from "ngx-toastr";
-import { ActivatedRoute, Router } from "@angular/router";
+import type { ActivatedRoute, Router } from "@angular/router";
+
+import type { ToastrService } from "ngx-toastr";
+
+import type { EventService } from "../events.service";
 
 @Component({
   selector: "app-events-form",
@@ -10,7 +13,7 @@ import { ActivatedRoute, Router } from "@angular/router";
   styleUrls: ["./events-form.component.scss"],
   standalone: false,
 })
-export class EventsFormComponent {
+export class EventsFormComponent implements OnInit {
   public id: string | null;
   public form = new FormGroup({
     name: new FormControl("", Validators.required),

@@ -1,6 +1,6 @@
-import { TicketGroup } from "../ticket_groups/ticket_groups.types";
+import type { TicketGroup } from "../ticket_groups/ticket_groups.types";
 
-export interface Event {
+export type Event = {
   id?: string;
   name: string;
   tickets_sales_start: string;
@@ -12,12 +12,12 @@ export interface Event {
   mail_html_cancelled_ticket: string;
 
   ticket_groups?: [TicketGroup];
-}
+};
 
-export interface EventCapacitySummary {
+export type EventCapacitySummary = {
   paid: number;
   free: number;
   reserved: number;
   total: number;
   cancelled: number;
-}
+};

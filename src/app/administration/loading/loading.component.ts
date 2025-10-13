@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 
 @Component({

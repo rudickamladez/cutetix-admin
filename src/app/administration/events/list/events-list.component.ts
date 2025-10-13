@@ -1,10 +1,13 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Subject } from "rxjs";
-import { EventService } from "../events.service";
-import { Event } from "../events.types";
+import type { OnDestroy, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
+import type { Router } from "@angular/router";
+
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { ToastrService } from "ngx-toastr";
-import { Router } from "@angular/router";
+import type { ToastrService } from "ngx-toastr";
+import { Subject } from "rxjs";
+
+import type { EventService } from "../events.service";
+import type { Event } from "../events.types";
 
 @Component({
   selector: "app-events-list",

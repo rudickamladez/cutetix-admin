@@ -1,10 +1,13 @@
-import { HttpClient } from "@angular/common/http";
+import type { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { Observable, Subject } from "rxjs";
+
+import type { Observable } from "rxjs";
+import { Subject } from "rxjs";
 import { map } from "rxjs/operators";
-import { TicketGroup, TicketGroupSum, TicketGroupUpdate } from "./ticket_groups.types";
 import { StorageService } from "src/app/services/storage.service";
 import { StorageKeys } from "src/app/tokens/storage.tokens";
+
+import type { TicketGroup, TicketGroupSum, TicketGroupUpdate } from "./ticket_groups.types";
 
 @Injectable({
   providedIn: "root",

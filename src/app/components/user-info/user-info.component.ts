@@ -1,4 +1,6 @@
-import { Component, inject, OnDestroy } from "@angular/core";
+import type { OnDestroy } from "@angular/core";
+import { Component, inject } from "@angular/core";
+
 import { AuthService } from "src/app/services/auth.service";
 
 @Component({
@@ -20,12 +22,14 @@ export class UserInfoComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.#refreshingInterval) clearInterval(this.#refreshingInterval);
+    if (this.#refreshingInterval) {
+      clearInterval(this.#refreshingInterval);
+    }
   }
 
   #updateCountdown() {
-    const at_exp = this.#auth.getDecodedAccessToken()?.exp as number | undefined;
-    const rt_exp = this.#auth.getDecodedRefreshToken()?.exp as number | undefined;
+    const at_exp = this.#auth.getDecodedAccessToken()?.exp;
+    const rt_exp = this.#auth.getDecodedRefreshToken()?.exp;
     if (!at_exp) {
       this.time_to_access_token_expire = "exp is not defined";
       return;
@@ -63,8 +67,12 @@ export class UserInfoComponent implements OnDestroy {
 
     const pad = (n: number) => n.toString().padStart(2, "0");
 
-    if (d > 0) return `${d} d ${h}:${pad(m)}:${pad(s)}`;
-    if (h > 0) return `${h}:${pad(m)}:${pad(s)}`;
+    if (d > 0) {
+      return `${d} d ${h}:${pad(m)}:${pad(s)}`;
+    }
+    if (h > 0) {
+      return `${h}:${pad(m)}:${pad(s)}`;
+    }
     return `${m}:${pad(s)}`;
   }
 
@@ -88,7 +96,9 @@ export class UserInfoComponent implements OnDestroy {
 
   get access_token_expire() {
     const exp = this.#auth.getDecodedAccessToken()?.exp;
-    if (!exp) return "undefined";
+    if (!exp) {
+      return "undefined";
+    }
 
     const userLocale = navigator.languages?.[0] || navigator.language || "cs-CZ";
     return new Intl.DateTimeFormat(userLocale, {
@@ -99,7 +109,9 @@ export class UserInfoComponent implements OnDestroy {
 
   get refresh_token_expire() {
     const exp = this.#auth.getDecodedRefreshToken()?.exp;
-    if (!exp) return "undefined";
+    if (!exp) {
+      return "undefined";
+    }
 
     const userLocale = navigator.languages?.[0] || navigator.language || "cs-CZ";
     return new Intl.DateTimeFormat(userLocale, {

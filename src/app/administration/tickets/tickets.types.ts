@@ -1,6 +1,6 @@
-import { TicketGroup } from "../ticket_groups/ticket_groups.types";
+import type { TicketGroup } from "../ticket_groups/ticket_groups.types";
 
-export interface Ticket {
+export type Ticket = {
   id?: string;
   firstname: string;
   lastname: string;
@@ -9,7 +9,7 @@ export interface Ticket {
   description?: string;
   group_id: number;
   group?: TicketGroup;
-}
+};
 
 export enum TicketStatusEnum {
   new = 0,

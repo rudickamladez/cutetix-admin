@@ -1,17 +1,19 @@
-import { Injectable, type OnDestroy, effect, inject, signal } from "@angular/core";
 import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
+import { effect, inject, Injectable, type OnDestroy, signal } from "@angular/core";
 
 import { jwtDecode } from "jwt-decode";
-import { timeout, filter, type Subscription } from "rxjs";
-// import { Socket } from "ngx-socket-io";
 import { ToastrService } from "ngx-toastr";
+import { filter, type Subscription, timeout } from "rxjs";
+// import { Socket } from "ngx-socket-io";
 
-import { StorageService } from "./storage.service";
-import { StorageKeys } from "../tokens/storage.tokens";
-import { LoggingService } from "./logging.service";
-import { LockNames } from "../tokens/lock.tokens";
-import { VisibilityService } from "./visibility.service";
 import { environment } from "src/environments/environment";
+
+import { LoggingService } from "./logging.service";
+import { StorageService } from "./storage.service";
+import { VisibilityService } from "./visibility.service";
+import { LockNames } from "../tokens/lock.tokens";
+import { StorageKeys } from "../tokens/storage.tokens";
+
 // import { NgxIndexedDBService } from "ngx-indexed-db";
 
 type TokensFromApi = {
@@ -130,7 +132,9 @@ export class AuthService implements OnDestroy {
 
   refresh(): void {
     this.#logging.log("auth", "Initiating refreshing of access token.");
-    if (!this.#canRefreshToken || this.#isRefreshingToken || !this.#visibilityService.visible()) return;
+    if (!this.#canRefreshToken || this.#isRefreshingToken || !this.#visibilityService.visible()) {
+      return;
+    }
 
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
@@ -179,7 +183,9 @@ export class AuthService implements OnDestroy {
   }
 
   logout(): void {
-    if (!this.isLoggedIn()) return;
+    if (!this.isLoggedIn()) {
+      return;
+    }
 
     const refreshToken = this.getRefreshToken();
     const apiUrl = this.#storageService.get(StorageKeys.API_URL);
@@ -203,7 +209,9 @@ export class AuthService implements OnDestroy {
   #scheduleNextRefresh(): void {
     try {
       this.#logging.log("auth", "Scheduling next token refresh.");
-      if (this.#visibilityService.visible() === false) return;
+      if (this.#visibilityService.visible() === false) {
+        return;
+      }
 
       // pokud je již naplánované obnovení, zrušíme ho
       if (this.#refreshingTimer !== null) {
@@ -235,8 +243,12 @@ export class AuthService implements OnDestroy {
   }
 
   #handleRefreshLock() {
-    if (this.#canRefreshToken === true) return;
-    if (this.#visibilityService.visible() === false) return;
+    if (this.#canRefreshToken === true) {
+      return;
+    }
+    if (this.#visibilityService.visible() === false) {
+      return;
+    }
 
     if (this.#lockAbortController.signal.aborted) {
       this.#lockAbortController = new AbortController();
@@ -266,7 +278,9 @@ export class AuthService implements OnDestroy {
 
   isLoggedIn(): boolean {
     const accessToken = this.getAccessToken();
-    if (accessToken === null) return false;
+    if (accessToken === null) {
+      return false;
+    }
 
     try {
       const parsedAccessToken = jwtDecode(accessToken);
@@ -282,7 +296,9 @@ export class AuthService implements OnDestroy {
 
   getDecodedAccessToken() {
     const accessToken = this.getAccessToken();
-    if (accessToken === null) return null;
+    if (accessToken === null) {
+      return null;
+    }
 
     try {
       return jwtDecode(accessToken);
@@ -297,7 +313,9 @@ export class AuthService implements OnDestroy {
 
   getDecodedRefreshToken() {
     const refreshToken = this.getRefreshToken();
-    if (refreshToken === null) return null;
+    if (refreshToken === null) {
+      return null;
+    }
 
     try {
       return jwtDecode(refreshToken);

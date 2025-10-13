@@ -1,4 +1,4 @@
-import { IconDefinition } from "@fortawesome/angular-fontawesome";
+import type { IconDefinition } from "@fortawesome/angular-fontawesome";
 
 export class MenuSubItem {
   constructor(
