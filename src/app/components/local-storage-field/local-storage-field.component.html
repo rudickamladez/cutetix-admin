@@ -1,25 +1,48 @@
-<div class="info" [class.has-checkbox]="isCheckbox" [attr.label]="label">
+<div
+  class="info"
+  [class.has-checkbox]="isCheckbox"
+  [attr.label]="label"
+>
   @if (!isCheckbox) {
-  <input class="lsf-input" [type]="type" [formControl]="ctrl" [placeholder]="placeholder || ''"
-    [autocomplete]="autocomplete" />
+    <input
+      class="lsf-input"
+      [type]="type"
+      [formControl]="ctrl"
+      [placeholder]="placeholder || ''"
+      [autocomplete]="autocomplete"
+    />
   } @else {
-  <div class="checkbox-row">
-    <input type="checkbox" [id]="cid" [formControl]="ctrl" />
-    <label [for]="cid">{{ label }}</label>
-  </div>
+    <div class="checkbox-row">
+      <input
+        type="checkbox"
+        [id]="cid"
+        [formControl]="ctrl"
+      />
+      <label [for]="cid">{{ label }}</label>
+    </div>
   }
-
 
   <div class="actions">
     @if (!autosave) {
-    <button type="button" (click)="saveNow()" [disabled]="!dirty">Save</button>
+      <button
+        type="button"
+        (click)="saveNow()"
+        [disabled]="!dirty"
+      >
+        Save
+      </button>
     }
     @if (!autosave) {
-    <button type="button" (click)="resetToStored()">Reset</button>
+      <button
+        type="button"
+        (click)="resetToStored()"
+      >
+        Reset
+      </button>
     }
   </div>
 
   @if (status) {
-  <span class="status">{{ status }}</span>
+    <span class="status">{{ status }}</span>
   }
 </div>

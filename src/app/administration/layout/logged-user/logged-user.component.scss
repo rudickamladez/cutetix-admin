@@ -1,81 +1,81 @@
 @use "../../../../styles/colors" as *;
 
 :host {
-    position: fixed;
-    z-index: 1000;
-    right: 14px;
-    top: 14px;
+  position: fixed;
+  z-index: 1000;
+  right: 14px;
+  top: 14px;
 
-    &:hover .user {
-        color: $foreColor;
+  &:hover .user {
+    color: $foreColor;
 
-        .picture {
-            box-shadow: none;
-        }
+    .picture {
+      box-shadow: none;
     }
+  }
 
-    &:hover .details {
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-    }
+  &:hover .details {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
 
-    @media (max-width: 1200px) {
-        display: none;
-    }
+  @media (max-width: 1200px) {
+    display: none;
+  }
 }
 
 .details {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 100;
-    min-width: 400px;
-    padding: 16px;
-    padding-top: 89px;
-    transition: all 150ms;
-    padding-top: 80px;
-    background: $backColorMediumDark;
-    color: $foreColor;
-    transition: all 150ms;
-    opacity: 0;
-    visibility: hidden;
-    transform: rotateX(5deg) scale(0.95);
-    transform-origin: top right;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 100;
+  min-width: 400px;
+  padding: 16px;
+  padding-top: 89px;
+  transition: all 150ms;
+  padding-top: 80px;
+  background: $backColorMediumDark;
+  color: $foreColor;
+  transition: all 150ms;
+  opacity: 0;
+  visibility: hidden;
+  transform: rotateX(5deg) scale(0.95);
+  transform-origin: top right;
 
-    .button-container {
-        margin-top: 32px;
-        min-width: 300px;
+  .button-container {
+    margin-top: 32px;
+    min-width: 300px;
 
-        button {
-            fa-icon {
-                margin-right: 5px;
-            }
-        }
-
-        a:hover {
-            color: $foreColorMediumLight;
-        }
+    button {
+      fa-icon {
+        margin-right: 5px;
+      }
     }
+
+    a:hover {
+      color: $foreColorMediumLight;
+    }
+  }
 }
 
 .user {
-    position: relative;
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-    font-weight: 500;
-    margin: 16px;
-    z-index: 101;
-    padding-left: 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  font-weight: 500;
+  margin: 16px;
+  z-index: 101;
+  padding-left: 16px;
 
-    .picture {
-        width: 48px;
-        height: 48px;
-        margin-left: 16px;
-        font-size: 40px;
-        text-align: center;
-        overflow: hidden;
-        transition: all 150ms;
-    }
+  .picture {
+    width: 48px;
+    height: 48px;
+    margin-left: 16px;
+    font-size: 40px;
+    text-align: center;
+    overflow: hidden;
+    transition: all 150ms;
+  }
 }

@@ -5,203 +5,204 @@
 
 button:not(.default-style),
 .button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 42px;
-    min-width: 120px;
-    padding: 0 28px;
-    padding-bottom: 1px;
-    border: none;
-    font: inherit;
-    background: $accentColor;
-    color: $foreColor;
-    cursor: pointer;
-    user-select: none;
-    transition: 100ms all;
-    text-decoration: none;
-    font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  min-width: 120px;
+  padding: 0 28px;
+  padding-bottom: 1px;
+  border: none;
+  font: inherit;
+  background: $accentColor;
+  color: $foreColor;
+  cursor: pointer;
+  user-select: none;
+  transition: 100ms all;
+  text-decoration: none;
+  font-weight: 400;
 
-    &.large {
-        height: 50px;
-        min-width: 160px;
-        padding-left: 32px;
-        padding-right: 32px;
-        margin-left: 16px;
-        margin-right: 16px;
+  &.large {
+    height: 50px;
+    min-width: 160px;
+    padding-left: 32px;
+    padding-right: 32px;
+    margin-left: 16px;
+    margin-right: 16px;
 
-        & > .fa-icon {
-            transform: scale(1.3);
-        }
+    & > .fa-icon {
+      transform: scale(1.3);
     }
+  }
+
+  .can-focus &:focus,
+  &:active {
+    background: $accentColorDark;
+  }
+
+  &:hover,
+  &:focus {
+    color: $foreColor;
+  }
+
+  &:disabled {
+    opacity: 0.33;
+    cursor: not-allowed;
+    text-decoration: none;
+  }
+
+  &:not(:disabled) {
+    box-shadow: inset 0px -2px 0px $accentColorDark;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.destructive {
+    background: $dangerColor;
 
     .can-focus &:focus,
     &:active {
-        background: $accentColorDark;
-    }
-
-    &:hover,
-    &:focus {
-        color: $foreColor;
-    }
-
-    &:disabled {
-        opacity: 0.33;
-        cursor: not-allowed;
-        text-decoration: none;
+      background: $dangerColorDark;
     }
 
     &:not(:disabled) {
-        box-shadow: inset 0px -2px 0px $accentColorDark;
+      box-shadow: inset 0px -2px 0px $dangerColorDark;
     }
+  }
 
-    &:active {
-        transform: scale(0.95);
+  &.secondary {
+    height: auto;
+    margin: 4px 0;
+    min-width: auto;
+    padding: 4px;
+    color: inherit;
+    background: transparent;
+    box-shadow: none;
+
+    .can-focus &:focus,
+    &:not(:disabled):hover {
+      text-decoration: underline;
+      background: transparent;
+      color: $foreColor;
     }
 
     &.destructive {
-        background: $dangerColor;
+      color: $dangerColorDark;
+      box-shadow: none;
 
-        .can-focus &:focus,
-        &:active {
-            background: $dangerColorDark;
-        }
-
-        &:not(:disabled) {
-            box-shadow: inset 0px -2px 0px $dangerColorDark;
-        }
-    }
-
-    &.secondary {
-        height: auto;
-        margin: 4px 0;
-        min-width: auto;
-        padding: 4px;
-        color: inherit;
+      &:not(:disabled):hover {
+        text-decoration: underline;
         background: transparent;
-        box-shadow: none;
-
-        .can-focus &:focus,
-        &:not(:disabled):hover {
-            text-decoration: underline;
-            background: transparent;
-            color: $foreColor;
-        }
-
-        &.destructive {
-            color: $dangerColorDark;
-            box-shadow: none;
-
-            &:not(:disabled):hover {
-                text-decoration: underline;
-                background: transparent;
-                color: $dangerColorDark;
-            }
-        }
-
-        &.large {
-            height: 50px;
-            margin: 0 16px;
-            padding: 0 32px;
-            border: 2px solid $foreColorDark;
-            text-decoration: none !important;
-
-            &:not(:disabled):hover {
-                border: 2px solid $foreColor;
-            }
-
-            & > .fa-icon {
-                margin-left: -4px;
-                margin-right: 12px;
-            }
-        }
-
-        & > .fa-icon {
-            margin-left: 0;
-            margin-right: 4px;
-        }
+        color: $dangerColorDark;
+      }
     }
 
-    &.alt {
-        background: $foreColorMedium;
+    &.large {
+      height: 50px;
+      margin: 0 16px;
+      padding: 0 32px;
+      border: 2px solid $foreColorDark;
+      text-decoration: none !important;
+
+      &:not(:disabled):hover {
         border: 2px solid $foreColor;
-        box-shadow: none;
+      }
 
-        .can-focus &:focus,
-        &:active {
-            background: $foreColorMediumLight;
-        }
-
-        &:not(:disabled):hover {
-            color: $foreColorMediumLight;
-            background: $backColor;
-            border: 2px solid $backColorMediumDark;
-        }
+      & > .fa-icon {
+        margin-left: -4px;
+        margin-right: 12px;
+      }
     }
 
     & > .fa-icon {
-        margin-left: -4px;
-        margin-right: 12px;
-        transform: scale(1.2);
+      margin-left: 0;
+      margin-right: 4px;
+    }
+  }
+
+  &.alt {
+    background: $foreColorMedium;
+    border: 2px solid $foreColor;
+    box-shadow: none;
+
+    .can-focus &:focus,
+    &:active {
+      background: $foreColorMediumLight;
     }
 
-    &.link {
-        background: none !important;
-        color: initial !important;
-        box-shadow: none;
-        text-decoration: underline;
-
-        &:hover {
-            color: dimgray !important;
-        }
+    &:not(:disabled):hover {
+      color: $foreColorMediumLight;
+      background: $backColor;
+      border: 2px solid $backColorMediumDark;
     }
+  }
+
+  & > .fa-icon {
+    margin-left: -4px;
+    margin-right: 12px;
+    transform: scale(1.2);
+  }
+
+  &.link {
+    background: none !important;
+    color: initial !important;
+    box-shadow: none;
+    text-decoration: underline;
+
+    &:hover {
+      color: dimgray !important;
+    }
+  }
 }
 
 .button-container {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 16px;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  align-items: center;
+
+  @media (max-width: 1200px) {
+    justify-content: center;
+  }
+
+  & > *:not(:last-child) {
+    margin-left: 16px !important;
+  }
+
+  button,
+  .button {
     margin-top: 16px;
-    flex-direction: row-reverse;
-    justify-content: flex-start;
-    align-items: center;
 
-    @media (max-width: 1200px) {
-        justify-content: center;
+    &.secondary {
+      margin-top: 20px;
+    }
+  }
+
+  .alt {
+    margin-right: auto;
+    margin-left: 0 !important;
+    order: 2;
+  }
+
+  .connected {
+    button:not(:only-child):first-child {
+      border-right: 1px solid $accentColorDark;
     }
 
-    & > *:not(:last-child) {
-        margin-left: 16px !important;
+    button:not(:only-child):not(:first-child):not(:last-child) {
+      margin-left: 0 !important;
+
+      border-left: 1px solid $accentColorDark;
+      border-right: 1px solid $accentColorDark;
     }
 
-    button, .button{
-        margin-top: 16px;
-
-        &.secondary{
-            margin-top: 20px;
-        }
+    button:not(:only-child):last-child {
+      border-left: 1px solid $accentColorDark;
     }
-
-    .alt {
-        margin-right: auto;
-        margin-left: 0 !important;
-        order: 2;
-    }
-
-    .connected {
-        button:not(:only-child):first-child {
-            border-right: 1px solid $accentColorDark;
-        }
-
-        button:not(:only-child):not(:first-child):not(:last-child) {
-            margin-left: 0 !important;
-
-            border-left: 1px solid $accentColorDark;
-            border-right: 1px solid $accentColorDark;
-        }
-
-        button:not(:only-child):last-child {
-            border-left: 1px solid $accentColorDark;
-        }
-    }
+  }
 }

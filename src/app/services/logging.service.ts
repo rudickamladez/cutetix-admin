@@ -5,25 +5,25 @@ import { Injectable } from "@angular/core";
 
 const interestedFields = ["auth", "ws", "swUpdate", "user", "dashboardEventLoad"] as const;
 
-export type Fields = typeof interestedFields[number];
+export type Fields = (typeof interestedFields)[number];
 
 @Injectable({
-    providedIn: "root"
+  providedIn: "root",
 })
 export class LoggingService {
-    readonly #output = true;
-    // readonly #output = !isDevMode();
-    readonly #interestedFields = new Set<Fields>(["auth", "ws", "swUpdate", "user", "dashboardEventLoad"]);
+  readonly #output = true;
+  // readonly #output = !isDevMode();
+  readonly #interestedFields = new Set<Fields>(["auth", "ws", "swUpdate", "user", "dashboardEventLoad"]);
 
-    log(field: Fields, message?: any, ...optionalParams: any[]) {
-        if (this.#output && this.#interestedFields.has(field)) {
-            console.log(`[${field}]`, message, ...optionalParams);
-        }
+  log(field: Fields, message?: any, ...optionalParams: any[]) {
+    if (this.#output && this.#interestedFields.has(field)) {
+      console.log(`[${field}]`, message, ...optionalParams);
     }
+  }
 
-    error(field: Fields, message?: any, ...optionalParams: any[]) {
-        if (this.#output && this.#interestedFields.has(field)) {
-            console.error(`[${field}]`, message, ...optionalParams);
-        }
+  error(field: Fields, message?: any, ...optionalParams: any[]) {
+    if (this.#output && this.#interestedFields.has(field)) {
+      console.error(`[${field}]`, message, ...optionalParams);
     }
+  }
 }
