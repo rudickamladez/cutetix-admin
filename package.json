@@ -5,8 +5,11 @@
     "ng": "ng",
     "start": "ng serve --watch --host 0.0.0.0 --port 4200",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "lint:ng": "ng lint",
+    "lint:prettier": "prettier --check 'src/**/*.{ts,html,scss,css}'",
+    "lint:scss": "stylelint \"src/**/*.scss\"",
+    "lint": "npm run lint:prettier && npm run lint:ng && npm run lint:scss",
+    "lint:fix": "prettier --write 'src/**/*.{ts,html,scss,css}' && ng lint --fix && stylelint --fix \"src/**/*.scss\""
   },
   "private": true,
   "dependencies": {

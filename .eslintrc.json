@@ -1,25 +1,31 @@
 {
   "root": true,
   "ignorePatterns": [
-    "src/utils"
   ],
   "overrides": [
     {
       "files": [
         "*.ts"
       ],
+      "parserOptions": {
+        "project": ["./tsconfig.json", "./tsconfig.app.json"]
+      },
+      "plugins": [
+        "import"
+      ],
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates"
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:prettier/recommended"
       ],
       "rules": {
         "@angular-eslint/directive-selector": [
           "error",
           {
             "type": "attribute",
-            "prefix": "norcus",
+            "prefix": "app",
             "style": "camelCase"
           }
         ],
@@ -27,8 +33,52 @@
           "error",
           {
             "type": "element",
-            "prefix": "norcus",
+            "prefix": "app",
             "style": "kebab-case"
+          }
+        ],
+        "@typescript-eslint/explicit-function-return-type": "error",
+
+        "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }],
+        "comma-spacing": ["error", { "before": false, "after": true }],
+        "eqeqeq": ["error", "always"],
+        "curly": ["error", "all"],
+        "no-fallthrough": "error",
+        "no-implicit-coercion": "error",
+        "no-return-await": "error",
+        "@typescript-eslint/consistent-type-imports": "error",
+        "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+        "@typescript-eslint/array-type": "error",
+        "@typescript-eslint/no-unnecessary-condition": "error",
+        "@typescript-eslint/no-unnecessary-type-assertion": "error",
+        "sort-imports": [
+          "error",
+          {
+            "ignoreCase": true,
+            "ignoreDeclarationSort": true,
+            "ignoreMemberSort": false,
+            "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+          }
+        ],
+        "import/order": [
+          "error",
+          {
+            "alphabetize": { "order": "asc", "caseInsensitive": true },
+            "newlines-between": "always",
+            "groups": [
+              "builtin",
+              "external",
+              "internal",
+              ["parent", "sibling", "index"]
+            ],
+            "pathGroups": [
+              {
+                "pattern": "@angular/**",
+                "group": "external",
+                "position": "before"
+              }
+            ],
+            "pathGroupsExcludedImportTypes": ["builtin"]
           }
         ]
       }
@@ -38,7 +88,8 @@
         "*.html"
       ],
       "extends": [
-        "plugin:@angular-eslint/template/recommended"
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:@angular-eslint/template/accessibility"
       ],
       "rules": {}
     }
