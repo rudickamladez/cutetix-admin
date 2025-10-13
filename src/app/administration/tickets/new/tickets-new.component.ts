@@ -39,11 +39,12 @@ export class TicketsNewComponent {
     })
   }
 
-  public newTicketGroup() {
+  public newTicket() {
     this.ticketService.create({
       firstname: this.form.value.firstname || '',
       lastname: this.form.value.lastname || '',
       email: this.form.value.email || '',
+      description: this.form.value.description || '',
       status: this.form.value.status || TicketStatusEnum.new,
       group_id: this.form.value.groupId || 0
     }).subscribe({
@@ -58,6 +59,7 @@ export class TicketsNewComponent {
         this.router.navigate(['/tickets/list']);
       },
       error: (err) => {
+        console.error(err);
         this.toastr.error(
           `NOT CREATED! Error: ${err.message}`,
           'Ticket',
