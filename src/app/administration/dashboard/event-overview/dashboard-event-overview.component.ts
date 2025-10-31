@@ -86,35 +86,35 @@ export class DashboardEventOverviewComponent implements OnInit {
     });
   }
 
-  get freeTickets() {
+  get freeTickets(): number | undefined {
     if (!this.event_id || !this.event) {
       return 0;
     }
     return this.eventCapacitySummary?.free;
   }
 
-  get reservedTickets() {
+  get reservedTickets(): number | undefined {
     if (!this.event_id || !this.event) {
       return 0;
     }
     return this.eventCapacitySummary?.reserved;
   }
 
-  get cancelledTickets() {
+  get cancelledTickets(): number | undefined {
     if (!this.event_id || !this.event) {
       return 0;
     }
     return this.eventCapacitySummary?.cancelled;
   }
 
-  get totalTickets() {
+  get totalTickets(): number | undefined {
     if (!this.event_id || !this.event) {
       return 0;
     }
     return this.eventCapacitySummary?.total;
   }
 
-  get paidTickets() {
+  get paidTickets(): number | undefined {
     if (!this.event_id || !this.event) {
       return 0;
     }
