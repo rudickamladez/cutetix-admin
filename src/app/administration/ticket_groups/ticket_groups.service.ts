@@ -1,4 +1,4 @@
-import type { HttpClient } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 
 import type { Observable } from "rxjs";
@@ -17,30 +17,30 @@ import type {
   providedIn: "root",
 })
 export class TicketGroupService {
+  private readonly httpClient = inject(HttpClient);
+
   readonly #storageService = inject(StorageService);
   private API_PATH: string = "ticket_groups";
 
   private ticket_groupSource = new Subject<TicketGroup>();
 
-  public asObservable() {
+  public asObservable(): Observable<TicketGroup> {
     return this.ticket_groupSource.asObservable();
   }
 
-  public register(ticket_group: TicketGroup) {
+  public register(ticket_group: TicketGroup): void {
     this.ticket_groupSource.next(ticket_group);
   }
 
   private deleteSource = new Subject<TicketGroup>();
 
-  public deleteAsObservable() {
+  public deleteAsObservable(): Observable<TicketGroup> {
     return this.deleteSource.asObservable();
   }
 
-  public ticketDelete(ticket_group: TicketGroup) {
+  public ticketDelete(ticket_group: TicketGroup): void {
     this.deleteSource.next(ticket_group);
   }
-
-  constructor(private readonly httpClient: HttpClient) {}
 
   public get(): Observable<TicketGroup[]> {
     return this.httpClient

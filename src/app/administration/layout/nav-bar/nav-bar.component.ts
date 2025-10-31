@@ -1,5 +1,5 @@
 import type { OnInit } from "@angular/core";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 
 import {
   faBars,
@@ -8,7 +8,7 @@ import {
   faTimes,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
-import type { AuthService } from "src/app/services/auth.service";
+import { AuthService } from "src/app/services/auth.service";
 
 import { MenuBuilder } from "./menu-builder";
 import { MenuItem } from "./menu-items";
@@ -20,6 +20,8 @@ import { MenuItem } from "./menu-items";
   standalone: false,
 })
 export class NavBarComponent implements OnInit {
+  private authService = inject(AuthService);
+
   dashboardItem = new MenuItem("Dashboard", "dashboard", faChartLine);
   userProfileItem = new MenuItem("My profile", "profile", faUser);
   logoutItem = new MenuItem("Log out", "", faSignOutAlt, () => this.logout());
@@ -30,8 +32,6 @@ export class NavBarComponent implements OnInit {
   // icons
   menuClosedIcon = faBars;
   menuOpenIcon = faTimes;
-
-  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.menuOpen = history.state.navBarVisible ?? false;

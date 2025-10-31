@@ -7,11 +7,11 @@ import {
   signal,
 } from "@angular/core";
 
+import type { JwtPayload } from "jwt-decode";
 import { jwtDecode } from "jwt-decode";
 import { ToastrService } from "ngx-toastr";
-import { filter, type Subscription, timeout } from "rxjs";
+import { type Subscription, timeout } from "rxjs";
 // import { Socket } from "ngx-socket-io";
-
 import { environment } from "src/environments/environment";
 
 import { LoggingService } from "./logging.service";
@@ -264,7 +264,7 @@ export class AuthService implements OnDestroy {
     }
   }
 
-  #handleRefreshLock() {
+  #handleRefreshLock(): void {
     if (this.#canRefreshToken === true) {
       return;
     }
@@ -328,7 +328,7 @@ export class AuthService implements OnDestroy {
     return this.#storageService.get(StorageKeys.ACCESS_TOKEN);
   }
 
-  getDecodedAccessToken() {
+  getDecodedAccessToken(): JwtPayload | null {
     const accessToken = this.getAccessToken();
     if (accessToken === null) {
       return null;
@@ -345,7 +345,7 @@ export class AuthService implements OnDestroy {
     return this.#storageService.get(StorageKeys.REFRESH_TOKEN);
   }
 
-  getDecodedRefreshToken() {
+  getDecodedRefreshToken(): JwtPayload | null {
     const refreshToken = this.getRefreshToken();
     if (refreshToken === null) {
       return null;

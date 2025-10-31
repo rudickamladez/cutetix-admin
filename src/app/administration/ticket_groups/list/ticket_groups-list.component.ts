@@ -1,20 +1,24 @@
 import type { OnInit } from "@angular/core";
-import { Component } from "@angular/core";
-import type { Router } from "@angular/router";
+import { Component, inject } from "@angular/core";
+import { Router } from "@angular/router";
 
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import type { ToastrService } from "ngx-toastr";
+import { ToastrService } from "ngx-toastr";
 
-import type { TicketGroupService } from "../ticket_groups.service";
+import { TicketGroupService } from "../ticket_groups.service";
 import type { TicketGroup } from "../ticket_groups.types";
 
 @Component({
-  selector: "app-ticket_groups-list",
+  selector: "app-ticket-groups-list",
   templateUrl: "./ticket_groups-list.component.html",
   styleUrls: ["./ticket_groups-list.component.scss"],
   standalone: false,
 })
 export class TicketGroupsListComponent implements OnInit {
+  private readonly ticket_groupService = inject(TicketGroupService);
+  private readonly toastr = inject(ToastrService);
+  private readonly router = inject(Router);
+
   public faPen = faPen;
   public faTrash = faTrash;
   public ticket_groups: TicketGroup[] = [];
@@ -23,12 +27,6 @@ export class TicketGroupsListComponent implements OnInit {
     enabled: false,
     text: "",
   };
-
-  constructor(
-    private readonly ticket_groupService: TicketGroupService,
-    private readonly toastr: ToastrService,
-    private readonly router: Router
-  ) {}
 
   ngOnInit(): void {
     this.ticket_groupService.get().subscribe({
@@ -49,11 +47,11 @@ export class TicketGroupsListComponent implements OnInit {
     });
   }
 
-  public edit(ticket_group: TicketGroup) {
+  public edit(ticket_group: TicketGroup): void {
     this.router.navigate(["/ticket_groups/edit/" + ticket_group.id]);
   }
 
-  public delete(ticket_group: TicketGroup) {
+  public delete(ticket_group: TicketGroup): void {
     if (!ticket_group.id) {
       this.toastr.error(
         `<div><b>Ticket group DIDN'T deleted!</b><br/>Can't delete! Didn't receive ticket_group id.</div>`,

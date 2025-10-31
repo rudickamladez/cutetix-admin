@@ -1,21 +1,27 @@
 import type { OnInit } from "@angular/core";
-import { Component, Input } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import type { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 
-import type { ToastrService } from "ngx-toastr";
+import { ToastrService } from "ngx-toastr";
 
-import type { EventService } from "../../events/events.service";
+import { EventService } from "../../events/events.service";
 import type { Event } from "../../events/events.types";
-import type { TicketGroupService } from "../ticket_groups.service";
+import { TicketGroupService } from "../ticket_groups.service";
 
 @Component({
-  selector: "app-ticket_groups-edit",
+  selector: "app-ticket-groups-edit",
   templateUrl: "./events-edit.component.html",
   styleUrls: ["./events-edit.component.scss"],
   standalone: false,
 })
 export class TicketGroupsEditComponent implements OnInit {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private ticket_groupService = inject(TicketGroupService);
+  private eventService = inject(EventService);
+  private toastr = inject(ToastrService);
+
   public id: string | null;
   public form = new FormGroup({
     name: new FormControl("", Validators.required),
@@ -25,13 +31,7 @@ export class TicketGroupsEditComponent implements OnInit {
   public showDetail: boolean = false;
   public events: Event[] = [];
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private ticket_groupService: TicketGroupService,
-    private eventService: EventService,
-    private toastr: ToastrService
-  ) {
+  constructor() {
     // Check detail view
     if (this.router.url.includes("detail")) {
       this.showDetail = true;
@@ -42,6 +42,7 @@ export class TicketGroupsEditComponent implements OnInit {
 
     // Get ID from query
     this.id = this.route.snapshot.paramMap.get("id");
+    // eslint-disable-next-line eqeqeq
     if (this.id == null) {
       this.form.get("name")?.disable();
       this.form.get("capacity")?.disable();
@@ -85,7 +86,7 @@ export class TicketGroupsEditComponent implements OnInit {
     });
   }
 
-  public editTicketGroup() {
+  public editTicketGroup(): void {
     this.ticket_groupService
       .update(this.id || "", {
         name: this.form.value.name || "",

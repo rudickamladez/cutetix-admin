@@ -1,5 +1,5 @@
-import { Component, DOCUMENT, Inject, inject } from "@angular/core";
-import type { Router } from "@angular/router";
+import { Component, DOCUMENT, inject } from "@angular/core";
+import { Router } from "@angular/router";
 
 import {
   faRepeat,
@@ -15,6 +15,9 @@ import { AuthService } from "src/app/services/auth.service";
   standalone: false,
 })
 export class LoggedUserComponent {
+  private document = inject<Document>(DOCUMENT);
+  private readonly router = inject(Router);
+
   readonly #auth = inject(AuthService);
 
   // icons
@@ -23,24 +26,19 @@ export class LoggedUserComponent {
   logoutIcon = faSignOutAlt;
   myProfileIcon = faUser;
 
-  constructor(
-    @Inject(DOCUMENT) private document: Document,
-    private readonly router: Router
-  ) {}
-
   get username(): string {
     return this.#auth.getDecodedAccessToken()?.sub || "undefined";
   }
 
-  openProfile() {
+  openProfile(): void {
     this.router.navigate(["/profile"]);
   }
 
-  logout() {
+  logout(): void {
     this.#auth.logout();
   }
 
-  toggleTheme() {
+  toggleTheme(): void {
     this.document.body.classList.toggle("light");
     this.document.body.classList.toggle("alt-font");
   }

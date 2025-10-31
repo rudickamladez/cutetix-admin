@@ -1,13 +1,13 @@
 import type { OnInit } from "@angular/core";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import type { Router } from "@angular/router";
+import { Router } from "@angular/router";
 
-import type { ToastrService } from "ngx-toastr";
+import { ToastrService } from "ngx-toastr";
 
-import type { TicketGroupService } from "../../ticket_groups/ticket_groups.service";
+import { TicketGroupService } from "../../ticket_groups/ticket_groups.service";
 import type { TicketGroup } from "../../ticket_groups/ticket_groups.types";
-import type { TicketService } from "../tickets.service";
+import { TicketService } from "../tickets.service";
 import { TicketStatusEnum } from "../tickets.types";
 
 @Component({
@@ -17,6 +17,11 @@ import { TicketStatusEnum } from "../tickets.types";
   standalone: false,
 })
 export class TicketsNewComponent implements OnInit {
+  private router = inject(Router);
+  private ticketService = inject(TicketService);
+  private ticketgroupService = inject(TicketGroupService);
+  private toastr = inject(ToastrService);
+
   public form = new FormGroup({
     firstname: new FormControl("", Validators.required),
     lastname: new FormControl("", Validators.required),
@@ -27,13 +32,6 @@ export class TicketsNewComponent implements OnInit {
   });
   public groups: TicketGroup[] = [];
 
-  constructor(
-    private router: Router,
-    private ticketService: TicketService,
-    private ticketgroupService: TicketGroupService,
-    private toastr: ToastrService
-  ) {}
-
   ngOnInit(): void {
     this.ticketgroupService.get().subscribe({
       next: ticket_groups => {
@@ -42,7 +40,7 @@ export class TicketsNewComponent implements OnInit {
     });
   }
 
-  public newTicket() {
+  public newTicket(): void {
     this.ticketService
       .create({
         firstname: this.form.value.firstname || "",

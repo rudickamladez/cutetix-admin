@@ -1,12 +1,11 @@
-import type { OnDestroy, OnInit } from "@angular/core";
-import { Component } from "@angular/core";
-import type { Router } from "@angular/router";
+import type { OnInit } from "@angular/core";
+import { Component, inject } from "@angular/core";
+import { Router } from "@angular/router";
 
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import type { ToastrService } from "ngx-toastr";
-import { Subject } from "rxjs";
+import { ToastrService } from "ngx-toastr";
 
-import type { EventService } from "../events.service";
+import { EventService } from "../events.service";
 import type { Event } from "../events.types";
 
 @Component({
@@ -15,7 +14,7 @@ import type { Event } from "../events.types";
   styleUrls: ["./events-list.component.scss"],
   standalone: false,
 })
-export class EventsListComponent implements OnInit, OnDestroy {
+export class EventsListComponent implements OnInit {
   public faPen = faPen;
   public faTrash = faTrash;
   public events: Event[] = [];
@@ -24,22 +23,17 @@ export class EventsListComponent implements OnInit, OnDestroy {
     enabled: false,
     text: "",
   };
-  // We use this trigger because fetching the list can be quite long,
-  // thus we ensure the data is fetched before rendering
-  dtTrigger: Subject<any> = new Subject<any>();
 
-  constructor(
-    private readonly eventsService: EventService,
-    private readonly toastr: ToastrService,
-    private readonly router: Router
-  ) {}
+  readonly #eventsService = inject(EventService);
+  readonly #router = inject(Router);
+  readonly #toastr = inject(ToastrService);
+
+  constructor() {}
 
   ngOnInit(): void {
-    this.eventsService.get().subscribe({
+    this.#eventsService.get().subscribe({
       next: events => {
         this.events = events;
-        // Calling the DT trigger to manually render the table
-        this.dtTrigger.next(null);
         this.loadingState--;
       },
       error: err => {
@@ -50,23 +44,18 @@ export class EventsListComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.eventsService.deleteAsObservable().subscribe(event => {
+    this.#eventsService.deleteAsObservable().subscribe(event => {
       this.events.splice(this.events.indexOf(event), 1);
     });
   }
 
-  ngOnDestroy(): void {
-    // Do not forget to unsubscribe the event
-    this.dtTrigger.unsubscribe();
+  public edit(event: Event): void {
+    this.#router.navigate(["/events/edit/" + event.id]);
   }
 
-  public edit(event: Event) {
-    this.router.navigate(["/events/edit/" + event.id]);
-  }
-
-  public delete(event: Event) {
+  public delete(event: Event): void {
     if (!event.id) {
-      this.toastr.error(
+      this.#toastr.error(
         `<div><b>Event DIDN'T deleted!</b><br/>Can't delete! Didn't receive event id.</div>`,
         "",
         {

@@ -27,13 +27,13 @@ export class LoggingService {
     "dashboardEventLoad",
   ]);
 
-  log(field: Fields, message?: any, ...optionalParams: any[]) {
+  log(field: Fields, message?: any, ...optionalParams: any[]): void {
     if (this.#output && this.#interestedFields.has(field)) {
       console.log(`[${field}]`, message, ...optionalParams);
     }
   }
 
-  error(field: Fields, message?: any, ...optionalParams: any[]) {
+  error(field: Fields, message?: any, ...optionalParams: any[]): void {
     if (this.#output && this.#interestedFields.has(field)) {
       console.error(`[${field}]`, message, ...optionalParams);
     }

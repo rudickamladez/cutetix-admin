@@ -27,7 +27,7 @@ export class UserInfoComponent implements OnDestroy {
     }
   }
 
-  #updateCountdown() {
+  #updateCountdown(): void {
     const at_exp = this.#auth.getDecodedAccessToken()?.exp;
     const rt_exp = this.#auth.getDecodedRefreshToken()?.exp;
     if (!at_exp) {
@@ -65,7 +65,7 @@ export class UserInfoComponent implements OnDestroy {
     const h = hTotal % 24;
     const d = (hTotal - h) / 24;
 
-    const pad = (n: number) => n.toString().padStart(2, "0");
+    const pad = (n: number): string => n.toString().padStart(2, "0");
 
     if (d > 0) {
       return `${d} d ${h}:${pad(m)}:${pad(s)}`;
@@ -96,7 +96,7 @@ export class UserInfoComponent implements OnDestroy {
     return ss;
   }
 
-  get access_token_expire() {
+  get access_token_expire(): string {
     const exp = this.#auth.getDecodedAccessToken()?.exp;
     if (!exp) {
       return "undefined";
@@ -109,7 +109,7 @@ export class UserInfoComponent implements OnDestroy {
     }).format(new Date(exp * 1000));
   }
 
-  get refresh_token_expire() {
+  get refresh_token_expire(): string {
     const exp = this.#auth.getDecodedRefreshToken()?.exp;
     if (!exp) {
       return "undefined";

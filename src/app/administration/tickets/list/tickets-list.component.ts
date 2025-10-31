@@ -1,6 +1,6 @@
 import type { OnInit } from "@angular/core";
-import { Component } from "@angular/core";
-import type { Router } from "@angular/router";
+import { Component, inject } from "@angular/core";
+import { Router } from "@angular/router";
 
 import {
   faBan,
@@ -8,9 +8,9 @@ import {
   faPen,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import type { ToastrService } from "ngx-toastr";
+import { ToastrService } from "ngx-toastr";
 
-import type { TicketService } from "../tickets.service";
+import { TicketService } from "../tickets.service";
 import type { Ticket } from "../tickets.types";
 
 type FilterState = {
@@ -27,6 +27,10 @@ type FilterState = {
   standalone: false,
 })
 export class TicketsListComponent implements OnInit {
+  private readonly ticketsService = inject(TicketService);
+  private readonly toastr = inject(ToastrService);
+  private readonly router = inject(Router);
+
   cleaningIcon = faBroom;
   public faPen = faPen;
   public faTrash = faTrash;
@@ -48,12 +52,6 @@ export class TicketsListComponent implements OnInit {
     event: "any",
   };
 
-  constructor(
-    private readonly ticketsService: TicketService,
-    private readonly toastr: ToastrService,
-    private readonly router: Router
-  ) {}
-
   ngOnInit(): void {
     this.updateTickets();
 
@@ -69,7 +67,7 @@ export class TicketsListComponent implements OnInit {
   }
 
   // --- načtení a filtrace ---
-  private updateTickets() {
+  private updateTickets(): void {
     this.loadingState = 1;
     this.errorLoading = { enabled: false, text: "" };
 
@@ -137,7 +135,7 @@ export class TicketsListComponent implements OnInit {
     return eventF == ticket.group?.event?.id;
   }
 
-  private applyFilter() {
+  private applyFilter(): void {
     const q = this.filter.query.trim().toLowerCase();
 
     this.filteredTickets = this.tickets.filter(
@@ -158,13 +156,13 @@ export class TicketsListComponent implements OnInit {
     );
   }
 
-  public clearFilters() {
+  public clearFilters(): void {
     this.filter = { query: "", status: "any", group: "any", event: "any" };
     this.applyFilter();
   }
 
   // --- UI handlery bez FormsModule ---
-  public onQueryChange(ev: Event) {
+  public onQueryChange(ev: Event): void {
     // jednoduchý debounce ~250ms
     const value = (ev.target as HTMLInputElement).value ?? "";
     this.filter.query = value;
@@ -173,21 +171,21 @@ export class TicketsListComponent implements OnInit {
     }
     this.queryDebounce = window.setTimeout(() => this.applyFilter(), 250);
   }
-  public onStatusChange(ev: Event) {
+  public onStatusChange(ev: Event): void {
     this.filter.status = (ev.target as HTMLSelectElement).value;
     this.applyFilter();
   }
-  public onGroupChange(ev: Event) {
+  public onGroupChange(ev: Event): void {
     this.filter.group = (ev.target as HTMLSelectElement).value;
     this.applyFilter();
   }
-  public onEventChange(ev: Event) {
+  public onEventChange(ev: Event): void {
     this.filter.event = (ev.target as HTMLSelectElement).value;
     this.applyFilter();
   }
 
   // --- stávající akce ---
-  private notCancelledTicketToastr(ticket: Ticket) {
+  private notCancelledTicketToastr(ticket: Ticket): void {
     this.toastr.error(
       `${ticket.firstname} ${ticket.lastname}`,
       "Ticket DIDN'T cancelled!",
@@ -195,7 +193,7 @@ export class TicketsListComponent implements OnInit {
     );
   }
 
-  public cancel(ticket: Ticket) {
+  public cancel(ticket: Ticket): void {
     if (
       !confirm(
         `Are you sure to cancel ticket for "${ticket.firstname} ${ticket.lastname}"?`
@@ -216,11 +214,11 @@ export class TicketsListComponent implements OnInit {
     });
   }
 
-  public edit(ticket: Ticket) {
+  public edit(ticket: Ticket): void {
     this.router.navigate(["/tickets/edit/" + ticket.id]);
   }
 
-  private notDeletedTicketToastr(ticket: Ticket) {
+  private notDeletedTicketToastr(ticket: Ticket): void {
     this.toastr.error(
       `${ticket.firstname} ${ticket.lastname}`,
       "Ticket DIDN'T deleted!",
@@ -228,7 +226,7 @@ export class TicketsListComponent implements OnInit {
     );
   }
 
-  public delete(ticket: Ticket) {
+  public delete(ticket: Ticket): void {
     if (!ticket.id) {
       this.toastr.error(
         "Can't delete! Didn't receive ticket id.",

@@ -1,4 +1,4 @@
-import type { HttpClient } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 
 import type { Observable } from "rxjs";
@@ -13,30 +13,30 @@ import type { Event, EventCapacitySummary } from "./events.types";
   providedIn: "root",
 })
 export class EventService {
+  private readonly httpClient = inject(HttpClient);
+
   private API_PATH: string = "events";
   readonly #storageService = inject(StorageService);
 
   private eventSource = new Subject<Event>();
 
-  public asObservable() {
+  public asObservable(): Observable<Event> {
     return this.eventSource.asObservable();
   }
 
-  public register(event: Event) {
+  public register(event: Event): void {
     this.eventSource.next(event);
   }
 
   private deleteSource = new Subject<Event>();
 
-  public deleteAsObservable() {
+  public deleteAsObservable(): Observable<Event> {
     return this.deleteSource.asObservable();
   }
 
-  public ticketDelete(event: Event) {
+  public ticketDelete(event: Event): void {
     this.deleteSource.next(event);
   }
-
-  constructor(private readonly httpClient: HttpClient) {}
 
   public get(): Observable<Event[]> {
     return this.httpClient

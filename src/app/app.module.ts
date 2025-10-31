@@ -17,12 +17,11 @@ import { AppComponent } from "./app.component";
 import { APP_ROUTES } from "./app.routes";
 import { LocalStorageFieldComponent } from "./components/local-storage-field/local-storage-field.component";
 import { HelloComponent } from "./hello/hello.component";
+import { authInterceptor } from "./interceptors/auth.interceptor";
 import { LoginPageComponent } from "./login-page/login-page.component";
 import { NotFoundComponent } from "./not-found/not-found.component";
-
 import { SharedModule } from "./shared/shared.module";
 import { UserProfileComponent } from "./user-profile/user-profile.component";
-import { authInterceptor } from "./interceptors/auth.interceptor";
 
 @NgModule({
   declarations: [

@@ -1,6 +1,6 @@
 import type { OnInit } from "@angular/core";
 import { Component, inject } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 
 import { faPersonRunning } from "@fortawesome/free-solid-svg-icons";
 

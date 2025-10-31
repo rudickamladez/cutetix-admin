@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnDestroy, signal } from "@angular/core";
+import { Component, effect, inject, signal } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 
@@ -8,7 +8,6 @@ import {
   faSignInAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { environment } from "../../environments/environment";
 import { AuthService } from "../services/auth.service";
 import { StorageService } from "../services/storage.service";
 import { StorageKeys } from "../tokens/storage.tokens";
@@ -73,7 +72,7 @@ export class LoginPageComponent {
     });
   }
 
-  protected loginWithPassword() {
+  protected loginWithPassword(): void {
     // Show loading spinner
     this.loggingIn = true;
 
@@ -86,7 +85,7 @@ export class LoginPageComponent {
     this.loggingIn = false;
   }
 
-  public toggleConfigVisibility() {
+  public toggleConfigVisibility(): void {
     this.showConfig.update(value => !value);
   }
 }

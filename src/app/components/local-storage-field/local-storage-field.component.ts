@@ -36,7 +36,7 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   status = "";
   cid = ""; // ID for label
 
-  get isCheckbox() {
+  get isCheckbox(): boolean {
     return this.type === "checkbox";
   }
 
@@ -87,11 +87,11 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
       });
   }
 
-  saveNow() {
+  saveNow(): void {
     this.write(this.ctrl.value);
   }
 
-  resetToStored() {
+  resetToStored(): void {
     const current = this.#storageService.get(this.key);
     const val = this.isCheckbox ? this.#toBool(current) : (current ?? "");
     this.ctrl.setValue(val as any, { emitEvent: false });
@@ -107,7 +107,7 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   //   this.flashStatus('Reverted to ENV value');
   // }
 
-  private write(val: string | boolean | null | undefined) {
+  private write(val: string | boolean | null | undefined): void {
     if (this.isCheckbox) {
       const b = this.#toBool(val);
       this.#storageService.set(this.key, b ? "true" : "false"); // kompatibilně jako string
@@ -118,7 +118,7 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
     this.flashStatus("Saved");
   }
 
-  private flashStatus(text: string) {
+  private flashStatus(text: string): void {
     this.status = text;
     setTimeout(() => (this.status = ""), 1200);
   }

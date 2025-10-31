@@ -1,11 +1,11 @@
 import type { OnInit } from "@angular/core";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import type { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 
-import type { ToastrService } from "ngx-toastr";
+import { ToastrService } from "ngx-toastr";
 
-import type { EventService } from "../events.service";
+import { EventService } from "../events.service";
 
 @Component({
   selector: "app-events-form",
@@ -14,6 +14,11 @@ import type { EventService } from "../events.service";
   standalone: false,
 })
 export class EventsFormComponent implements OnInit {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private eventService = inject(EventService);
+  private toastr = inject(ToastrService);
+
   public id: string | null;
   public form = new FormGroup({
     name: new FormControl("", Validators.required),
@@ -48,12 +53,7 @@ export class EventsFormComponent implements OnInit {
   public editButtonText: string = "Create";
   public formMethod: Function = this.createEvent;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private eventService: EventService,
-    private toastr: ToastrService
-  ) {
+  constructor() {
     // Check detail view
     if (this.router.url.includes("edit")) {
       this.title = "Event edit";
@@ -75,7 +75,7 @@ export class EventsFormComponent implements OnInit {
     this.id = this.route.snapshot.paramMap.get("id");
 
     // Editing event
-    if (this.id != null) {
+    if (this.id !== null) {
       // Update form submit method
       this.formMethod = this.editEvent;
 
@@ -113,7 +113,7 @@ export class EventsFormComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  public createEvent() {
+  public createEvent(): void {
     this.eventService
       .create({
         name: this.form.value.name || "",
@@ -150,7 +150,7 @@ export class EventsFormComponent implements OnInit {
       });
   }
 
-  public editEvent() {
+  public editEvent(): void {
     this.eventService
       .update(this.id || "", {
         name: this.form.value.name || "",
