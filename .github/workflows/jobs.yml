@@ -1,10 +1,9 @@
-name: Publish Docker
+name: Lint and publish docker image
 on: [push]
 jobs:
   lint:
     name: Frontend lint
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout repository
         uses: actions/checkout@master
