@@ -3,38 +3,38 @@
 /**
  * Global color styles
  */
- /* default, dark mode styles set with variables */
+/* default, dark mode styles set with variables */
 :root {
-    // Foreground global colors
-    --color-foreground: rgb(255, 255, 255);
-    --color-foreground-medium: rgb(60, 60, 60);
-    --color-foreground-dark: rgb(0, 0, 0);
-    
-    // Background global colors
-    --color-background: rgb(0, 0, 0);
-    --color-background-medium: rgb(190, 190, 190);
-    --color-background-medium-hex: #000;
-    --color-background-medium-dark: rgb(94, 94, 94);
-    --color-background-light: rgb(220, 220, 220);
+  // Foreground global colors
+  --color-foreground: rgb(255, 255, 255);
+  --color-foreground-medium: rgb(60, 60, 60);
+  --color-foreground-dark: rgb(0, 0, 0);
+
+  // Background global colors
+  --color-background: rgb(0, 0, 0);
+  --color-background-medium: rgb(190, 190, 190);
+  --color-background-medium-hex: #000;
+  --color-background-medium-dark: rgb(94, 94, 94);
+  --color-background-light: rgb(220, 220, 220);
 }
 
 /* default, light mode styles set with variables */
 body.light {
-    // Foreground global colors
-    --color-foreground: rgb(0, 0, 0);
-    --color-foreground-medium: rgb(60, 60, 60);
-    --color-foreground-dark: rgb(255, 255, 255);
-    
-    // Background global colors
-    --color-background: rgb(220, 220, 220);
-    --color-background-medium: rgb(190, 190, 190);
-    --color-background-medium-hex: #000;
-    --color-background-medium-dark: rgb(168, 168, 168);
-    --color-background-medium-dark-hex: #a8a8a8;
-    --color-background-light: rgb(0, 0, 0);
+  // Foreground global colors
+  --color-foreground: rgb(0, 0, 0);
+  --color-foreground-medium: rgb(60, 60, 60);
+  --color-foreground-dark: rgb(255, 255, 255);
+
+  // Background global colors
+  --color-background: rgb(220, 220, 220);
+  --color-background-medium: rgb(190, 190, 190);
+  --color-background-medium-hex: #000;
+  --color-background-medium-dark: rgb(168, 168, 168);
+  --color-background-medium-dark-hex: #a8a8a8;
+  --color-background-light: rgb(0, 0, 0);
 }
 
- // Foreground color
+// Foreground color
 $foreColor: var(--color-foreground);
 $foreColorMedium: var(--color-foreground-medium);
 // $foreColorMediumLight: lighten($foreColorMedium, 20%);
@@ -58,10 +58,18 @@ $successColorDark: rgb(30, 130, 76);
 
 // Warning action color
 $warningColor: goldenrod;
-$warningColorLight: color.adjust($warningColor, $lightness: 20%, $saturation: 40%);
+$warningColorLight: color.adjust(
+  $warningColor,
+  $lightness: 20%,
+  $saturation: 40%
+);
 $warningColorDark: color.adjust($warningColor, $lightness: -30%);
 
 // Cherry color
-$accentColor: #49DD5D;
-$accentColorLight: color.adjust($accentColor, $lightness: 20%, $saturation: 40%);
+$accentColor: #49dd5d;
+$accentColorLight: color.adjust(
+  $accentColor,
+  $lightness: 20%,
+  $saturation: 40%
+);
 $accentColorDark: color.adjust($accentColor, $lightness: -30%);

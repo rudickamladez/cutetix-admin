@@ -1,26 +1,26 @@
 @use "../../styles/colors" as *;
 
 .details {
-    padding: 1.5rem;
-    background: $backColorMediumDark;
-    color: $foreColor;
+  padding: 1.5rem;
+  background: $backColorMediumDark;
+  color: $foreColor;
 
-    .info {
-        &:before {
-            content: attr(label);
-            font-size: 14px;
-            display: block;
-            font-weight: 400;
-        }
-
-        font-size: 18px;
-        font-weight: 500;
-        margin: 0 16px;
-        margin-bottom: 12px;
-        white-space: pre-wrap;
+  .info {
+    &:before {
+      content: attr(label);
+      font-size: 14px;
+      display: block;
+      font-weight: 400;
     }
+
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 16px;
+    margin-bottom: 12px;
+    white-space: pre-wrap;
+  }
 }
 
 .details:nth-child(2n) {
-    margin: 1.5rem 0;
+  margin: 1.5rem 0;
 }

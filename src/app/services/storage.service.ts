@@ -1,21 +1,24 @@
 import { Injectable } from "@angular/core";
 
-import { fromEvent, filter, map, type Observable, merge, Subject } from "rxjs";
-import { StorageKeys } from "../tokens/storage.tokens";
+import { filter, fromEvent, map, merge, type Observable, Subject } from "rxjs";
+
+import type { StorageKeys } from "../tokens/storage.tokens";
 
 type CustomStorageEvent = {
   readonly currentValue: string | null;
   readonly action: CustomStorageEventAction;
   readonly key: string;
-}
+};
 
 type CustomStorageEventAction = "create" | "update" | "delete";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class StorageService {
-  #storageEventsFromThisWindow = new Subject<Omit<CustomStorageEvent, "key"> & { readonly key: string | null }>();
+  #storageEventsFromThisWindow = new Subject<
+    Omit<CustomStorageEvent, "key"> & { readonly key: string | null }
+  >();
 
   storageEvent$(key: StorageKeys): Observable<CustomStorageEvent> {
     return merge(
@@ -25,18 +28,21 @@ export class StorageService {
           currentValue: e.newValue,
           action: this.#actionMapper(e.oldValue, e.newValue),
           key: e.key,
-        })),
+        }))
       ),
-      this.#storageEventsFromThisWindow.pipe(
-        filter(e => e.key === key),
-      ),
-    ).pipe(map(e => ({
-      ...e,
-      key,
-    })));
+      this.#storageEventsFromThisWindow.pipe(filter(e => e.key === key))
+    ).pipe(
+      map(e => ({
+        ...e,
+        key,
+      }))
+    );
   }
 
-  #actionMapper<T = string | null>(previous: T, current: T): CustomStorageEventAction {
+  #actionMapper<T = string | null>(
+    previous: T,
+    current: T
+  ): CustomStorageEventAction {
     if (previous !== null) {
       return current !== null ? "update" : "delete";
     }
@@ -49,12 +55,20 @@ export class StorageService {
 
   getBoolean(key: StorageKeys, fallback = false): boolean {
     const v = this.get<any>(key);
-    if (typeof v === 'boolean') return v;
-    if (typeof v === 'number') return v !== 0;
-    if (typeof v === 'string') {
+    if (typeof v === "boolean") {
+      return v;
+    }
+    if (typeof v === "number") {
+      return v !== 0;
+    }
+    if (typeof v === "string") {
       const s = v.trim().toLowerCase();
-      if (['true', '1', 'yes', 'y', 'on'].includes(s)) return true;
-      if (['false', '0', 'no', 'n', 'off', ''].includes(s)) return false;
+      if (["true", "1", "yes", "y", "on"].includes(s)) {
+        return true;
+      }
+      if (["false", "0", "no", "n", "off", ""].includes(s)) {
+        return false;
+      }
     }
     return fallback;
   }
@@ -88,7 +102,7 @@ export class StorageService {
     this.#storageEventsFromThisWindow.next({
       currentValue: null,
       action: "delete",
-      key
+      key,
     });
     return this;
   }

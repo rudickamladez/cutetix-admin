@@ -1,14 +1,16 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
-import { faPersonRunning } from '@fortawesome/free-solid-svg-icons';
+import type { OnInit } from "@angular/core";
+import { Component, inject } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
 
+import { faPersonRunning } from "@fortawesome/free-solid-svg-icons";
+
+import { AuthService } from "../services/auth.service";
 
 @Component({
-    selector: 'app-hello',
-    templateUrl: './hello.component.html',
-    styleUrls: ['./hello.component.scss'],
-    standalone: false
+  selector: "app-hello",
+  templateUrl: "./hello.component.html",
+  styleUrls: ["./hello.component.scss"],
+  standalone: false,
 })
 export class HelloComponent implements OnInit {
   readonly #auth = inject(AuthService);
@@ -17,11 +19,11 @@ export class HelloComponent implements OnInit {
   // icons
   enterIcon = faPersonRunning;
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     if (this.#auth.isLoggedIn()) {
-      this.#router.navigate(['/dashboard']);
+      this.#router.navigate(["/dashboard"]);
     }
   }
 }
