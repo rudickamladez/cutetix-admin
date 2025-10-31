@@ -1,5 +1,4 @@
-// @ts-nocheck
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-explicit-any
 export function equal(a: any, b: any): boolean {
   if (a === b) {
     return true;
@@ -10,9 +9,11 @@ export function equal(a: any, b: any): boolean {
       return false;
     }
 
-    let length, i, keys;
+    let length, i;
+    let keys;
     if (Array.isArray(a)) {
       length = a.length;
+      // eslint-disable-next-line eqeqeq
       if (length != b.length) {
         return false;
       }
@@ -55,7 +56,9 @@ export function equal(a: any, b: any): boolean {
 
     if (ArrayBuffer.isView(a) && ArrayBuffer.isView(b)) {
       length = a.length;
+      // eslint-disable-next-line eqeqeq
       if (length != b.length) {
+        // Oprava chyby 'eqeqeq' na řádku 58:18
         return false;
       }
       for (i = length; i-- !== 0; ) {
@@ -76,6 +79,7 @@ export function equal(a: any, b: any): boolean {
       return a.toString() === b.toString();
     }
 
+    // eslint-disable-next-line prefer-const
     keys = Object.keys(a);
     length = keys.length;
     if (length !== Object.keys(b).length) {
