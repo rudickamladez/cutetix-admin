@@ -16,18 +16,18 @@
   --color-background-medium: #bebebe;
   --color-background-medium-dark: #5e5e5e;
   --color-background-light: #dcdcdc;
-  --success-color: #27ae60;
-  --success-color-dark: #1e824c;
-  --warning-color: goldenrod;
-  --danger-color: #e74c3c;
-  --danger-color-dark: #c0392b;
-  --accent-color: #49dd5d;
-  --accent-color-light: color.adjust(
+  --color-success: #27ae60;
+  --color-success-dark: #1e824c;
+  --color-warning: goldenrod;
+  --color-danger: #e74c3c;
+  --color-danger-dark: #c0392b;
+  --color-accent: #49dd5d;
+  --color-accent-light: color.adjust(
     $accentColor,
     $lightness: 20%,
     $saturation: 40%
   );
-  --accent-color-dark: color.adjust($accentColor, $lightness: -30%);
+  --color-accent-dark: color.adjust($accentColor, $lightness: -30%);
 }
 
 /* default, light mode styles set with variables */
@@ -48,7 +48,7 @@ body.light {
 $foreColor: var(--color-foreground);
 $foreColorMedium: var(--color-foreground-medium);
 $foreColorMediumLight: color.adjust(
-  var(--color-foreground-medium),
+  $foreColorMedium,
   $lightness: 20%
 );
 $foreColorDark: var(--color-foreground-dark);
@@ -61,15 +61,15 @@ $backColorMediumDark: var(--color-background-medium-dark);
 $backColorMediumDarkTran: rgba(#a8a8a8, 50%);
 
 // Danger action color
-$dangerColor: var(--danger-color);
-$dangerColorDark: var(--danger-color-dark);
+$dangerColor: var(--color-danger);
+$dangerColorDark: var(--color-danger-dark);
 
 // Success action color
-$successColor: var(--success-color);
-$successColorDark: var(--success-color-dark);
+$successColor: var(--color-success);
+$successColorDark: var(--color-success-dark);
 
 // Warning action color
-$warningColor: var(--warning-color);
+$warningColor: var(--color-warning);
 $warningColorLight: color.adjust(
   $warningColor,
   $lightness: 20%,
@@ -78,7 +78,7 @@ $warningColorLight: color.adjust(
 $warningColorDark: color.adjust($warningColor, $lightness: -30%);
 
 // Accent color
-$accentColor: var(--accent-color);
+$accentColor: var(--color-accent);
 $accentColorLight: color.adjust(
   $accentColor,
   $lightness: 20%,
