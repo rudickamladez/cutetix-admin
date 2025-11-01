@@ -16,72 +16,61 @@
   --color-background-medium: #bebebe;
   --color-background-medium-dark: #5e5e5e;
   --color-background-light: #dcdcdc;
+
+  // Semantic colors
   --color-success: #27ae60;
   --color-success-dark: #1e824c;
   --color-warning: goldenrod;
+  --color-warning-light: #ffcd4d;
+  --color-warning-dark: #665200;
   --color-danger: #e74c3c;
   --color-danger-dark: #c0392b;
   --color-accent: #49dd5d;
-  --color-accent-light: color.adjust(
-    $accentColor,
-    $lightness: 20%,
-    $saturation: 40%
-  );
-  --color-accent-dark: color.adjust($accentColor, $lightness: -30%);
+  --color-accent-light: #7ef08e;
+  --color-accent-dark: #36aa46;
 }
 
-/* default, light mode styles set with variables */
+/* light mode override */
 body.light {
-  // Foreground global colors
   --color-foreground: #000;
   --color-foreground-medium: #3c3c3c;
   --color-foreground-dark: #fff;
 
-  // Background global colors
   --color-background: #dcdcdc;
   --color-background-medium: #bebebe;
   --color-background-medium-dark: #a8a8a8;
   --color-background-light: #000;
 }
 
-// Foreground color
+/* SCSS variables */
+
+// Foreground
 $foreColor: var(--color-foreground);
 $foreColorMedium: var(--color-foreground-medium);
-$foreColorMediumLight: color.adjust(
-  $foreColorMedium,
-  $lightness: 20%
-);
+$foreColorMediumLight: var(--color-foreground-medium);
 $foreColorDark: var(--color-foreground-dark);
 
-// Background color
+// Background
 $backColor: var(--color-background);
 $backColorLight: var(--color-background-light);
 $backColorMedium: var(--color-background-medium);
 $backColorMediumDark: var(--color-background-medium-dark);
-$backColorMediumDarkTran: rgba(#a8a8a8, 50%);
+$backColorMediumDarkTran: rgb(168 168 168 / 50%);
 
-// Danger action color
+// Danger
 $dangerColor: var(--color-danger);
 $dangerColorDark: var(--color-danger-dark);
 
-// Success action color
+// Success
 $successColor: var(--color-success);
 $successColorDark: var(--color-success-dark);
 
-// Warning action color
+// Warning
 $warningColor: var(--color-warning);
-$warningColorLight: color.adjust(
-  $warningColor,
-  $lightness: 20%,
-  $saturation: 40%
-);
-$warningColorDark: color.adjust($warningColor, $lightness: -30%);
+$warningColorLight: var(--color-warning-light);
+$warningColorDark: var(--color-warning-dark);
 
-// Accent color
+// Accent
 $accentColor: var(--color-accent);
-$accentColorLight: color.adjust(
-  $accentColor,
-  $lightness: 20%,
-  $saturation: 40%
-);
-$accentColorDark: color.adjust($accentColor, $lightness: -30%);
+$accentColorLight: var(--color-accent-light);
+$accentColorDark: var(--color-accent-dark);
