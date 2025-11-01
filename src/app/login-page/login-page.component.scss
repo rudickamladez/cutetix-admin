@@ -51,7 +51,7 @@ h2 {
   box-shadow: none;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   0% {
     opacity: 0;
     transform: scale(0.75);
@@ -66,23 +66,9 @@ h2 {
 .title,
 .error,
 .window {
-  animation: 500ms fadeIn;
+  animation: 500ms fade-in;
   animation-delay: 300ms;
   animation-fill-mode: backwards;
-}
-
-.error {
-  margin-top: auto;
-  z-index: 1;
-  width: 100%;
-  grid-area: error;
-  text-align: center;
-
-  p {
-    background-color: rgba($color: red, $alpha: 15%);
-    max-width: 55%;
-    padding: 1.5rem;
-  }
 }
 
 button.config {
@@ -110,7 +96,7 @@ button.config {
   padding-bottom: calc(64px - 32px);
   color: $foreColorDark;
   background: $backColorMedium;
-  box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 15%);
+  box-shadow: 0 0 70px rgb(var(--color-foreground) / 15%);
   text-align: center;
   grid-area: window;
   margin: auto;
@@ -123,7 +109,7 @@ button.config {
   form {
     margin: 0 auto;
     background-color: transparent;
-    padding: none;
+    padding: 0;
     max-width: 100%;
 
     input {
@@ -159,7 +145,7 @@ p {
       color: $foreColor;
       padding: 24px 32px;
       text-align: center;
-      box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 15%);
+      box-shadow: 0 0 70px rgb(var(--color-foreground) / 15%);
     }
   }
 
@@ -167,6 +153,20 @@ p {
     font-size: 18px;
     line-height: 1.33;
     margin-bottom: 24px;
+  }
+}
+
+.error {
+  margin-top: auto;
+  z-index: 1;
+  width: 100%;
+  grid-area: error;
+  text-align: center;
+
+  p {
+    background-color: rgb(255 0 0 / 15%);
+    max-width: 55%;
+    padding: 1.5rem;
   }
 }
 

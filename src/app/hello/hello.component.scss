@@ -37,7 +37,7 @@
   }
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   0% {
     opacity: 0;
     transform: scale(0.75);
@@ -51,7 +51,7 @@
 
 .title,
 .window {
-  animation: 500ms fadeIn;
+  animation: 500ms fade-in;
   animation-delay: 300ms;
   animation-fill-mode: backwards;
 }

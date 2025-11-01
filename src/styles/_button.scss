@@ -4,7 +4,6 @@
  * Button styles
  */
 
-button:not(.default-style),
 .button {
   display: inline-flex;
   align-items: center;
@@ -22,6 +21,13 @@ button:not(.default-style),
   transition: 100ms all;
   text-decoration: none;
   font-weight: 400;
+  margin-top: 16px;
+
+  & > .fa-icon {
+    margin-left: -4px;
+    margin-right: 12px;
+    transform: scale(1.2);
+  }
 
   &.large {
     height: 50px;
@@ -36,9 +42,9 @@ button:not(.default-style),
     }
   }
 
-  .can-focus &:focus,
+  &:focus,
   &:active {
-    background: $accentColorDark;
+    background: var(--accent-color-dark);
   }
 
   &:hover,
@@ -53,7 +59,7 @@ button:not(.default-style),
   }
 
   &:not(:disabled) {
-    box-shadow: inset 0 -2px 0 $accentColorDark;
+    box-shadow: inset 0 -2px 0 var(--accent-color-dark);
   }
 
   &:active {
@@ -63,13 +69,13 @@ button:not(.default-style),
   &.destructive {
     background: $dangerColor;
 
-    .can-focus &:focus,
+    &:focus,
     &:active {
       background: $dangerColorDark;
     }
 
     &:not(:disabled) {
-      box-shadow: inset 0 -2px 0 $dangerColorDark;
+      box-shadow: inset 0 -2px 0 var(--danger-color-dark);
     }
   }
 
@@ -81,8 +87,9 @@ button:not(.default-style),
     color: inherit;
     background: transparent;
     box-shadow: none;
+    margin-top: 20px;
 
-    .can-focus &:focus,
+    &:focus,
     &:not(:disabled):hover {
       text-decoration: underline;
       background: transparent;
@@ -104,16 +111,11 @@ button:not(.default-style),
       height: 50px;
       margin: 0 16px;
       padding: 0 32px;
-      border: 2px solid $foreColorDark;
+      border: 2px solid var(--color-foreground-dark);
       text-decoration: none !important;
 
       &:not(:disabled):hover {
-        border: 2px solid $foreColor;
-      }
-
-      & > .fa-icon {
-        margin-left: -4px;
-        margin-right: 12px;
+        border: 2px solid var(--color-foreground);
       }
     }
 
@@ -125,10 +127,10 @@ button:not(.default-style),
 
   &.alt {
     background: $foreColorMedium;
-    border: 2px solid $foreColor;
+    border: 2px solid var(--color-foreground);
     box-shadow: none;
 
-    .can-focus &:focus,
+    &:focus,
     &:active {
       background: $foreColorMediumLight;
     }
@@ -136,14 +138,8 @@ button:not(.default-style),
     &:not(:disabled):hover {
       color: $foreColorMediumLight;
       background: $backColor;
-      border: 2px solid $backColorMediumDark;
+      border: 2px solid var(--color-background-medium-dark);
     }
-  }
-
-  & > .fa-icon {
-    margin-left: -4px;
-    margin-right: 12px;
-    transform: scale(1.2);
   }
 
   &.link {
@@ -166,7 +162,7 @@ button:not(.default-style),
   justify-content: flex-start;
   align-items: center;
 
-  @media (width <= 1200px) {
+  @media (width <=1200px) {
     justify-content: center;
   }
 
@@ -174,34 +170,9 @@ button:not(.default-style),
     margin-left: 16px !important;
   }
 
-  button,
-  .button {
-    margin-top: 16px;
-
-    &.secondary {
-      margin-top: 20px;
-    }
-  }
-
   .alt {
     margin-right: auto;
     margin-left: 0 !important;
     order: 2;
-  }
-
-  .connected {
-    button:not(:only-child):first-child {
-      border-right: 1px solid $accentColorDark;
-    }
-
-    button:not(:only-child, :first-child, :last-child) {
-      margin-left: 0 !important;
-      border-left: 1px solid $accentColorDark;
-      border-right: 1px solid $accentColorDark;
-    }
-
-    button:not(:only-child):last-child {
-      border-left: 1px solid $accentColorDark;
-    }
   }
 }

@@ -19,7 +19,6 @@
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   user-select: none;
-  user-select: none;
 
   &:focus {
     outline: none;
@@ -37,7 +36,7 @@ body {
 // class for light mode defined in colors file
 
 body.alt-font {
-  font-family: "Open Sans";
+  font-family: "Open Sans", sans-serif;
 }
 
 // @import "styles/filters";

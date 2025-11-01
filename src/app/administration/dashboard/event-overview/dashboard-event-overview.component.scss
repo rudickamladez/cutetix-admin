@@ -63,7 +63,7 @@ div.container {
       }
 
       &.disabled {
-        background-color: rgba($color: #fff, $alpha: 33%) !important;
+        background-color: rgb(255 255 255 / 33%);
       }
     }
   }
