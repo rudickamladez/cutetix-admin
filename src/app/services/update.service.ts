@@ -15,7 +15,7 @@ export class UpdateService {
   readonly #updates = inject(SwUpdate);
   readonly #logging = inject(LoggingService);
 
-  #toastRef?: ActiveToast<any>;
+  #toastRef?: ActiveToast<undefined>;
 
   constructor() {
     this.#updates.versionUpdates

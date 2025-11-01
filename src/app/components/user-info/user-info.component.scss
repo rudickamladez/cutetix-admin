@@ -1,5 +1,5 @@
 .info {
-  &:before {
+  &::before {
     content: attr(label);
     font-size: 14px;
     display: block;

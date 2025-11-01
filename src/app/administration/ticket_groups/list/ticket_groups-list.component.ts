@@ -64,17 +64,6 @@ export class TicketGroupsListComponent implements OnInit {
       return;
     }
     this.ticket_groupService.delete(ticket_group.id).subscribe(ticket_group => {
-      if (!ticket_group) {
-        this.toastr.error(
-          `<div><b>Ticket group DIDN'T deleted!</b></div>`,
-          "",
-          {
-            enableHtml: true,
-            progressBar: true,
-          }
-        );
-        return;
-      }
       this.ticket_groups.splice(this.ticket_groups.indexOf(ticket_group), 1);
       this.toastr.info(
         `<b>Ticket group "${ticket_group.name}" deleted</b>`,

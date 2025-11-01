@@ -8,7 +8,6 @@
   height: 100%;
   width: 100%;
   background: $backColor;
-
   display: grid;
   grid-template-rows: 1fr auto 1fr 1fr;
   grid-template-areas:
@@ -18,7 +17,7 @@
     "."
     "copyright";
 
-  @media (max-width: 650px) {
+  @media (width <= 650px) {
     grid-template-rows: 1fr 0.5fr 1fr 1fr;
     align-items: initial;
   }
@@ -32,11 +31,11 @@
   text-align: center;
   margin: auto;
 
-  @media (max-width: 900px) {
+  @media (width <= 900px) {
     font-size: 36px;
   }
 
-  @media (max-width: 650px) {
+  @media (width <= 650px) {
     margin-top: 50px;
   }
 }
@@ -80,7 +79,7 @@ h2 {
   text-align: center;
 
   p {
-    background-color: rgba($color: red, $alpha: 0.15);
+    background-color: rgba($color: red, $alpha: 15%);
     max-width: 55%;
     padding: 1.5rem;
   }
@@ -88,19 +87,16 @@ h2 {
 
 button.config {
   position: fixed;
-  right: 0px;
-  bottom: 0px;
+  right: 0;
+  bottom: 0;
   min-width: auto;
   width: auto;
-  padding: 0px 15px;
-
+  padding: 0 15px;
   z-index: 1000; // more than window
   pointer-events: auto;
-
   display: flex;
   justify-content: flex-end;
   align-items: center;
-
   background-color: transparent;
   border: none;
   box-shadow: none;
@@ -114,18 +110,18 @@ button.config {
   padding-bottom: calc(64px - 32px);
   color: $foreColorDark;
   background: $backColorMedium;
-  box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 0.15);
+  box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 15%);
   text-align: center;
   grid-area: window;
   margin: auto;
   animation-delay: 350ms;
 
-  @media screen and (max-width: 666px) {
+  @media screen and (width <= 666px) {
     max-width: 333px;
   }
 
   form {
-    margin: 0px auto;
+    margin: 0 auto;
     background-color: transparent;
     padding: none;
     max-width: 100%;
@@ -151,7 +147,6 @@ p {
     padding: 16px;
     min-width: 100%;
     z-index: 10000;
-
     animation: 300ms fadeIn;
     animation-fill-mode: backwards;
 
@@ -164,11 +159,11 @@ p {
       color: $foreColor;
       padding: 24px 32px;
       text-align: center;
-      box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 0.15);
+      box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 15%);
     }
   }
 
-  @media (max-width: 650px) {
+  @media (width <= 650px) {
     font-size: 18px;
     line-height: 1.33;
     margin-bottom: 24px;

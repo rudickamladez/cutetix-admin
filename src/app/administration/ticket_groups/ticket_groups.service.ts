@@ -3,7 +3,6 @@ import { inject, Injectable } from "@angular/core";
 
 import type { Observable } from "rxjs";
 import { Subject } from "rxjs";
-import { map } from "rxjs/operators";
 import { StorageService } from "src/app/services/storage.service";
 import { StorageKeys } from "src/app/tokens/storage.tokens";
 
@@ -43,90 +42,58 @@ export class TicketGroupService {
   }
 
   public get(): Observable<TicketGroup[]> {
-    return this.httpClient
-      .get(
-        new URL(
-          `${this.API_PATH}/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href
-      )
-      .pipe(
-        map((res: any) => {
-          return res.map((result: any) => <TicketGroup[]>result);
-        })
-      );
+    return this.httpClient.get<TicketGroup[]>(
+      new URL(
+        `${this.API_PATH}/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href
+    );
   }
 
-  public getById(id: string): Observable<TicketGroup> {
-    return this.httpClient
-      .get(
-        new URL(
-          `${this.API_PATH}/${id}/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href
-      )
-      .pipe(
-        map((res: any) => {
-          return <TicketGroup>res;
-        })
-      );
+  public getById(id: string): Observable<> {
+    return this.httpClient.get<TicketGroup>(
+      new URL(
+        `${this.API_PATH}/${id}/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href
+    );
   }
 
   public create(ticket_group: TicketGroup): Observable<TicketGroup> {
-    return this.httpClient
-      .post(
-        new URL(
-          `${this.API_PATH}/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href,
-        ticket_group
-      )
-      .pipe(
-        map((res: any) => {
-          return <TicketGroup>res;
-        })
-      );
+    return this.httpClient.post<TicketGroup>(
+      new URL(
+        `${this.API_PATH}/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href,
+      ticket_group
+    );
   }
 
   public update(id: string, body: TicketGroupUpdate): Observable<TicketGroup> {
-    return this.httpClient
-      .put(
-        new URL(
-          `${this.API_PATH}/${id}/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href,
-        body
-      )
-      .pipe(
-        map((res: any) => {
-          return <TicketGroup>res;
-        })
-      );
+    return this.httpClient.put<TicketGroup>(
+      new URL(
+        `${this.API_PATH}/${id}/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href,
+      body
+    );
   }
 
   public delete(id: string): Observable<TicketGroup> {
-    return this.httpClient
-      .delete(
-        new URL(
-          `${this.API_PATH}/${id}/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href
-      )
-      .pipe(
-        map((res: any) => {
-          return <TicketGroup>res;
-        })
-      );
+    return this.httpClient.delete<TicketGroup>(
+      new URL(
+        `${this.API_PATH}/${id}/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href
+    );
   }
 
   public getActiveSum(): Observable<TicketGroupSum> {
-    return this.httpClient
-      .get(
-        new URL(
-          `${this.API_PATH}/active/sum/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href
-      )
-      .pipe(map((ticket_groupSum: any) => <TicketGroupSum>ticket_groupSum));
+    return this.httpClient.get<TicketGroupSum>(
+      new URL(
+        `${this.API_PATH}/active/sum/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href
+    );
   }
 }

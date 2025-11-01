@@ -17,7 +17,7 @@ export type Fields = (typeof interestedFields)[number];
   providedIn: "root",
 })
 export class LoggingService {
-  readonly #output = true;
+  readonly #output: boolean = true;
   // readonly #output = !isDevMode();
   readonly #interestedFields = new Set<Fields>([
     "auth",

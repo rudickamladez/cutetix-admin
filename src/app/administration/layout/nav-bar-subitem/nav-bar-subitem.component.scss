@@ -39,7 +39,7 @@ a {
     opacity: 1;
   }
 
-  @media (min-width: 1199px) {
+  @media (width >= 1199px) {
     &.active {
       opacity: 1;
       font-weight: 500;

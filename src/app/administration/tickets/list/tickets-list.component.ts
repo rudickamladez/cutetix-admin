@@ -73,7 +73,7 @@ export class TicketsListComponent implements OnInit {
 
     this.ticketsService.get().subscribe({
       next: tickets => {
-        this.tickets = tickets ?? [];
+        this.tickets = tickets;
         if (this.startup) {
           this.startup = false;
         }
@@ -125,14 +125,14 @@ export class TicketsListComponent implements OnInit {
     if (group === "any") {
       return true;
     }
-    return group == ticket.group?.id;
+    return group === ticket.group?.id;
   }
 
   private matchesEvent(ticket: Ticket, eventF: FilterState["event"]): boolean {
     if (eventF === "any") {
       return true;
     }
-    return eventF == ticket.group?.event?.id;
+    return eventF === ticket.group?.event?.id;
   }
 
   private applyFilter(): void {
@@ -164,7 +164,7 @@ export class TicketsListComponent implements OnInit {
   // --- UI handlery bez FormsModule ---
   public onQueryChange(ev: Event): void {
     // jednoduchý debounce ~250ms
-    const value = (ev.target as HTMLInputElement).value ?? "";
+    const value = (ev.target as HTMLInputElement).value;
     this.filter.query = value;
     if (this.queryDebounce) {
       window.clearTimeout(this.queryDebounce);
@@ -203,10 +203,6 @@ export class TicketsListComponent implements OnInit {
       return;
     }
     this.ticketsService.cancel(ticket).subscribe(t => {
-      if (!t) {
-        this.notCancelledTicketToastr(ticket);
-        return;
-      }
       this.updateTickets();
       this.toastr.info(`${t.firstname} ${t.lastname}`, "Ticket cancelled", {
         progressBar: true,
@@ -245,10 +241,6 @@ export class TicketsListComponent implements OnInit {
     }
     // TODO: try catch?
     this.ticketsService.delete(ticket.id).subscribe(t => {
-      if (!t) {
-        this.notDeletedTicketToastr(ticket);
-        return;
-      }
       this.updateTickets();
       this.toastr.info(`${t.firstname} ${t.lastname}`, "Ticket deleted", {
         progressBar: true,

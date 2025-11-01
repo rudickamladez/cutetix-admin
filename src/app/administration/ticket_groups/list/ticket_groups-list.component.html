@@ -29,12 +29,12 @@
             <td class="d-none">{{ ticket_group.id }}</td>
             <td>{{ ticket_group.capacity }}</td>
             <td>
-              @if (ticket_group.event != null) {
+              @if (ticket_group.event) {
                 <a [routerLink]="'/events/detail/' + ticket_group.event.id">
                   {{ ticket_group.event.name }}
                 </a>
               }
-              @if (ticket_group.event == null) {
+              @if (!ticket_group.event) {
                 <span> No event </span>
               }
             </td>

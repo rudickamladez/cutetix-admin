@@ -237,9 +237,10 @@ export class AuthService implements OnDestroy {
         clearTimeout(this.#refreshingTimer);
         this.#refreshingTimer = null;
       }
-      const accessToken = this.getAccessToken()!;
+      const accessToken = this.getAccessToken();
       if (accessToken === null) {
         this.refresh();
+        return;
       }
       const parsedAccessToken = jwtDecode(accessToken);
 

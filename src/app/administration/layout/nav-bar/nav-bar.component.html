@@ -9,9 +9,11 @@
     <fa-icon [icon]="menuOpenIcon"></fa-icon>
   }
 </button>
+<!-- eslint-disable-next-line -->
 <div
   class="hide-nav-bar {{ menuOpen ? 'visible' : '' }}"
   (click)="hide()"
+  (keypress)="hide()"
 ></div>
 <div class="wrapper {{ menuOpen ? 'visible' : '' }}">
   <h1>

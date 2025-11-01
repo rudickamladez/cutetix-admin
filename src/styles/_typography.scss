@@ -1,7 +1,7 @@
 @use "colors" as *;
 
 a {
-  color: currentColor;
+  color: currentcolor;
 
   &:hover,
   &:focus {
@@ -22,7 +22,7 @@ h2 {
   & + h3 {
     margin-top: -56px;
 
-    @media (max-width: 1200px) {
+    @media (width <= 1200px) {
       margin-top: -24px;
     }
   }
@@ -32,7 +32,7 @@ h2 {
     left: 0;
   }
 
-  @media (max-width: 1200px) {
+  @media (width <= 1200px) {
     &:not(.ignore-mobile) {
       font-size: 36px;
       padding-top: 14px;
@@ -47,7 +47,7 @@ h3 {
   font-weight: 700;
   height: 56px;
 
-  @media (max-width: 1200px) {
+  @media (width <= 1200px) {
     padding: 16px 10px;
     font-size: 28px;
     text-align: center;
@@ -65,7 +65,7 @@ h4 {
     margin-right: 16px;
   }
 
-  @media (max-width: 1200px) {
+  @media (width <= 1200px) {
     text-align: center;
 
     .fa-icon {
@@ -79,7 +79,7 @@ span .smaller-text {
   font-size: 0.8em;
 }
 
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   ul {
     margin-left: 20px;
   }

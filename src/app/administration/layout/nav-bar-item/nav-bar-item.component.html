@@ -8,8 +8,12 @@
     {{ item.name }}
   </a>
 }
-@if (item.customFunc != null) {
-  <a (click)="item.customFunc()">
+@if (item.customFunc !== null) {
+  <!-- eslint-disable-next-line -->
+  <a
+    (click)="item!.customFunc()"
+    (keypress)="item!.customFunc()"
+  >
     <fa-icon [icon]="item.icon"></fa-icon>
     {{ item.name }}
   </a>

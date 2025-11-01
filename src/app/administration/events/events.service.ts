@@ -3,7 +3,6 @@ import { inject, Injectable } from "@angular/core";
 
 import type { Observable } from "rxjs";
 import { Subject } from "rxjs";
-import { map } from "rxjs/operators";
 import { StorageService } from "src/app/services/storage.service";
 import { StorageKeys } from "src/app/tokens/storage.tokens";
 
@@ -39,65 +38,41 @@ export class EventService {
   }
 
   public get(): Observable<Event[]> {
-    return this.httpClient
-      .get(
-        new URL(
-          `${this.API_PATH}/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href
-      )
-      .pipe(
-        map((res: any) => {
-          return res.map((result: any) => <Event[]>result);
-        })
-      );
+    return this.httpClient.get<Event[]>(
+      new URL(
+        `${this.API_PATH}/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href
+    );
   }
 
   public getById(id: string): Observable<Event> {
-    return this.httpClient
-      .get(
-        new URL(
-          `${this.API_PATH}/${id}/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href
-      )
-      .pipe(
-        map((res: any) => {
-          return <Event>res;
-        })
-      );
+    return this.httpClient.get<Event>(
+      new URL(
+        `${this.API_PATH}/${id}/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href
+    );
   }
 
   public create(event: Event): Observable<Event> {
-    return this.httpClient
-      .post(
-        new URL(
-          `${this.API_PATH}/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href,
-        event
-      )
-      .pipe(
-        map((res: any) => {
-          return <Event>res;
-        })
-      );
+    return this.httpClient.post<Event>(
+      new URL(
+        `${this.API_PATH}/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href,
+      event
+    );
   }
 
   public update(id: string, body: Event): Observable<Event> {
-    return this.httpClient
-      .patch(
-        new URL(
-          `${this.API_PATH}/${id}/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href,
-        body
-      )
-      .pipe(
-        map((res: any) => {
-          return <Event>res;
-        })
-      );
+    return this.httpClient.patch<Event>(
+      new URL(
+        `${this.API_PATH}/${id}/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href,
+      body
+    );
   }
 
   // public delete(id: string): Observable<Event> {
@@ -113,17 +88,11 @@ export class EventService {
   // }
 
   public capacitySummaryById(id: string): Observable<EventCapacitySummary> {
-    return this.httpClient
-      .get(
-        new URL(
-          `${this.API_PATH}/capacity_summary/${id}/`,
-          this.#storageService.get(StorageKeys.API_URL)!
-        ).href
-      )
-      .pipe(
-        map((res: any) => {
-          return <EventCapacitySummary>res;
-        })
-      );
+    return this.httpClient.get<EventCapacitySummary>(
+      new URL(
+        `${this.API_PATH}/capacity_summary/${id}/`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href
+    );
   }
 }

@@ -21,7 +21,7 @@ export class MenuBuilder {
       this.getMenuItem("Events", "events", faCalendarDays, () =>
         this.getSubItemsByPath("events")
       ),
-    ].filter(o => o);
+    ].filter(o => Boolean(o));
   }
 
   getSubItemsByPath(path: string = "events"): MenuSubItem[] {

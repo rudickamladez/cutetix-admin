@@ -1,4 +1,3 @@
-import type { OnInit } from "@angular/core";
 import { Component, inject } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -13,7 +12,7 @@ import { EventService } from "../events.service";
   styleUrls: ["./events-form.component.scss"],
   standalone: false,
 })
-export class EventsFormComponent implements OnInit {
+export class EventsFormComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private eventService = inject(EventService);
@@ -51,7 +50,7 @@ export class EventsFormComponent implements OnInit {
   public title: string = "New event";
   public editButtonEnabled: boolean = true;
   public editButtonText: string = "Create";
-  public formMethod: Function = this.createEvent;
+  public formMethod = this.createEvent;
 
   constructor() {
     // Check detail view
@@ -110,8 +109,6 @@ export class EventsFormComponent implements OnInit {
       });
     }
   }
-
-  ngOnInit(): void {}
 
   public createEvent(): void {
     this.eventService

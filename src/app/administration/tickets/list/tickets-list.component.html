@@ -92,36 +92,36 @@
             </td>
             <td class="d-none">{{ ticket.description }}</td>
             <td>
-              @if (ticket.group != null) {
+              @if (ticket.group) {
                 <a [routerLink]="'/ticket_groups/detail/' + ticket.group.id">
                   {{ ticket.group.name }}
                 </a>
               }
-              @if (ticket.group == null) {
+              @if (ticket.group === null) {
                 <span>No group</span>
               }
             </td>
             <td>
-              @if (ticket.group?.event != null) {
+              @if (ticket.group?.event) {
                 <a [routerLink]="'/events/detail/' + ticket.group?.event?.id">
                   {{ ticket.group?.event?.name }}
                 </a>
               }
-              @if (ticket.group?.event == null) {
+              @if (!ticket.group?.event) {
                 <span>No event for group</span>
               }
             </td>
             <td class="d-md-none">
-              @if (ticket.status == 0) {
+              @if (ticket.status === 0) {
                 <span class="new">New</span>
               }
-              @if (ticket.status == 1) {
+              @if (ticket.status === 1) {
                 <span class="confirmed">Confirmed</span>
               }
-              @if (ticket.status == 2) {
+              @if (ticket.status === 2) {
                 <span class="paid">Paid</span>
               }
-              @if (ticket.status == 3) {
+              @if (ticket.status === 3) {
                 <span class="cancelled">Cancelled</span>
               }
             </td>

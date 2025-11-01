@@ -46,7 +46,7 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
 
     const stored = this.#storageService.get(this.key);
     const initial = this.isCheckbox ? this.#toBool(stored) : (stored ?? "");
-    this.ctrl.setValue(initial as any, { emitEvent: false });
+    this.ctrl.setValue(initial, { emitEvent: false });
 
     const delay = this.autosave
       ? this.isCheckbox
@@ -76,7 +76,7 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
           ? this.#toBool(e.currentValue)
           : (e.currentValue ?? "");
         if (this.ctrl.value !== incoming) {
-          this.ctrl.setValue(incoming as any, { emitEvent: false });
+          this.ctrl.setValue(incoming, { emitEvent: false });
           this.dirty = false;
           this.flashStatus(
             e.action === "delete"
@@ -94,7 +94,7 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   resetToStored(): void {
     const current = this.#storageService.get(this.key);
     const val = this.isCheckbox ? this.#toBool(current) : (current ?? "");
-    this.ctrl.setValue(val as any, { emitEvent: false });
+    this.ctrl.setValue(val, { emitEvent: false });
     this.dirty = false;
     this.flashStatus("Reverted to stored value");
   }

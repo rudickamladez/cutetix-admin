@@ -1,4 +1,4 @@
-@import "../../../../styles/colors";
+@import url("../../../../styles/colors");
 
 div.container {
   display: flex;
@@ -9,18 +9,18 @@ div.container {
   margin-bottom: 10px;
 
   .title {
-    margin: 0px 5px 10px 5px;
+    margin: 0 5px 10px;
   }
 
   .cards {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
 
-    @media screen and (max-width: 666px) {
+    @media screen and (width <= 666px) {
       grid-template-columns: 1fr 1fr;
     }
 
-    @media screen and (max-width: 333px) {
+    @media screen and (width <= 333px) {
       grid-template-columns: 1fr;
     }
 
@@ -28,9 +28,8 @@ div.container {
       background-color: $backColorMedium;
       color: black;
       max-height: 100px;
-      margin: 0px 5px 10px 5px;
+      margin: 0 5px 10px;
       padding: 15px 10px;
-
       display: grid;
       grid-template-areas:
         "title title"
@@ -64,7 +63,7 @@ div.container {
       }
 
       &.disabled {
-        background-color: rgba($color: #ffffff, $alpha: 0.33) !important;
+        background-color: rgba($color: #fff, $alpha: 33%) !important;
       }
     }
   }

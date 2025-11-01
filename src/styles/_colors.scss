@@ -3,42 +3,43 @@
 /**
  * Global color styles
  */
+
 /* default, dark mode styles set with variables */
 :root {
   // Foreground global colors
-  --color-foreground: rgb(255, 255, 255);
-  --color-foreground-medium: rgb(60, 60, 60);
-  --color-foreground-dark: rgb(0, 0, 0);
+  --color-foreground: rgb(255 255 255);
+  --color-foreground-medium: rgb(60 60 60);
+  --color-foreground-dark: rgb(0 0 0);
 
   // Background global colors
-  --color-background: rgb(0, 0, 0);
-  --color-background-medium: rgb(190, 190, 190);
+  --color-background: rgb(0 0 0);
+  --color-background-medium: rgb(190 190 190);
   --color-background-medium-hex: #000;
-  --color-background-medium-dark: rgb(94, 94, 94);
-  --color-background-light: rgb(220, 220, 220);
+  --color-background-medium-dark: rgb(94 94 94);
+  --color-background-light: rgb(220 220 220);
 }
 
 /* default, light mode styles set with variables */
 body.light {
   // Foreground global colors
-  --color-foreground: rgb(0, 0, 0);
-  --color-foreground-medium: rgb(60, 60, 60);
-  --color-foreground-dark: rgb(255, 255, 255);
+  --color-foreground: rgb(0 0 0);
+  --color-foreground-medium: rgb(60 60 60);
+  --color-foreground-dark: rgb(255 255 255);
 
   // Background global colors
-  --color-background: rgb(220, 220, 220);
-  --color-background-medium: rgb(190, 190, 190);
+  --color-background: rgb(220 220 220);
+  --color-background-medium: rgb(190 190 190);
   --color-background-medium-hex: #000;
-  --color-background-medium-dark: rgb(168, 168, 168);
+  --color-background-medium-dark: rgb(168 168 168);
   --color-background-medium-dark-hex: #a8a8a8;
-  --color-background-light: rgb(0, 0, 0);
+  --color-background-light: rgb(0 0 0);
 }
 
 // Foreground color
 $foreColor: var(--color-foreground);
 $foreColorMedium: var(--color-foreground-medium);
 // $foreColorMediumLight: lighten($foreColorMedium, 20%);
-$foreColorMediumLight: color.adjust(rgb(60, 60, 60), $lightness: 20%);
+$foreColorMediumLight: color.adjust(rgb(60 60 60), $lightness: 20%);
 $foreColorDark: var(--color-foreground-dark);
 
 // Background color
@@ -49,12 +50,12 @@ $backColorMediumDark: var(--color-background-medium-dark);
 $backColorMediumDarkTran: rgba(#a8a8a8, 50%);
 
 // Danger action color
-$dangerColor: rgb(231, 76, 60);
-$dangerColorDark: rgb(192, 57, 43);
+$dangerColor: rgb(231 76 60);
+$dangerColorDark: rgb(192 57 43);
 
 // Success action color
-$successColor: rgb(39, 174, 96);
-$successColorDark: rgb(30, 130, 76);
+$successColor: rgb(39 174 96);
+$successColorDark: rgb(30 130 76);
 
 // Warning action color
 $warningColor: goldenrod;

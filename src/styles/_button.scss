@@ -1,4 +1,5 @@
 @use "colors" as *;
+
 /**
  * Button styles
  */
@@ -52,7 +53,7 @@ button:not(.default-style),
   }
 
   &:not(:disabled) {
-    box-shadow: inset 0px -2px 0px $accentColorDark;
+    box-shadow: inset 0 -2px 0 $accentColorDark;
   }
 
   &:active {
@@ -68,7 +69,7 @@ button:not(.default-style),
     }
 
     &:not(:disabled) {
-      box-shadow: inset 0px -2px 0px $dangerColorDark;
+      box-shadow: inset 0 -2px 0 $dangerColorDark;
     }
   }
 
@@ -159,14 +160,13 @@ button:not(.default-style),
 
 .button-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-flow: row-reverse wrap;
   width: 100%;
   margin-top: 16px;
-  flex-direction: row-reverse;
   justify-content: flex-start;
   align-items: center;
 
-  @media (max-width: 1200px) {
+  @media (width <= 1200px) {
     justify-content: center;
   }
 
@@ -194,9 +194,8 @@ button:not(.default-style),
       border-right: 1px solid $accentColorDark;
     }
 
-    button:not(:only-child):not(:first-child):not(:last-child) {
+    button:not(:only-child, :first-child, :last-child) {
       margin-left: 0 !important;
-
       border-left: 1px solid $accentColorDark;
       border-right: 1px solid $accentColorDark;
     }

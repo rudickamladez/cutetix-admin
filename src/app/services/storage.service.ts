@@ -54,21 +54,16 @@ export class StorageService {
   }
 
   getBoolean(key: StorageKeys, fallback = false): boolean {
-    const v = this.get<any>(key);
-    if (typeof v === "boolean") {
-      return v;
+    const v = this.get<string>(key);
+    if (!v) {
+      return fallback;
     }
-    if (typeof v === "number") {
-      return v !== 0;
+    const s = v.trim().toLowerCase();
+    if (["true", "1", "yes", "y", "on"].includes(s)) {
+      return true;
     }
-    if (typeof v === "string") {
-      const s = v.trim().toLowerCase();
-      if (["true", "1", "yes", "y", "on"].includes(s)) {
-        return true;
-      }
-      if (["false", "0", "no", "n", "off", ""].includes(s)) {
-        return false;
-      }
+    if (["false", "0", "no", "n", "off", ""].includes(s)) {
+      return false;
     }
     return fallback;
   }
