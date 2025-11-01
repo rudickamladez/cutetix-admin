@@ -3,65 +3,74 @@
 /**
  * Global color styles
  */
- /* default, dark mode styles set with variables */
+
+/* default, dark mode styles set with variables */
 :root {
-    // Foreground global colors
-    --color-foreground: rgb(255, 255, 255);
-    --color-foreground-medium: rgb(60, 60, 60);
-    --color-foreground-dark: rgb(0, 0, 0);
-    
-    // Background global colors
-    --color-background: rgb(0, 0, 0);
-    --color-background-medium: rgb(190, 190, 190);
-    --color-background-medium-hex: #000;
-    --color-background-medium-dark: rgb(94, 94, 94);
-    --color-background-light: rgb(220, 220, 220);
+  // Foreground global colors
+  --color-foreground: #fff;
+  --color-foreground-medium: #3c3c3c;
+  --color-foreground-dark: #000;
+
+  // Background global colors
+  --color-background: #000;
+  --color-background-medium: #bebebe;
+  --color-background-medium-dark: #5e5e5e;
+  --color-background-light: #dcdcdc;
+
+  // Semantic colors
+  --color-success: #27ae60;
+  --color-success-dark: #1e824c;
+  --color-warning: goldenrod;
+  --color-warning-light: #ffcd4d;
+  --color-warning-dark: #665200;
+  --color-danger: #e74c3c;
+  --color-danger-dark: #c0392b;
+  --color-accent: #49dd5d;
+  --color-accent-light: #7ef08e;
+  --color-accent-dark: #36aa46;
 }
 
-/* default, light mode styles set with variables */
+/* light mode override */
 body.light {
-    // Foreground global colors
-    --color-foreground: rgb(0, 0, 0);
-    --color-foreground-medium: rgb(60, 60, 60);
-    --color-foreground-dark: rgb(255, 255, 255);
-    
-    // Background global colors
-    --color-background: rgb(220, 220, 220);
-    --color-background-medium: rgb(190, 190, 190);
-    --color-background-medium-hex: #000;
-    --color-background-medium-dark: rgb(168, 168, 168);
-    --color-background-medium-dark-hex: #a8a8a8;
-    --color-background-light: rgb(0, 0, 0);
+  --color-foreground: #000;
+  --color-foreground-medium: #3c3c3c;
+  --color-foreground-dark: #fff;
+
+  --color-background: #dcdcdc;
+  --color-background-medium: #bebebe;
+  --color-background-medium-dark: #a8a8a8;
+  --color-background-light: #000;
 }
 
- // Foreground color
+/* SCSS variables */
+
+// Foreground
 $foreColor: var(--color-foreground);
 $foreColorMedium: var(--color-foreground-medium);
-// $foreColorMediumLight: lighten($foreColorMedium, 20%);
-$foreColorMediumLight: color.adjust(rgb(60, 60, 60), $lightness: 20%);
+$foreColorMediumLight: var(--color-foreground-medium);
 $foreColorDark: var(--color-foreground-dark);
 
-// Background color
+// Background
 $backColor: var(--color-background);
 $backColorLight: var(--color-background-light);
 $backColorMedium: var(--color-background-medium);
 $backColorMediumDark: var(--color-background-medium-dark);
-$backColorMediumDarkTran: rgba(#a8a8a8, 50%);
+$backColorMediumDarkTran: rgb(168 168 168 / 50%);
 
-// Danger action color
-$dangerColor: rgb(231, 76, 60);
-$dangerColorDark: rgb(192, 57, 43);
+// Danger
+$dangerColor: var(--color-danger);
+$dangerColorDark: var(--color-danger-dark);
 
-// Success action color
-$successColor: rgb(39, 174, 96);
-$successColorDark: rgb(30, 130, 76);
+// Success
+$successColor: var(--color-success);
+$successColorDark: var(--color-success-dark);
 
-// Warning action color
-$warningColor: goldenrod;
-$warningColorLight: color.adjust($warningColor, $lightness: 20%, $saturation: 40%);
-$warningColorDark: color.adjust($warningColor, $lightness: -30%);
+// Warning
+$warningColor: var(--color-warning);
+$warningColorLight: var(--color-warning-light);
+$warningColorDark: var(--color-warning-dark);
 
-// Cherry color
-$accentColor: #49DD5D;
-$accentColorLight: color.adjust($accentColor, $lightness: 20%, $saturation: 40%);
-$accentColorDark: color.adjust($accentColor, $lightness: -30%);
+// Accent
+$accentColor: var(--color-accent);
+$accentColorLight: var(--color-accent-light);
+$accentColorDark: var(--color-accent-dark);

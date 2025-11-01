@@ -14,4 +14,4 @@ export const StorageKeys = {
 //   API_URL: environment.backend.api,
 // }
 
-export type StorageKeys = typeof StorageKeys[keyof typeof StorageKeys];
+export type StorageKeys = (typeof StorageKeys)[keyof typeof StorageKeys];

@@ -2,193 +2,188 @@
 @use "../../styles/colors" as *;
 
 :host {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: $backColor;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: $backColor;
+  display: grid;
+  grid-template-rows: 1fr auto 1fr 1fr;
+  grid-template-areas:
+    "title"
+    "error"
+    "window"
+    "."
+    "copyright";
 
-    display: grid;
-    grid-template-rows: 1fr auto 1fr 1fr;
-    grid-template-areas:
-        "title"
-        "error"
-        "window"
-        "."
-        "copyright";
-
-    @media (max-width: 650px) {
-        grid-template-rows: 1fr 0.5fr 1fr 1fr;
-        align-items: initial;
-    }
+  @media (width <= 650px) {
+    grid-template-rows: 1fr 0.5fr 1fr 1fr;
+    align-items: initial;
+  }
 }
 
 .title {
-    color: $foreColor;
-    font-size: 56px;
-    z-index: 1;
-    grid-area: title;
-    text-align: center;
-    margin: auto;
+  color: $foreColor;
+  font-size: 56px;
+  z-index: 1;
+  grid-area: title;
+  text-align: center;
+  margin: auto;
 
-    @media (max-width: 900px) {
-        font-size: 36px;
-    }
+  @media (width <= 900px) {
+    font-size: 36px;
+  }
 
-    @media (max-width: 650px) {
-        margin-top: 50px;
-    }
+  @media (width <= 650px) {
+    margin-top: 50px;
+  }
 }
 
 h2 {
-    margin: 0;
-    margin-top: -24px;
-    margin-bottom: 16px;
-    padding: 0;
-    font-size: 28px;
-    background: none;
-    height: auto;
-    box-shadow: none;
+  margin: 0;
+  margin-top: -24px;
+  margin-bottom: 16px;
+  padding: 0;
+  font-size: 28px;
+  background: none;
+  height: auto;
+  box-shadow: none;
 }
 
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.75);
-    }
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.75);
+  }
 
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .title,
 .error,
 .window {
-    animation: 500ms fadeIn;
-    animation-delay: 300ms;
-    animation-fill-mode: backwards;
-}
-
-.error {
-    margin-top: auto;
-    z-index: 1;
-    width: 100%;
-    grid-area: error;
-    text-align: center;
-
-    p {
-        background-color: rgba($color: red, $alpha: 0.15);
-        max-width: 55%;
-        padding: 1.5rem;
-    }
+  animation: 500ms fade-in;
+  animation-delay: 300ms;
+  animation-fill-mode: backwards;
 }
 
 button.config {
-    position: fixed;
-    right: 0px;
-    bottom: 0px;
-    min-width: auto;
-    width: auto;
-    padding: 0px 15px;
-
-    z-index: 1000; // more than window
-    pointer-events: auto;
-
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: auto;
+  width: auto;
+  padding: 0 15px;
+  z-index: 1000; // more than window
+  pointer-events: auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .window {
-    z-index: 1;
-    max-width: 550px;
-    width: 100%;
-    padding: 64px 16px;
-    padding-bottom: calc(64px - 32px);
-    color: $foreColorDark;
-    background: $backColorMedium;
-    box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 0.15);
-    text-align: center;
-    grid-area: window;
-    margin: auto;
-    animation-delay: 350ms;
+  z-index: 1;
+  max-width: 550px;
+  width: 100%;
+  padding: 64px 16px;
+  padding-bottom: calc(64px - 32px);
+  color: $foreColorDark;
+  background: $backColorMedium;
+  box-shadow: 0 0 70px rgb(var(--color-foreground) / 15%);
+  text-align: center;
+  grid-area: window;
+  margin: auto;
+  animation-delay: 350ms;
 
-    @media screen and (max-width: 666px) {
-        max-width: 333px;
+  @media screen and (width <= 666px) {
+    max-width: 333px;
+  }
+
+  form {
+    margin: 0 auto;
+    background-color: transparent;
+    padding: 0;
+    max-width: 100%;
+
+    input {
+      text-align: center;
     }
-
-    form {
-        margin: 0px auto;
-        background-color: transparent;
-        padding: none;
-        max-width: 100%;
-
-        input {
-            text-align: center;
-        }
-    }
+  }
 }
 
 p {
-    font-size: 20px;
-    line-height: 1.75;
-    max-width: 400px;
-    margin: auto;
+  font-size: 20px;
+  line-height: 1.75;
+  max-width: 400px;
+  margin: auto;
+  margin-bottom: 24px;
+
+  &.wait-text {
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 16px;
+    min-width: 100%;
+    z-index: 10000;
+    animation: 300ms fadeIn;
+    animation-fill-mode: backwards;
+
+    & > span {
+      max-width: 500px;
+      width: 100%;
+      display: block;
+      margin: auto;
+      background-color: $dangerColorDark;
+      color: $foreColor;
+      padding: 24px 32px;
+      text-align: center;
+      box-shadow: 0 0 70px rgb(var(--color-foreground) / 15%);
+    }
+  }
+
+  @media (width <= 650px) {
+    font-size: 18px;
+    line-height: 1.33;
     margin-bottom: 24px;
+  }
+}
 
-    &.wait-text {
-        position: fixed;
-        top: 0;
-        left: 0;
-        margin: 0;
-        padding: 16px;
-        min-width: 100%;
-        z-index: 10000;
+.error {
+  margin-top: auto;
+  z-index: 1;
+  width: 100%;
+  grid-area: error;
+  text-align: center;
 
-        animation: 300ms fadeIn;
-        animation-fill-mode: backwards;
-
-        &>span {
-            max-width: 500px;
-            width: 100%;
-            display: block;
-            margin: auto;
-            background-color: $dangerColorDark;
-            color: $foreColor;
-            padding: 24px 32px;
-            text-align: center;
-            box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 0.15);
-        }
-    }
-
-    @media (max-width: 650px) {
-        font-size: 18px;
-        line-height: 1.33;
-        margin-bottom: 24px;
-    }
+  p {
+    background-color: rgb(255 0 0 / 15%);
+    max-width: 55%;
+    padding: 1.5rem;
+  }
 }
 
 button.large {
-    margin-bottom: 32px !important;
-    min-width: 160px;
+  margin-bottom: 32px !important;
+  min-width: 160px;
 
-    .fa-spin {
-        margin: 0;
+  .fa-spin {
+    margin: 0;
 
-        &::before {
-            transform: scale(1.4);
-            display: block;
-        }
+    &::before {
+      transform: scale(1.4);
+      display: block;
     }
+  }
 }
 
 app-copyright {
-    grid-area: copyright;
+  grid-area: copyright;
 }

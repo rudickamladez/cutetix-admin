@@ -1,13 +1,13 @@
 @use "../../../styles/colors" as *;
 
 footer {
-    text-align: center;
-    width: 100%;
-    margin: 10px 0px;
-    color: $foreColorMediumLight;
-    font-size: 75%;
-    
-    .blue {
-        color: blue;
-    }
+  text-align: center;
+  width: 100%;
+  margin: 10px 0;
+  color: $foreColorMediumLight;
+  font-size: 75%;
+
+  .blue {
+    color: blue;
+  }
 }

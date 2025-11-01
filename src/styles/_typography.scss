@@ -1,86 +1,86 @@
 @use "colors" as *;
 
 a {
-    color: currentColor;
+  color: currentcolor;
 
-    &:hover,
-    &:focus {
-        color: $accentColorDark;
-    }
+  &:hover,
+  &:focus {
+    color: $accentColorDark;
+  }
 
-    .can-focus &:not(.button):focus {
-        font-weight: 500;
-    }
+  .can-focus &:not(.button):focus {
+    font-weight: 500;
+  }
 }
 
-h2 {
+h4 {
+  margin-top: 32px;
+  margin-bottom: 16px;
+  font-size: 24px;
+
+  .fa-icon {
+    font-size: 28px;
+    margin-right: 16px;
+  }
+
+  h3 {
+    font-size: 32px;
+    padding-left: 64px;
+    font-weight: 700;
+    height: 56px;
+
+    @media (width <= 1200px) {
+      padding: 16px 10px;
+      font-size: 28px;
+      text-align: center;
+      height: initial;
+    }
+  }
+
+  h2 {
     font-size: 48px;
     font-weight: 700;
 
     & + app-table,
     & + .table-wrapper,
     & + h3 {
-        margin-top: -56px;
+      margin-top: -56px;
 
-        @media (max-width: 1200px) {
-            margin-top: -24px;
-        }
+      @media (width <= 1200px) {
+        margin-top: -24px;
+      }
     }
 
     & + h3 {
-        position: sticky;
-        left: 0;
+      position: sticky;
+      left: 0;
     }
 
-    @media (max-width: 1200px) {
-        &:not(.ignore-mobile){
-            font-size: 36px;
-            padding-top: 14px;
-            padding-bottom: 10px;
-        }
+    @media (width <= 1200px) {
+      &:not(.ignore-mobile) {
+        font-size: 36px;
+        padding-top: 14px;
+        padding-bottom: 10px;
+      }
     }
-}
+  }
 
-h3 {
-    font-size: 32px;
-    padding-left: 64px;
-    font-weight: 700;
-    height: 56px;
-
-    @media (max-width: 1200px) {
-        padding: 16px 10px;
-        font-size: 28px;
-        text-align: center;
-        height: initial
-    }
-}
-
-h4 {
-    margin-top: 32px;
-    margin-bottom: 16px;
-    font-size: 24px;
+  @media (width <= 1200px) {
+    text-align: center;
 
     .fa-icon {
-        font-size: 28px;
-        margin-right: 16px;
+      font-size: 24px;
+      margin-right: 8px;
     }
-
-    @media (max-width: 1200px) {
-        text-align: center;
-
-        .fa-icon{
-            font-size: 24px;
-            margin-right: 8px;
-        }
-    }
+  }
 }
 
 span .smaller-text {
-    font-size: 0.8em;
+  font-size: 0.8em;
 }
 
-@media (max-width: 1200px) {
-    ul{
-        margin-left: 20px;
-    }
+@media (width <= 1200px) {
+  ul {
+    margin-left: 20px;
+  }
 }
