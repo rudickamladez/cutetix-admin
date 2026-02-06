@@ -59,8 +59,7 @@ export class UsersService {
 
   addEventFavorite(eventId: string) {
     const baseUrl = this.#storageService.get(StorageKeys.API_URL)!;
-    const url = new URL(`${API_PATH}/me/favorite_events/`, baseUrl);
-    url.searchParams.set("event_id", eventId);
+    const url = new URL(`${API_PATH}/me/favorite_events/${eventId}/`, baseUrl);
 
     return this.httpClient.post(
       url.href,
@@ -81,8 +80,7 @@ export class UsersService {
 
   removeEventFavorite(eventId: string) {
     const baseUrl = this.#storageService.get(StorageKeys.API_URL)!;
-    const url = new URL(`${API_PATH}/me/favorite_events/`, baseUrl);
-    url.searchParams.set("event_id", eventId);
+    const url = new URL(`${API_PATH}/me/favorite_events/${eventId}/`, baseUrl);
 
     return this.httpClient.delete(
       url.href
