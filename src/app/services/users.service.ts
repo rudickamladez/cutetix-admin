@@ -18,7 +18,7 @@ export class UsersService {
   readonly #toastr = inject(ToastrService);
   readonly #logging = inject(LoggingService);
   readonly #storageService = inject(StorageService);
-  readonly httpClient = inject(HttpClient);
+  readonly #httpClient = inject(HttpClient);
 
   readonly user = httpResource<User>(
     () => new URL(`${API_PATH}/me/`, this.#storageService.get(StorageKeys.API_URL)!).href,
@@ -61,7 +61,7 @@ export class UsersService {
     const baseUrl = this.#storageService.get(StorageKeys.API_URL)!;
     const url = new URL(`${API_PATH}/me/favorite_events/${eventId}/`, baseUrl);
 
-    return this.httpClient.post(
+    return this.#httpClient.post(
       url.href,
       null
     ).subscribe({
@@ -82,7 +82,7 @@ export class UsersService {
     const baseUrl = this.#storageService.get(StorageKeys.API_URL)!;
     const url = new URL(`${API_PATH}/me/favorite_events/${eventId}/`, baseUrl);
 
-    return this.httpClient.delete(
+    return this.#httpClient.delete(
       url.href
     ).subscribe({
       next: () => {
