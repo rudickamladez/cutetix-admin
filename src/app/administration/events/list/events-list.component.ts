@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { EventService } from '../events.service';
 import { Event } from '../events.types';
-import { faPen, faStar, faStarHalf, faStarHalfStroke, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faStar, faStarHalfStroke, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
@@ -13,10 +13,10 @@ import { UsersService } from 'src/app/services/users.service';
   standalone: false
 })
 export class EventsListComponent implements OnInit {
-  readonly eventsService = inject(EventService);
-  readonly usersService = inject(UsersService);
-  readonly toastr = inject(ToastrService);
-  readonly router = inject(Router);
+  readonly #eventsService = inject(EventService);
+  readonly #usersService = inject(UsersService);
+  readonly #toastr = inject(ToastrService);
+  readonly #router = inject(Router);
   public editIcon = faPen;
   public deleteIcon = faTrash;
   public events: Event[] = [];
@@ -27,7 +27,7 @@ export class EventsListComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.eventsService.get().subscribe({
+    this.#eventsService.get().subscribe({
       next: (events) => {
         this.errorLoading.enabled = false;
         this.events = events;
@@ -41,7 +41,7 @@ export class EventsListComponent implements OnInit {
       },
     });
 
-    this.eventsService.deleteAsObservable().subscribe(
+    this.#eventsService.deleteAsObservable().subscribe(
       (event) => {
         this.events.splice(this.events.indexOf(event), 1);
       }
@@ -49,24 +49,24 @@ export class EventsListComponent implements OnInit {
   }
 
   favoriteIcon(eventId: string) {
-    if (this.usersService.isEventFavorited(eventId)) {
+    if (this.#usersService.isEventFavorited(eventId)) {
       return faStarHalfStroke; // icon for removal
     }
     return faStar; // icon for adding
   }
 
   favorite(eventId: string) {
-    this.usersService.toggleEventFavorite(eventId);
+    this.#usersService.toggleEventFavorite(eventId);
     window.location.reload();
   }
 
   public edit(event: Event) {
-    this.router.navigate(['/events/edit/' + event.id])
+    this.#router.navigate(['/events/edit/' + event.id])
   }
 
   public delete(event: Event) {
     if (!event.id) {
-      this.toastr.error(
+      this.#toastr.error(
         `<div><b>Event DIDN'T deleted!</b><br/>Can't delete! Didn't receive event id.</div>`,
         '',
         {
