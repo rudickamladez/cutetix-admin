@@ -11,9 +11,7 @@ import { HttpClient, httpResource } from "@angular/common/http";
 
 const API_PATH: string = "users";
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable()
 export class UsersService {
   readonly #toastr = inject(ToastrService);
   readonly #logging = inject(LoggingService);
