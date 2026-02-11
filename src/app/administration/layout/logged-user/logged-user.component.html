@@ -19,11 +19,11 @@
             <fa-icon [icon]="switchThemeIcon"></fa-icon>
             Switch theme
         </button>
-        <button (click)="logout()">
+        <button (click)="this.authService.logout();">
             <fa-icon [icon]="logoutIcon"></fa-icon>
             Log out
         </button>
-        <button (click)="openProfile()">
+        <button [routerLink]="['/profile']">
             <fa-icon [icon]="myProfileIcon"></fa-icon>
             My profile
         </button>

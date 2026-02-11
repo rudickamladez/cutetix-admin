@@ -1,5 +1,4 @@
-import { Component, inject, Inject, DOCUMENT } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject, DOCUMENT } from '@angular/core';
 import { faRepeat, faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
@@ -11,6 +10,8 @@ import { UsersService } from 'src/app/services/users.service';
   standalone: false
 })
 export class LoggedUserComponent {
+  private document = inject<Document>(DOCUMENT);
+
   protected readonly authService = inject(AuthService);
   protected readonly usersService = inject(UsersService);
 
@@ -19,20 +20,6 @@ export class LoggedUserComponent {
   switchThemeIcon = faRepeat;
   logoutIcon = faSignOutAlt;
   myProfileIcon = faUser;
-
-  constructor(
-    @Inject(DOCUMENT) private document: Document,
-    private readonly router: Router,
-  ) {
-  }
-
-  openProfile() {
-    this.router.navigate(['/profile']);
-  }
-
-  logout() {
-    this.authService.logout();
-  }
 
   protected toggleTheme() {
     this.document.body.classList.toggle('light');
