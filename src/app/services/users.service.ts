@@ -71,15 +71,7 @@ export class UsersService {
         this.#toastr.error("Failed to favorite event", "Error");
       },
       complete: () => {
-        this.user.update(user => {
-          if (!user) return user;
-          return {
-            ...user,
-            favorite_events: [
-              ...user.favorite_events.filter(e => e.id !== eventId)
-            ]
-          };
-        });
+        this.user.reload();
       }
     });
   }
@@ -99,15 +91,7 @@ export class UsersService {
         this.#toastr.error("Failed to remove favorite event", "Error");
       },
       complete: () => {
-        this.user.update(user => {
-          if (!user) return user;
-          return {
-            ...user,
-            favorite_events: [
-              ...user.favorite_events.filter(e => e.id !== eventId)
-            ]
-          };
-        });
+        this.user.reload();
       }
     });
   }

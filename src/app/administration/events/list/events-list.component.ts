@@ -57,7 +57,6 @@ export class EventsListComponent implements OnInit {
 
   favorite(eventId: string) {
     this.#usersService.toggleEventFavorite(eventId);
-    window.location.reload();
   }
 
   public edit(event: Event) {
