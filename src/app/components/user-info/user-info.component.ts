@@ -9,8 +9,8 @@ import { UsersService } from "src/app/services/users.service";
   standalone: false,
 })
 export class UserInfoComponent implements OnInit, OnDestroy {
-  procted readonly authService = inject(AuthService);
-  procted readonly usersService = inject(UsersService);
+  protected readonly authService = inject(AuthService);
+  protected readonly usersService = inject(UsersService);
 
   readonly show_favorite_events = input(true, {
     transform: booleanAttribute,
