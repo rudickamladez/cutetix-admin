@@ -77,7 +77,7 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     return `${m}:${pad(s)}`;
   }
 
-  formatTokenExpirationDate(exp: number): string {
+  #formatTokenExpirationDate(exp: number): string {
     const userLocale = navigator.languages?.[0] || navigator.language || 'cs-CZ';
     return new Intl.DateTimeFormat(
       userLocale,
@@ -88,17 +88,17 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     ).format(new Date(exp * 1000));
   }
 
-  protected access_token_expire() {
+  access_token_expire() {
     const exp = this.authService.getDecodedAccessToken()?.exp;
     if (!exp) return 'undefined';
-    return this.formatTokenExpirationDate(exp);
+    return this.#formatTokenExpirationDate(exp);
   }
 
-  procted refresh_token_expire() {
+  refresh_token_expire() {
     const exp = this.authService.getDecodedRefreshToken()?.exp;
     if (!exp) return 'undefined';
 
-    return this.formatTokenExpirationDate(exp);
+    return this.#formatTokenExpirationDate(exp);
   }
 
   protected readonly show_user_dependended_info = computed<boolean>(() => {
