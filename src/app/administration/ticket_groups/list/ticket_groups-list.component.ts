@@ -12,8 +12,8 @@ import { Router } from '@angular/router';
   standalone: false
 })
 export class TicketGroupsListComponent implements OnInit {
-  public faPen = faPen;
-  public faTrash = faTrash;
+  protected readonly editIcon = faPen;
+  protected readonly deleteIcon = faTrash;
   public ticket_groups: TicketGroup[] = [];
   public loadingState = 1;
   public errorLoading = {

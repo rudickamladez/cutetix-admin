@@ -12,9 +12,9 @@ import { Router } from '@angular/router';
   standalone: false
 })
 export class TicketsListComponent implements OnInit {
-  public faPen = faPen;
-  public faTrash = faTrash;
-  public cancelIcon = faBan;
+  protected readonly editIcon = faPen;
+  protected readonly deleteIcon = faTrash;
+  protected readonly cancelIcon = faBan;
   public tickets: Ticket[] = [];
   public loadingState = 1;
   public errorLoading = {

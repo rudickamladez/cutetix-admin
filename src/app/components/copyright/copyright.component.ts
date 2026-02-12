@@ -8,6 +8,6 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
     standalone: false,
 })
 export class CopyrightComponent {
-    feelingIcon = faHeart;
-    current_date = new Date();
+    protected readonly feelingIcon = faHeart;
+    protected readonly current_date = new Date();
 }

@@ -30,9 +30,9 @@ export class LoginPageComponent {
   readonly keys = StorageKeys;
 
   // icons
-  loginIcon = faSignInAlt;
-  loadingIcon = faCircleNotch;
-  settingsIcon = faCog;
+  protected readonly loginIcon = faSignInAlt;
+  protected readonly loadingIcon = faCircleNotch;
+  protected readonly settingsIcon = faCog;
 
 
   constructor() {

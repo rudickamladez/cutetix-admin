@@ -17,8 +17,8 @@ export class EventsListComponent implements OnInit {
   readonly #usersService = inject(UsersService);
   readonly #toastr = inject(ToastrService);
   readonly #router = inject(Router);
-  public editIcon = faPen;
-  public deleteIcon = faTrash;
+  protected readonly editIcon = faPen;
+  protected readonly deleteIcon = faTrash;
   public events: Event[] = [];
   public loadingState = 1;
   public errorLoading = {

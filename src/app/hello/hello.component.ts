@@ -15,7 +15,7 @@ export class HelloComponent implements OnInit {
   readonly #router = inject(Router);
 
   // icons
-  enterIcon = faPersonRunning;
+  protected readonly enterIcon = faPersonRunning;
 
   constructor() { }
 

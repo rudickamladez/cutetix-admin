@@ -17,9 +17,9 @@ export class LoggedUserComponent {
 
   // icons
   protected readonly userIcon = faUser;
-  switchThemeIcon = faRepeat;
-  logoutIcon = faSignOutAlt;
-  myProfileIcon = faUser;
+  protected readonly switchThemeIcon = faRepeat;
+  protected readonly logoutIcon = faSignOutAlt;
+  protected readonly myProfileIcon = faUser;
 
   protected toggleTheme() {
     this.document.body.classList.toggle('light');

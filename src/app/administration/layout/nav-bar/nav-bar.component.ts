@@ -19,8 +19,8 @@ export class NavBarComponent implements OnInit {
     menuOpen = false;
 
     // icons
-    menuClosedIcon = faBars;
-    menuOpenIcon = faTimes;
+    protected readonly menuClosedIcon = faBars;
+    protected readonly menuOpenIcon = faTimes;
 
     constructor(
         private authService: AuthService,

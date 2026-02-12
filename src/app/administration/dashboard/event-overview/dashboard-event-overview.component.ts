@@ -20,12 +20,11 @@ export class DashboardEventOverviewComponent implements OnInit {
     eventCapacitySummary?: EventCapacitySummary;
 
     // icons
-    paidTicketsIcon = faCoins;
-    reservedTicketsIcon = faTicket;
-    totalTicketsIcon = faTicketAlt;
-    freeTicketsIcon = faPlus;
-    cancelledTicketsIcon = faTimes;
-
+    protected readonly paidTicketsIcon = faCoins;
+    protected readonly reservedTicketsIcon = faTicket;
+    protected readonly totalTicketsIcon = faTicketAlt;
+    protected readonly freeTicketsIcon = faPlus;
+    protected readonly cancelledTicketsIcon = faTimes;
     @Input() event_id?: string;
 
     constructor(

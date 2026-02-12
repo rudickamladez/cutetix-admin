@@ -8,6 +8,6 @@ import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
     standalone: false
 })
 export class LoadingComponent {
-  faLoading = faCircleNotch;
+  protected readonly loadingIcon = faCircleNotch;
 
 }
