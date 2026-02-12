@@ -2,7 +2,7 @@ import { Injectable, type OnDestroy, effect, inject, signal } from "@angular/cor
 import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
 
 import { jwtDecode } from "jwt-decode";
-import { timeout, filter, type Subscription } from "rxjs";
+import { timeout, type Subscription } from "rxjs";
 // import { Socket } from "ngx-socket-io";
 import { ToastrService } from "ngx-toastr";
 
