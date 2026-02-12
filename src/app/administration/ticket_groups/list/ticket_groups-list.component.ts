@@ -53,7 +53,7 @@ export class TicketGroupsListComponent implements OnInit {
   public delete(ticket_group: TicketGroup) {
     if (!ticket_group.id) {
       this.toastr.error(
-        `<div><b>Ticket group DIDN'T deleted!</b><br/>Can't delete! Didn't receive ticket_group id.</div>`,
+        `<div><b>Ticket group wasn't deleted!</b><br/>Can't delete! Didn't receive ticket_group id.</div>`,
         '',
         {
           enableHtml: true,
@@ -66,7 +66,7 @@ export class TicketGroupsListComponent implements OnInit {
       (ticket_group) => {
         if (!ticket_group) {
           this.toastr.error(
-            `<div><b>Ticket group DIDN'T deleted!</b></div>`,
+            `<div><b>Ticket group wasn't deleted!</b></div>`,
             '',
             {
               enableHtml: true,

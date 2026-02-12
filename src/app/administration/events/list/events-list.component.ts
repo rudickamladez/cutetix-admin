@@ -66,7 +66,7 @@ export class EventsListComponent implements OnInit {
   public delete(event: Event) {
     if (!event.id) {
       this.#toastr.error(
-        `<div><b>Event DIDN'T deleted!</b><br/>Can't delete! Didn't receive event id.</div>`,
+        `<div><b>Event wasn't deleted!</b><br/>Can't delete! Didn't receive event id.</div>`,
         '',
         {
           enableHtml: true,
@@ -79,7 +79,7 @@ export class EventsListComponent implements OnInit {
     //   (event) => {
     //     if (!event) {
     //       this.toastr.error(
-    //         `<div><b>Event DIDN'T deleted!</b></div>`,
+    //         `<div><b>Event wasn't deleted!</b></div>`,
     //         '',
     //         {
     //           enableHtml: true,
