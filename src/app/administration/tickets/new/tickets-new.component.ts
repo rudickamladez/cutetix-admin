@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketService } from '../tickets.service';
 import { ToastrService } from 'ngx-toastr';
@@ -14,6 +14,11 @@ import { TicketStatusEnum } from '../tickets.types';
     standalone: false
 })
 export class TicketsNewComponent {
+  private router = inject(Router);
+  private ticketService = inject(TicketService);
+  private ticketgroupService = inject(TicketGroupService);
+  private toastr = inject(ToastrService);
+
   public form = new FormGroup({
     firstname: new FormControl('', Validators.required),
     lastname: new FormControl('', Validators.required),
@@ -23,13 +28,6 @@ export class TicketsNewComponent {
     groupId: new FormControl(0, Validators.required)
   });
   public groups: Array<TicketGroup> = [];
-
-  constructor(
-    private router: Router,
-    private ticketService: TicketService,
-    private ticketgroupService: TicketGroupService,
-    private toastr: ToastrService
-  ) { }
 
   ngOnInit(): void {
     this.ticketgroupService.get().subscribe({

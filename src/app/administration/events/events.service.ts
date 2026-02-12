@@ -10,6 +10,8 @@ import { StorageService } from 'src/app/services/storage.service';
   providedIn: 'root'
 })
 export class EventService {
+  private readonly httpClient = inject(HttpClient);
+
   private API_PATH: string = 'events';
   readonly #storageService = inject(StorageService);
 
@@ -31,12 +33,6 @@ export class EventService {
 
   public ticketDelete(event: Event) {
     this.deleteSource.next(event);
-  }
-
-  constructor(
-    private readonly httpClient: HttpClient
-  ) {
-
   }
 
   public get(): Observable<Event[]> {

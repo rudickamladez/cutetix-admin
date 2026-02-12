@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { TicketService } from '../tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -12,6 +12,10 @@ import { Router } from '@angular/router';
   standalone: false
 })
 export class TicketsListComponent implements OnInit {
+  private readonly ticketsService = inject(TicketService);
+  private readonly toastr = inject(ToastrService);
+  private readonly router = inject(Router);
+
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   protected readonly cancelIcon = faBan;
@@ -22,12 +26,6 @@ export class TicketsListComponent implements OnInit {
     text: '',
   };
   private startup = true;
-
-  constructor(
-    private readonly ticketsService: TicketService,
-    private readonly toastr: ToastrService,
-    private readonly router: Router,
-  ) { }
 
   private updateTickets() {
     this.loadingState = 1;

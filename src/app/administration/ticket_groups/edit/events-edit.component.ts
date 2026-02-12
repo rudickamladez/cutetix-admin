@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketGroupService } from '../ticket_groups.service';
 import { ToastrService } from 'ngx-toastr';
@@ -13,6 +13,12 @@ import { Event } from '../../events/events.types';
     standalone: false
 })
 export class TicketGroupsEditComponent {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private ticket_groupService = inject(TicketGroupService);
+  private eventService = inject(EventService);
+  private toastr = inject(ToastrService);
+
   public id: string | null;
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -22,13 +28,7 @@ export class TicketGroupsEditComponent {
   public showDetail: boolean = false;
   public events: Array<Event> = [];
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private ticket_groupService: TicketGroupService,
-    private eventService: EventService,
-    private toastr: ToastrService
-  ) {
+  constructor() {
     // Check detail view
     if (this.router.url.includes('detail')) {
       this.showDetail = true;

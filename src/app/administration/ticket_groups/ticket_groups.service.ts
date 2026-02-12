@@ -10,6 +10,8 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
   providedIn: 'root'
 })
 export class TicketGroupService {
+  private readonly httpClient = inject(HttpClient);
+
   readonly #storageService = inject(StorageService);
   private API_PATH: string = 'ticket_groups';
 
@@ -31,12 +33,6 @@ export class TicketGroupService {
 
   public ticketDelete(ticket_group: TicketGroup) {
     this.deleteSource.next(ticket_group);
-  }
-
-  constructor(
-    private readonly httpClient: HttpClient
-  ) {
-
   }
 
   public get(): Observable<TicketGroup[]> {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { TicketGroupService } from '../ticket_groups.service';
 import { TicketGroup } from '../ticket_groups.types';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -12,6 +12,10 @@ import { Router } from '@angular/router';
   standalone: false
 })
 export class TicketGroupsListComponent implements OnInit {
+  private readonly ticket_groupService = inject(TicketGroupService);
+  private readonly toastr = inject(ToastrService);
+  private readonly router = inject(Router);
+
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   public ticket_groups: TicketGroup[] = [];
@@ -20,12 +24,6 @@ export class TicketGroupsListComponent implements OnInit {
     enabled: false,
     text: '',
   };
-
-  constructor(
-    private readonly ticket_groupService: TicketGroupService,
-    private readonly toastr: ToastrService,
-    private readonly router: Router
-  ) { }
 
   ngOnInit(): void {
     this.ticket_groupService.get().subscribe({

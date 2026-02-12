@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketGroupService } from '../ticket_groups.service';
 import { ToastrService } from 'ngx-toastr';
@@ -13,19 +13,17 @@ import { Event } from '../../events/events.types';
     standalone: false
 })
 export class TicketGroupsNewComponent {
+  private router = inject(Router);
+  private ticket_groupService = inject(TicketGroupService);
+  private eventService = inject(EventService);
+  private toastr = inject(ToastrService);
+
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
     capacity: new FormControl(0, Validators.required),
     eventId: new FormControl(1, Validators.required)
   });
   public events: Array<Event> = [];
-
-  constructor(
-    private router: Router,
-    private ticket_groupService: TicketGroupService,
-    private eventService: EventService,
-    private toastr: ToastrService
-  ) { }
 
   ngOnInit(): void {
     this.eventService.get().subscribe({

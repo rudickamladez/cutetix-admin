@@ -10,6 +10,8 @@ import { StorageService } from 'src/app/services/storage.service';
   providedIn: 'root'
 })
 export class TicketService {
+  private readonly httpClient = inject(HttpClient);
+
   readonly #storageService = inject(StorageService);
   private API_PATH: string = 'tickets';
 
@@ -31,12 +33,6 @@ export class TicketService {
 
   public ticketDelete(ticket: Ticket) {
     this.deleteSource.next(ticket);
-  }
-
-  constructor(
-    private readonly httpClient: HttpClient
-  ) {
-
   }
 
   public get(): Observable<Ticket[]> {

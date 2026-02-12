@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../events.service';
 import { ToastrService } from 'ngx-toastr';
@@ -11,6 +11,11 @@ import { ActivatedRoute, Router } from '@angular/router';
     standalone: false
 })
 export class EventsFormComponent {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private eventService = inject(EventService);
+  private toastr = inject(ToastrService);
+
   public id: string | null;
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -27,12 +32,7 @@ export class EventsFormComponent {
   public editButtonText: string = 'Create';
   public formMethod: Function = this.createEvent;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private eventService: EventService,
-    private toastr: ToastrService
-  ) {
+  constructor() {
     // Check detail view
     if (this.router.url.includes('edit')) {
       this.title = 'Event edit'
