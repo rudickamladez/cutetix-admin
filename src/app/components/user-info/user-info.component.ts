@@ -88,13 +88,13 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     ).format(new Date(exp * 1000));
   }
 
-  access_token_expire() {
+  protected access_token_expire() {
     const exp = this.authService.getDecodedAccessToken()?.exp;
     if (!exp) return 'undefined';
     return this.#formatTokenExpirationDate(exp);
   }
 
-  refresh_token_expire() {
+  procted refresh_token_expire() {
     const exp = this.authService.getDecodedRefreshToken()?.exp;
     if (!exp) return 'undefined';
 
