@@ -120,13 +120,13 @@ export class AuthService implements OnDestroy {
                 if (err.error.detail) {
                     this.#toastr.error(
                         err.error.detail,
-                        'Login'
+                        "Login"
                     );
                     return;
                 }
                 this.#toastr.error(
                     err.statusText,
-                    'Login'
+                    "Login"
                 );
             }
         });
@@ -302,12 +302,12 @@ export class AuthService implements OnDestroy {
     getScopes(): string {
         const scope = Object(this.getDecodedAccessToken())?.scope as string | undefined;
 
-        const ss = (scope ?? '')
+        const ss = (scope ?? "")
             .toString()
-            .split(',')
+            .split(",")
             .map(s => s.trim())
             .filter(Boolean)
-            .join(', ') || 'undefined';
+            .join(", ") || "undefined";
 
         return ss;
     }
