@@ -94,7 +94,7 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     return this.#formatTokenExpirationDate(exp);
   }
 
-  procted refresh_token_expire() {
+  protected refresh_token_expire() {
     const exp = this.authService.getDecodedRefreshToken()?.exp;
     if (!exp) return 'undefined';
 
