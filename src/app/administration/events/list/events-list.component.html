@@ -1,16 +1,16 @@
-@if (this.loadingState > 0) {
+@if (events.isLoading()) {
 <app-loading></app-loading>
 }
 <div>
-  @if (this.errorLoading.enabled) {
+  @if (events.error()) {
   <div class="error">
     <p>
       There's problem loading table.<br />
-      {{ this.errorLoading.text }}
+      {{ loadErrorText() }}
     </p>
   </div>
   }
-  @if (!this.errorLoading.enabled) {
+  @if (!events.error()) {
   <table>
     <thead>
       <tr>
@@ -22,7 +22,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (event of events; track event) {
+      @for (event of events.value(); track event) {
       <tr>
         <td>{{ event.name }}</td>
         <!-- so hidden column with IDs is second -->
@@ -30,11 +30,14 @@
         <td class="d-sm-none">{{ event.tickets_sales_start | date : "medium" }}</td>
         <td class="d-sm-none">{{ event.tickets_sales_end | date : "medium" }}</td>
         <td class="actions">
+          <button class="favorite" (click)="favorite(event.id!)">
+            <fa-icon [icon]="favoriteIcon(event.id!)"></fa-icon>
+          </button>
           <button class="edit" (click)="edit(event)">
-            <fa-icon [icon]="faPen"></fa-icon>
+            <fa-icon [icon]="editIcon"></fa-icon>
           </button>
           <button class="delete" (click)="delete(event)" [disabled]="true">
-            <fa-icon [icon]="faTrash"></fa-icon>
+            <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
         </td>
       </tr>

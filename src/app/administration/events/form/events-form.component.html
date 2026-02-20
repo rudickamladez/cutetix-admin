@@ -1,3 +1,17 @@
+@if (isEditing && event.isLoading()) {
+  <app-loading></app-loading>
+}
+
+@if (isEditing && event.error()) {
+  <div class="error">
+    <p>
+      There's problem loading event.<br />
+      {{ loadErrorText() }}
+    </p>
+  </div>
+}
+
+@if (!isEditing || (!event.isLoading() && !event.error())) {
 <form [formGroup]="form" (submit)="formMethod()">
   <h1>{{ title }}</h1>
 
@@ -31,3 +45,4 @@
     </button>
   }
 </form>
+}

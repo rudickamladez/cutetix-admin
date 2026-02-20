@@ -31,12 +31,16 @@ table {
             padding: 10px;
             margin: 2.5px;
 
-            &.delete {
-                background-color: tomato;
+            &.favorite {
+                background-color: #1E90ED;
             }
 
             &.edit {
                 background-color: #BF40BF;
+            }
+
+            &.delete {
+                background-color: tomato;
             }
         }
 

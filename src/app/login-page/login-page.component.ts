@@ -1,7 +1,6 @@
-import { Component, effect, inject, OnDestroy, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
 import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
@@ -30,9 +29,9 @@ export class LoginPageComponent {
   readonly keys = StorageKeys;
 
   // icons
-  loginIcon = faSignInAlt;
-  loadingIcon = faCircleNotch;
-  settingsIcon = faCog;
+  protected readonly loginIcon = faSignInAlt;
+  protected readonly loadingIcon = faCircleNotch;
+  protected readonly settingsIcon = faCog;
 
 
   constructor() {

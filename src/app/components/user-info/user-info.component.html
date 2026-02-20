@@ -1,4 +1,35 @@
-<div class="info" label="Username">{{username}}</div>
-<div class="info" label="Scopes">{{scopes}}</div>
-<div class="info" label="Access token expires on">{{access_token_expire}} ‒ {{time_to_access_token_expire}}</div>
-<div class="info" label="Refresh token expires on">{{refresh_token_expire}} ‒ {{time_to_refresh_token_expire}}</div>
+<div class="info" label="Username">{{ authService.getUsername() }}</div>
+<div class="info" label="Scopes in token">{{ authService.getScopes() }}</div>
+<div class="info" label="Access token expires on">{{ get_access_token_expiration() }} ‒ {{ time_to_access_token_expire }}</div>
+<div class="info" label="Refresh token expires on">{{ refresh_token_expire() }} ‒ {{ time_to_refresh_token_expire }}
+</div>
+
+@if (usersService.user.isLoading()) {
+<span>Loading user data...</span>
+} @else {
+<!-- User is loaded -->
+@let user = usersService.user.value()!;
+
+@if (show_user_dependended_info()) {
+<hr />
+<div class="info" label="UUID">{{ user.uuid }}</div>
+<div class="info" label="Full name">{{ user.full_name }}</div>
+<div class="info" label="E-mail">{{ user.email }}</div>
+<div class="info" label="Scopes in database">{{ user.scopes }}</div>
+@if (show_favorite_events()) {
+
+<div class="info" label="Favorite events">
+  @if (user.favorite_events && user.favorite_events.length > 0) {
+  <ul>
+    @for (event of user!.favorite_events; track event.id) {
+    <li>{{ event.name }}</li>
+    }
+  </ul>
+
+  } @else {
+  <span>No favorite events.</span>
+  }
+</div>
+}
+}
+}

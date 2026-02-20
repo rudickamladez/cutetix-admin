@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { TicketGroupService } from '../ticket_groups.service';
 import { TicketGroup } from '../ticket_groups.types';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -12,8 +12,12 @@ import { Router } from '@angular/router';
   standalone: false
 })
 export class TicketGroupsListComponent implements OnInit {
-  public faPen = faPen;
-  public faTrash = faTrash;
+  readonly #ticket_groupService = inject(TicketGroupService);
+  readonly #toastr = inject(ToastrService);
+  readonly #router = inject(Router);
+
+  protected readonly editIcon = faPen;
+  protected readonly deleteIcon = faTrash;
   public ticket_groups: TicketGroup[] = [];
   public loadingState = 1;
   public errorLoading = {
@@ -21,14 +25,8 @@ export class TicketGroupsListComponent implements OnInit {
     text: '',
   };
 
-  constructor(
-    private readonly ticket_groupService: TicketGroupService,
-    private readonly toastr: ToastrService,
-    private readonly router: Router
-  ) { }
-
   ngOnInit(): void {
-    this.ticket_groupService.get().subscribe({
+    this.#ticket_groupService.get().subscribe({
       next: (ticket_groups) => {
         this.ticket_groups = ticket_groups;
         this.loadingState--;
@@ -41,7 +39,7 @@ export class TicketGroupsListComponent implements OnInit {
       },
     });
 
-    this.ticket_groupService.deleteAsObservable().subscribe(
+    this.#ticket_groupService.deleteAsObservable().subscribe(
       (ticket_group) => {
         this.ticket_groups.splice(this.ticket_groups.indexOf(ticket_group), 1);
       }
@@ -49,13 +47,13 @@ export class TicketGroupsListComponent implements OnInit {
   }
 
   public edit(ticket_group: TicketGroup) {
-    this.router.navigate(['/ticket_groups/edit/' + ticket_group.id])
+    this.#router.navigate(['/ticket_groups/edit/' + ticket_group.id])
   }
 
   public delete(ticket_group: TicketGroup) {
     if (!ticket_group.id) {
-      this.toastr.error(
-        `<div><b>Ticket group DIDN'T deleted!</b><br/>Can't delete! Didn't receive ticket_group id.</div>`,
+      this.#toastr.error(
+        `<div><b>Ticket group wasn't deleted!</b><br/>Can't delete! Didn't receive ticket_group id.</div>`,
         '',
         {
           enableHtml: true,
@@ -64,11 +62,11 @@ export class TicketGroupsListComponent implements OnInit {
       );
       return;
     }
-    this.ticket_groupService.delete(ticket_group.id).subscribe(
+    this.#ticket_groupService.delete(ticket_group.id).subscribe(
       (ticket_group) => {
         if (!ticket_group) {
-          this.toastr.error(
-            `<div><b>Ticket group DIDN'T deleted!</b></div>`,
+          this.#toastr.error(
+            `<div><b>Ticket group wasn't deleted!</b></div>`,
             '',
             {
               enableHtml: true,
@@ -78,7 +76,7 @@ export class TicketGroupsListComponent implements OnInit {
           return
         }
         this.ticket_groups.splice(this.ticket_groups.indexOf(ticket_group), 1);
-        this.toastr.info(
+        this.#toastr.info(
           `<b>Ticket group "${ticket_group.name}" deleted</b>`,
           '',
           {

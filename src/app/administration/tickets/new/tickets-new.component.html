@@ -1,4 +1,4 @@
-<form [formGroup]="form" (submit)="newTicket()">
+<form [formGroup]="form" (submit)="newTicketGroup()">
   <h1>New ticket</h1>
   <label for="firstname">Firstname</label>
   <input type="text" formControlName="firstname" required>
@@ -20,12 +20,9 @@
   <label for="groupId">Group</label>
   <select name="groupId" formControlName="groupId">
     @for (group of groups; track group) {
-      <option [ngValue]="group.id">{{ group.event?.name }} ‒ {{ group.name }}</option>
+      <option [ngValue]="group.id">{{ group.name }}</option>
     }
   </select>
-
-  <label for="send_mail">Send e-mail</label>
-  <input type="checkbox" name="send_mail" formControlName="send_mail">
 
   <button class="alt">
     Create
