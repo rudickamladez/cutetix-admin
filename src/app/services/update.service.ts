@@ -12,7 +12,7 @@ export class UpdateService {
     readonly #updates = inject(SwUpdate);
     readonly #logging = inject(LoggingService);
 
-    #toastRef?: ActiveToast<any>;
+    #toastRef: ActiveToast<any> | null = null;
 
     constructor() {
         this.#updates.versionUpdates
@@ -20,7 +20,7 @@ export class UpdateService {
                 filter(e => e.type === "VERSION_DETECTED"))
             .subscribe(() => {
                 this.#logging.log("swUpdate", "New version was detected on the server.");
-                if (this.#toastRef === undefined || this.#toastRef.toastRef.isInactive()) {
+                if (this.#toastRef === null || this.#toastRef.toastRef.isInactive()) {
                     this.#toastRef = this.#toastr.show("Updates are being applied. The application will be reloaded.", "Updates", {
                         timeOut: 0,
                     });
