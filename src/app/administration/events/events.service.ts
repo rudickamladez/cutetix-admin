@@ -2,7 +2,7 @@ import { HttpClient, HttpResourceRef, httpResource } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Event, EventCapacitySummary } from './events.types';
+import { Event, EventCapacitySummary, EventCreate } from './events.types';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { StorageService } from 'src/app/services/storage.service';
 
@@ -50,7 +50,7 @@ export class EventService {
     });
   }
 
-  public create(event: Event): Observable<Event> {
+  public create(event: EventCreate): Observable<Event> {
     return this.#httpClient.post<Event>(
       this.#endpoint('/'),
       event
@@ -61,7 +61,7 @@ export class EventService {
 
   public update(
     id: string,
-    body: Event
+    body: EventCreate
   ): Observable<Event> {
     return this.#httpClient.patch<Event>(
       this.#endpoint(`/${id}/`),

@@ -15,9 +15,9 @@ export class DashboardEventOverviewComponent {
     readonly #toastr = inject(ToastrService);
     readonly #logging = inject(LoggingService)
 
-    readonly event_id = input<string>();
-    readonly event = this.#eventService.eventByIdResource(() => this.event_id());
-    readonly eventCapacitySummary = this.#eventService.eventCapacitySummaryByIdResource(() => this.event_id());
+    readonly event_id = input.required<string>();
+    protected readonly event = this.#eventService.eventByIdResource(() => this.event_id());
+    protected readonly eventCapacitySummary = this.#eventService.eventCapacitySummaryByIdResource(() => this.event_id());
     #eventErrorShown = false;
     #summaryErrorShown = false;
 
@@ -69,41 +69,6 @@ export class DashboardEventOverviewComponent {
                 }
             );
         });
-    }
-
-    get freeTickets() {
-        if (!this.event_id() || !this.event.value()) {
-            return 0;
-        }
-        return this.eventCapacitySummary.value()?.free ?? 0;
-    }
-
-    get reservedTickets() {
-        if (!this.event_id() || !this.event.value()) {
-            return 0;
-        }
-        return this.eventCapacitySummary.value()?.reserved ?? 0;
-    }
-
-    get cancelledTickets() {
-        if (!this.event_id() || !this.event.value()) {
-            return 0;
-        }
-        return this.eventCapacitySummary.value()?.cancelled ?? 0;
-    }
-
-    get totalTickets() {
-        if (!this.event_id() || !this.event.value()) {
-            return 0;
-        }
-        return this.eventCapacitySummary.value()?.total ?? 0;
-    }
-
-    get paidTickets() {
-        if (!this.event_id() || !this.event.value()) {
-            return 0;
-        }
-        return this.eventCapacitySummary.value()?.paid ?? 0;
     }
 
     protected eventErrorText() {

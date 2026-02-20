@@ -34,7 +34,7 @@ export class EventsFormComponent {
   public title: string = 'New event';
   public editButtonEnabled: boolean = true;
   public editButtonText: string = 'Create';
-  public formMethod: Function = this.createEvent;
+  public formMethod: () => void = this.createEvent;
 
   constructor() {
     // Check detail view
@@ -95,8 +95,6 @@ export class EventsFormComponent {
       });
     }
   }
-
-  ngOnInit(): void {}
 
   public createEvent() {
     this.#eventService.create(
