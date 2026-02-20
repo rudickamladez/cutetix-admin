@@ -296,7 +296,7 @@ export class AuthService implements OnDestroy {
     }
 
     getUsername(): string {
-        return this.getDecodedAccessToken()?.sub || "undefined";
+        return this.getDecodedAccessToken()!.sub!;
     }
 
     getScopes(): string {
