@@ -1,4 +1,4 @@
-import { faCalendarDays, faClock, faTicket } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDays, faClock, faTicket, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem, MenuSubItem } from './menu-items';
 import { IconDefinition } from '@fortawesome/angular-fontawesome';
 
@@ -11,6 +11,7 @@ export class MenuBuilder {
             this.#getMenuItem('Tickets', 'tickets', faTicket, () => this.getTicketsSubItems()),
             this.#getMenuItem('Ticket groups', 'ticket_groups', faClock, () => this.getSubItemsByPath('ticket_groups')),
             this.#getMenuItem('Events', 'events', faCalendarDays, () => this.getSubItemsByPath('events')),
+            this.#getMenuItem('Users', 'users', faUsers, () => this.getUsersSubItems()),
         ].filter(o => o);
     }
 
@@ -27,6 +28,13 @@ export class MenuBuilder {
         const result: MenuSubItem[] = [];
         result.push(new MenuSubItem('List', '/tickets/list'));
         result.push(new MenuSubItem('New', '/tickets/add'));
+        return result;
+    }
+
+    getUsersSubItems(): MenuSubItem[] {
+        const result: MenuSubItem[] = [];
+        result.push(new MenuSubItem('List', '/users/list'));
+        result.push(new MenuSubItem('New', '/users/add'));
         return result;
     }
 
