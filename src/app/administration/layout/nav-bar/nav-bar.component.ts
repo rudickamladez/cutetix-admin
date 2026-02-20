@@ -26,7 +26,10 @@ export class NavBarComponent implements OnInit {
 
     ngOnInit(): void {
         this.menuOpen = history.state.navBarVisible ?? false;
-        this.availableItems = this.builder.build()
+        const canSeeUsersSection = this.#authService.hasAnyScope('users:read', 'users:edit');
+        this.availableItems = this.builder
+            .build()
+            .filter(item => item.link !== 'users' || canSeeUsersSection);
         this.availableItems.unshift(this.dashboardItem);
         this.availableItems.push(
             this.userProfileItem,

@@ -127,16 +127,7 @@ export class UsersListComponent implements OnInit {
   }
 
   private hasScope(scope: string): boolean {
-    const scopes = this.#authService.getScopes();
-    if (!scopes || scopes === 'undefined') {
-      return false;
-    }
-
-    return scopes
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean)
-      .includes(scope);
+    return this.#authService.hasScope(scope);
   }
 
   private applyFilters(): void {

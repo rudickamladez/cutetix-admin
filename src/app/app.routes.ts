@@ -16,6 +16,7 @@ import { UsersListComponent } from './administration/users/list/users-list.compo
 import { UsersFormComponent } from './administration/users/form/users-form.component';
 import { authGuard } from './guards/auth.guard';
 import { logoutGuard } from './guards/logout.guard';
+import { usersSectionGuard } from './guards/users-section.guard';
 
 export const APP_ROUTES: Routes = [
   {
@@ -126,6 +127,7 @@ export const APP_ROUTES: Routes = [
       },
       {
         path: 'users',
+        canActivate: [usersSectionGuard],
         children: [
           {
             path: '',

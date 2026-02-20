@@ -124,7 +124,7 @@ export class UsersFormComponent {
     }
 
     this.#usersService.update(this.userFromDb.uuid, payload).subscribe({
-      next: (user) => {
+      next: (user: AdministrationUser) => {
         this.userFromDb = user;
         this.#toastr.info('Successfully edited.', `User '${user.username}'`, {
           progressBar: true,
@@ -165,6 +165,7 @@ export class UsersFormComponent {
 
     this.#usersService.create(payload).subscribe({
       next: (user) => {
+        console.log(user);
         this.#toastr.info('Successfully created.', `User '${user.username}'`, {
           progressBar: true,
         });
