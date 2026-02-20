@@ -57,6 +57,16 @@ export class TicketGroupsListComponent {
             progressBar: true
           }
         );
+      },
+      error: () => {
+        this.#toastr.error(
+          `<div><b>Ticket group wasn't deleted!</b><br/>An error occurred while deleting the ticket group.</div>`,
+          '',
+          {
+            enableHtml: true,
+            progressBar: true,
+          }
+        );
       }
     });
   }

@@ -51,6 +51,18 @@ export class TicketsListComponent {
             progressBar: true
           }
         );
+      },
+      error: (err) => {
+        const message = err instanceof Error
+          ? err.message
+          : 'An unexpected error occurred while cancelling the ticket.';
+        this.#toastr.error(
+          message,
+          'Ticket DIDN\'T cancelled!',
+          {
+            progressBar: true,
+          }
+        );
       }
     });
   }
@@ -99,6 +111,9 @@ export class TicketsListComponent {
             progressBar: true
           }
         );
+      },
+      error: () => {
+        this.#notDeletedTicketToastr(ticket);
       }
     });
   }
