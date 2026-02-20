@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketGroupService } from '../ticket_groups.service';
 import { ToastrService } from 'ngx-toastr';
@@ -18,8 +18,12 @@ export class TicketGroupsEditComponent {
   readonly #ticket_groupService = inject(TicketGroupService);
   readonly #eventService = inject(EventService);
   readonly #toastr = inject(ToastrService);
+  readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
+  readonly #ticketGroupResource = this.#ticket_groupService.ticketGroupByIdResource(() => this.#id());
+  #loadErrorShown = false;
+  #loadSuccessShown = false;
 
-  public id: string | null;
+  public readonly id = this.#id();
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
     capacity: new FormControl(0, Validators.required),
@@ -27,6 +31,7 @@ export class TicketGroupsEditComponent {
   });
   public showDetail: boolean = false;
   protected readonly eventsResource = this.#eventService.events;
+  protected readonly ticketGroup = this.#ticketGroupResource;
 
   constructor() {
     // Check detail view
@@ -37,11 +42,10 @@ export class TicketGroupsEditComponent {
       // this.form.get('sumbit')?.disable();
     }
 
-    // Get ID from query
-    this.id = this.#route.snapshot.paramMap.get('id');
     if (this.id == null) {
       this.form.get('name')?.disable();
       this.form.get('capacity')?.disable();
+      this.form.get('eventId')?.disable();
       this.#toastr.error(
         'Cannot load',
         'Ticket group',
@@ -49,50 +53,59 @@ export class TicketGroupsEditComponent {
           progressBar: true,
         }
       );
-      return
+      return;
     }
 
-    // Load ticket_group object from database
-    this.#ticket_groupService.getById(this.id).subscribe({
-      // Success
-      next: (ticket_group) => {
+    effect(() => {
+      const ticket_group = this.#ticketGroupResource.value();
+      if (!ticket_group) {
+        return;
+      }
+      if (!this.#loadSuccessShown) {
+        this.#loadSuccessShown = true;
         this.#toastr.info(
           'Loaded successfully.',
           'Ticket group',
           {
             progressBar: true
           }
-        )
-        this.form.setValue({
-          name: ticket_group.name,
-          capacity: ticket_group.capacity,
-          eventId: ticket_group.event_id,
-        });
-      },
-      // Error
-      error: (err) => {
-        this.form.get('name')?.disable();
-        this.form.get('capacity')?.disable();
-        this.form.get('eventId')?.disable();
-        this.#toastr.error(
-          err.message,
-          'Cannot load ticket group',
-          {
-            progressBar: true,
-          }
         );
-        return
       }
+      this.form.setValue({
+        name: ticket_group.name,
+        capacity: ticket_group.capacity,
+        eventId: ticket_group.event_id,
+      });
+    });
+
+    effect(() => {
+      const err = this.#ticketGroupResource.error();
+      if (!err || this.#loadErrorShown) {
+        return;
+      }
+      this.#loadErrorShown = true;
+      this.form.get('name')?.disable();
+      this.form.get('capacity')?.disable();
+      this.form.get('eventId')?.disable();
+      const msg = err instanceof Error ? err.message : String(err);
+      this.#toastr.error(
+        msg,
+        'Cannot load ticket group',
+        {
+          progressBar: true,
+        }
+      );
+      return;
     });
   }
 
-  ngOnInit(): void {
-    this.eventsResource.reload();
-  }
-
   public editTicketGroup() {
+    const id = this.#id();
+    if (!id) {
+      return;
+    }
     this.#ticket_groupService.update(
-      this.id || '',
+      id,
       {
         name: this.form.value.name || '',
         capacity: this.form.value.capacity || 0,
@@ -123,5 +136,16 @@ export class TicketGroupsEditComponent {
 
   protected events(): Array<Event> {
     return this.eventsResource.value();
+  }
+
+  protected ticketGroupLoadErrorText(): string {
+    const err = this.ticketGroup.error();
+    if (!err) {
+      return '';
+    }
+    if (err instanceof Error) {
+      return err.message;
+    }
+    return String(err);
   }
 }
