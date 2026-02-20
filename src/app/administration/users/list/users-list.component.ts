@@ -77,7 +77,7 @@ export class UsersListComponent implements OnInit {
     if (!user.uuid) {
       this.#toastr.error(
         `Cannot delete user '${user.username}'. Missing UUID.`,
-        'User DIDN\'T deleted!',
+        'User NOT deleted!',
         {
           progressBar: true,
         }

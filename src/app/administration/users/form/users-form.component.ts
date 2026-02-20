@@ -165,7 +165,7 @@ export class UsersFormComponent {
 
     this.#usersService.create(payload).subscribe({
       next: (user) => {
-        console.log(user);
+
         this.#toastr.info('Successfully created.', `User '${user.username}'`, {
           progressBar: true,
         });
@@ -182,7 +182,7 @@ export class UsersFormComponent {
 
   private parseScopes(scopesInput: string): string[] {
     return scopesInput
-      .split(',')
+      .split(/[,\s]+/)
       .map(scope => scope.trim())
       .filter(scope => scope.length > 0);
   }
