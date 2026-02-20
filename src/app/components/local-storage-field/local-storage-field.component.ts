@@ -13,7 +13,7 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
 })
 export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   readonly #storageService = inject(StorageService);
-  #destroy$ = new Subject<void>();
+  readonly #destroy$ = new Subject<void>();
 
   @Input({ required: true }) key!: StorageKeys;
   @Input() label = 'Value';
