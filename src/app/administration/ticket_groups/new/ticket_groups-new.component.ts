@@ -23,14 +23,10 @@ export class TicketGroupsNewComponent implements OnInit{
     capacity: new FormControl(0, Validators.required),
     eventId: new FormControl(1, Validators.required)
   });
-  public events: Array<Event> = [];
+  protected readonly eventsResource = this.#eventService.events;
 
   ngOnInit(): void {
-    this.#eventService.get().subscribe({
-      next: (events) => {
-        this.events = events;
-      }
-    })
+    this.eventsResource.reload();
   }
 
   public newTicketGroup() {
@@ -59,5 +55,9 @@ export class TicketGroupsNewComponent implements OnInit{
         )
       }
     })
+  }
+
+  protected events(): Array<Event> {
+    return this.eventsResource.value();
   }
 }

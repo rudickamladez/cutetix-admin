@@ -1,16 +1,16 @@
-@if (this.loadingState > 0) {
+@if (events.isLoading()) {
 <app-loading></app-loading>
 }
 <div>
-  @if (this.errorLoading.enabled) {
+  @if (events.error()) {
   <div class="error">
     <p>
       There's problem loading table.<br />
-      {{ this.errorLoading.text }}
+      {{ loadErrorText() }}
     </p>
   </div>
   }
-  @if (!this.errorLoading.enabled) {
+  @if (!events.error()) {
   <table>
     <thead>
       <tr>
@@ -22,7 +22,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (event of events; track event) {
+      @for (event of events.value(); track event) {
       <tr>
         <td>{{ event.name }}</td>
         <!-- so hidden column with IDs is second -->

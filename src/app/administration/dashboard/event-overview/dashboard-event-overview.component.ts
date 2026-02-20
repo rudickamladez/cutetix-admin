@@ -1,8 +1,7 @@
-import { Component, inject, Input, OnInit } from "@angular/core";
+import { Component, effect, inject, input } from "@angular/core";
 import { faCoins, faPlus, faTicket, faTicketAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from "ngx-toastr";
 import { EventService } from "../../events/events.service";
-import { Event, EventCapacitySummary } from "../../events/events.types";
 import { LoggingService } from "src/app/services/logging.service";
 
 @Component({
@@ -11,13 +10,16 @@ import { LoggingService } from "src/app/services/logging.service";
     styleUrls: ['./dashboard-event-overview.component.scss'],
     standalone: false,
 })
-export class DashboardEventOverviewComponent implements OnInit {
+export class DashboardEventOverviewComponent {
     readonly #eventService = inject(EventService);
     readonly #toastr = inject(ToastrService);
     readonly #logging = inject(LoggingService)
 
-    event?: Event;
-    eventCapacitySummary?: EventCapacitySummary;
+    readonly event_id = input<string>();
+    readonly event = this.#eventService.eventByIdResource(() => this.event_id());
+    readonly eventCapacitySummary = this.#eventService.eventCapacitySummaryByIdResource(() => this.event_id());
+    #eventErrorShown = false;
+    #summaryErrorShown = false;
 
     // icons
     protected readonly paidTicketsIcon = faCoins;
@@ -25,94 +27,95 @@ export class DashboardEventOverviewComponent implements OnInit {
     protected readonly totalTicketsIcon = faTicketAlt;
     protected readonly freeTicketsIcon = faPlus;
     protected readonly cancelledTicketsIcon = faTimes;
-    @Input() event_id?: string;
-
-    constructor(
-    ) { }
-
-    ngOnInit(): void {
-        this.#eventService.getById(this.event_id!).subscribe({
-            // success
-            next: (event_from_api) => {
-                this.event = event_from_api;
-
-                // continue only when event exists
-                this.#eventService.capacitySummaryById(this.event_id!).subscribe({
-                    // success
-                    next: (eventCapacitySum) => {
-                        this.eventCapacitySummary = eventCapacitySum;
-                        this.#logging.log(
-                            "dashboardEventLoad",
-                            `Loaded successfully capacity summary for ${this.event?.name}`,
-                        );
-                    },
-                    // error
-                    error: (err) => {
-                        this.#logging.error(
-                            "dashboardEventLoad",
-                            `Cannot load event capacity summary for ${this.event?.name}`,
-                        );
-                        this.#toastr.error(
-                            err.message,
-                            'Cannot load event capacity summary',
-                            {
-                                progressBar: true,
-                            }
-                        );
-                        return
-                    }
-                })
-            },
-            // error
-            error: (err) => {
-                this.#logging.error(
-                    "dashboardEventLoad",
-                    `Cannot load event capacity summary for event with ID: ${this.event_id}`,
-                );
-                this.#toastr.error(
-                    err.message,
-                    'Cannot load event',
-                    {
-                        progressBar: true,
-                    }
-                );
-                return
+    constructor() {
+        effect(() => {
+            const eventErr = this.event.error();
+            if (!eventErr || this.#eventErrorShown) {
+                return;
             }
-        })
+            this.#eventErrorShown = true;
+
+            const msg = eventErr instanceof Error ? eventErr.message : String(eventErr);
+            this.#logging.error(
+                "dashboardEventLoad",
+                `Cannot load event for event with ID: ${this.event_id()}`,
+            );
+            this.#toastr.error(
+                msg,
+                'Cannot load event',
+                {
+                    progressBar: true,
+                }
+            );
+        });
+
+        effect(() => {
+            const summaryErr = this.eventCapacitySummary.error();
+            if (!summaryErr || this.#summaryErrorShown) {
+                return;
+            }
+            this.#summaryErrorShown = true;
+
+            const msg = summaryErr instanceof Error ? summaryErr.message : String(summaryErr);
+            this.#logging.error(
+                "dashboardEventLoad",
+                `Cannot load event capacity summary for ${this.event.value()?.name}`,
+            );
+            this.#toastr.error(
+                msg,
+                'Cannot load event capacity summary',
+                {
+                    progressBar: true,
+                }
+            );
+        });
     }
 
     get freeTickets() {
-        if (!this.event_id || !this.event) {
+        if (!this.event_id() || !this.event.value()) {
             return 0;
         }
-        return this.eventCapacitySummary?.free;
+        return this.eventCapacitySummary.value()?.free ?? 0;
     }
 
     get reservedTickets() {
-        if (!this.event_id || !this.event) {
+        if (!this.event_id() || !this.event.value()) {
             return 0;
         }
-        return this.eventCapacitySummary?.reserved;
+        return this.eventCapacitySummary.value()?.reserved ?? 0;
     }
 
     get cancelledTickets() {
-        if (!this.event_id || !this.event) {
+        if (!this.event_id() || !this.event.value()) {
             return 0;
         }
-        return this.eventCapacitySummary?.cancelled
+        return this.eventCapacitySummary.value()?.cancelled ?? 0;
     }
 
     get totalTickets() {
-        if (!this.event_id || !this.event) {
+        if (!this.event_id() || !this.event.value()) {
             return 0;
         }
-        return this.eventCapacitySummary?.total
+        return this.eventCapacitySummary.value()?.total ?? 0;
     }
 
     get paidTickets() {
-        if (!this.event_id || !this.event) {
+        if (!this.event_id() || !this.event.value()) {
             return 0;
         }
-        return this.eventCapacitySummary?.paid
+        return this.eventCapacitySummary.value()?.paid ?? 0;
+    }
+
+    protected eventErrorText() {
+        const eventErr = this.event.error();
+        if (eventErr) {
+            return eventErr instanceof Error ? eventErr.message : String(eventErr);
+        }
+
+        const summaryErr = this.eventCapacitySummary.error();
+        if (!summaryErr) {
+            return '';
+        }
+        return summaryErr instanceof Error ? summaryErr.message : String(summaryErr);
     }
 }

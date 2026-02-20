@@ -1,5 +1,11 @@
 <div class="container">
-  <h1 class="title">{{ event?.name ?? "Event not found" }}</h1>
+  @if (event.isLoading()) {
+    <p>Loading event...</p>
+  }
+  @if (event.error() || eventCapacitySummary.error()) {
+    <p>{{ eventErrorText() }}</p>
+  }
+  <h1 class="title">{{ event.value()?.name ?? "Event not found" }}</h1>
   <div class="cards">
     <div class="card">
       <p>Free tickets</p>

@@ -26,7 +26,7 @@ export class TicketGroupsEditComponent {
     eventId: new FormControl(0, Validators.required),
   });
   public showDetail: boolean = false;
-  public events: Array<Event> = [];
+  protected readonly eventsResource = this.#eventService.events;
 
   constructor() {
     // Check detail view
@@ -87,11 +87,7 @@ export class TicketGroupsEditComponent {
   }
 
   ngOnInit(): void {
-    this.#eventService.get().subscribe({
-      next: (events) => {
-        this.events = events;
-      }
-    })
+    this.eventsResource.reload();
   }
 
   public editTicketGroup() {
@@ -123,5 +119,9 @@ export class TicketGroupsEditComponent {
         )
       }
     })
+  }
+
+  protected events(): Array<Event> {
+    return this.eventsResource.value();
   }
 }

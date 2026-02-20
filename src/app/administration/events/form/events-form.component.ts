@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../events.service';
 import { ToastrService } from 'ngx-toastr';
@@ -15,8 +15,12 @@ export class EventsFormComponent {
   readonly #route = inject(ActivatedRoute);
   readonly #eventService = inject(EventService);
   readonly #toastr = inject(ToastrService);
+  readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
+  readonly #eventResource = this.#eventService.eventByIdResource(() => this.#id());
+  #loadErrorShown = false;
 
-  public id: string | null;
+  public readonly event = this.#eventResource;
+  public readonly isEditing = this.#id() != null;
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
     ticketsSalesStart: new FormControl(new Date().toISOString().substring(0, 16), Validators.required),
@@ -50,38 +54,34 @@ export class EventsFormComponent {
       this.form.get('mailHtmlCancelledTicket')?.disable();
     }
 
-    // Get ID from query
-    this.id = this.#route.snapshot.paramMap.get('id');
-    
     // Editing event
-    if (this.id != null) {
+    if (this.isEditing) {
       // Update form submit method
       this.formMethod = this.editEvent;
 
-      // Load event object from database
-      this.#eventService.getById(this.id).subscribe({
-        // Success
-        next: (event) => {
-          this.#toastr.info(
-            'Loaded successfully.',
-            'Event',
-            {
-              progressBar: true
-            }
-          )
-          this.form.setValue({
-            name: event.name,
-            ticketsSalesStart: event.tickets_sales_start,
-            ticketsSalesEnd: event.tickets_sales_end,
-            smtpMailFrom: event.smtp_mail_from,
-            mailTextNewTicket: event.mail_text_new_ticket,
-            mailHtmlNewTicket: event.mail_html_new_ticket,
-            mailTextCancelledTicket: event.mail_text_cancelled_ticket,
-            mailHtmlCancelledTicket: event.mail_html_cancelled_ticket,
-          });
-        },
-        // Error
-        error: (err) => {
+      effect(() => {
+        const event = this.#eventResource.value();
+        if (!event) {
+          return;
+        }
+        this.form.setValue({
+          name: event.name,
+          ticketsSalesStart: event.tickets_sales_start,
+          ticketsSalesEnd: event.tickets_sales_end,
+          smtpMailFrom: event.smtp_mail_from,
+          mailTextNewTicket: event.mail_text_new_ticket,
+          mailHtmlNewTicket: event.mail_html_new_ticket,
+          mailTextCancelledTicket: event.mail_text_cancelled_ticket,
+          mailHtmlCancelledTicket: event.mail_html_cancelled_ticket,
+        });
+      });
+
+      effect(() => {
+        const err = this.#eventResource.error();
+        if (!err || this.#loadErrorShown) {
+          return;
+        }
+        this.#loadErrorShown = true;
           this.form.get('name')?.disable();
           this.form.get('ticketsSalesStart')?.disable();
           this.form.get('ticketsSalesEnd')?.disable();
@@ -92,8 +92,6 @@ export class EventsFormComponent {
               progressBar: true,
             }
           );
-          return
-        }
       });
     }
   }
@@ -136,8 +134,12 @@ export class EventsFormComponent {
   }
 
   public editEvent() {
+    const id = this.#id();
+    if (!id) {
+      return;
+    }
     this.#eventService.update(
-      this.id || '',
+      id,
       {
         name: this.form.value.name || '',
         tickets_sales_start: this.form.value.ticketsSalesStart || new Date().toISOString().substring(0, 16),
@@ -169,5 +171,16 @@ export class EventsFormComponent {
         )
       }
     })
+  }
+
+  protected loadErrorText(): string {
+    const err = this.event.error();
+    if (!err) {
+      return '';
+    }
+    if (err instanceof Error) {
+      return err.message;
+    }
+    return String(err);
   }
 }

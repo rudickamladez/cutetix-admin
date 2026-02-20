@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { EventService } from '../events.service';
 import { Event } from '../events.types';
 import { faPen, faStar, faStarHalfStroke, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -12,41 +12,14 @@ import { UsersService } from 'src/app/services/users.service';
   styleUrls: ['./events-list.component.scss'],
   standalone: false
 })
-export class EventsListComponent implements OnInit {
+export class EventsListComponent {
   readonly #eventsService = inject(EventService);
   readonly #usersService = inject(UsersService);
   readonly #toastr = inject(ToastrService);
   readonly #router = inject(Router);
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
-  public events: Event[] = [];
-  public loadingState = 1;
-  public errorLoading = {
-    enabled: false,
-    text: '',
-  };
-
-  ngOnInit(): void {
-    this.#eventsService.get().subscribe({
-      next: (events) => {
-        this.errorLoading.enabled = false;
-        this.events = events;
-        this.loadingState--;
-      },
-      error: (err) => {
-        console.error(err);
-        this.errorLoading.enabled = true;
-        this.errorLoading.text = err.message;
-        this.loadingState--;
-      },
-    });
-
-    this.#eventsService.deleteAsObservable().subscribe(
-      (event) => {
-        this.events.splice(this.events.indexOf(event), 1);
-      }
-    );
-  }
+  protected readonly events = this.#eventsService.events;
 
   favoriteIcon(eventId: string) {
     if (this.#usersService.isEventFavorited(eventId)) {
@@ -99,5 +72,16 @@ export class EventsListComponent implements OnInit {
     //     );
     //   }
     // )
+  }
+
+  protected loadErrorText(): string {
+    const err = this.events.error();
+    if (!err) {
+      return '';
+    }
+    if (err instanceof Error) {
+      return err.message;
+    }
+    return String(err);
   }
 }
