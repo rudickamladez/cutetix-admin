@@ -10,7 +10,7 @@ import { UsersService } from 'src/app/services/users.service';
   standalone: false
 })
 export class LoggedUserComponent {
-  private document = inject<Document>(DOCUMENT);
+  readonly #document = inject<Document>(DOCUMENT);
 
   protected readonly authService = inject(AuthService);
   protected readonly usersService = inject(UsersService);
@@ -22,8 +22,8 @@ export class LoggedUserComponent {
   protected readonly myProfileIcon = faUser;
 
   protected toggleTheme() {
-    this.document.body.classList.toggle('light');
-    this.document.body.classList.toggle('alt-font');
+    this.#document.body.classList.toggle('light');
+    this.#document.body.classList.toggle('alt-font');
   }
 
 }

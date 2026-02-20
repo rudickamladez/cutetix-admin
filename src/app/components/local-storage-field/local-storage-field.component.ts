@@ -13,7 +13,7 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
 })
 export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   readonly #storageService = inject(StorageService);
-  private destroy$ = new Subject<void>();
+  #destroy$ = new Subject<void>();
 
   @Input({ required: true }) key!: StorageKeys;
   @Input() label = 'Value';
@@ -41,33 +41,33 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
     const delay = this.autosave ? (this.isCheckbox ? 0 : this.autosaveDebounce) : 0;
 
     this.ctrl.valueChanges
-      .pipe(debounceTime(delay), distinctUntilChanged(), takeUntil(this.destroy$))
+      .pipe(debounceTime(delay), distinctUntilChanged(), takeUntil(this.#destroy$))
       .subscribe(val => {
         this.dirty = true;
         if (!this.autosave) return;
-        this.write(val);
+        this.#write(val);
       });
 
     this.#storageService.storageEvent$(this.key)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.#destroy$))
       .subscribe(e => {
         const incoming = this.isCheckbox ? this.#toBool(e.currentValue) : (e.currentValue ?? '');
         if (this.ctrl.value !== incoming) {
           this.ctrl.setValue(incoming as any, { emitEvent: false });
           this.dirty = false;
-          this.flashStatus(e.action === 'delete' ? 'Deleted from storage' : 'Updated from storage');
+          this.#flashStatus(e.action === 'delete' ? 'Deleted from storage' : 'Updated from storage');
         }
       });
   }
 
-  saveNow() { this.write(this.ctrl.value); }
+  saveNow() { this.#write(this.ctrl.value); }
 
   resetToStored() {
     const current = this.#storageService.get(this.key);
     const val = this.isCheckbox ? this.#toBool(current) : (current ?? '');
     this.ctrl.setValue(val as any, { emitEvent: false });
     this.dirty = false;
-    this.flashStatus('Reverted to stored value');
+    this.#flashStatus('Reverted to stored value');
   }
 
   // TODO
@@ -78,7 +78,7 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   //   this.flashStatus('Reverted to ENV value');
   // }
 
-  private write(val: string | boolean | null | undefined) {
+  #write(val: string | boolean | null | undefined) {
     if (this.isCheckbox) {
       const b = this.#toBool(val);
       this.#storageService.set(this.key, b ? 'true' : 'false'); // kompatibilně jako string
@@ -86,10 +86,10 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
       this.#storageService.set(this.key, (val ?? '').toString());
     }
     this.dirty = false;
-    this.flashStatus('Saved');
+    this.#flashStatus('Saved');
   }
 
-  private flashStatus(text: string) {
+  #flashStatus(text: string) {
     this.status = text;
     setTimeout(() => (this.status = ''), 1200);
   }
@@ -105,5 +105,5 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
+  ngOnDestroy(): void { this.#destroy$.next(); this.#destroy$.complete(); }
 }

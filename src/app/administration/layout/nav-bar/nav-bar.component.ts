@@ -11,7 +11,7 @@ import { faBars, faChartLine, faSignOutAlt, faTimes, faUser } from '@fortawesome
     standalone: false
 })
 export class NavBarComponent implements OnInit {
-    private authService = inject(AuthService);
+    readonly #authService = inject(AuthService);
 
     dashboardItem = new MenuItem('Dashboard', 'dashboard', faChartLine);
     userProfileItem = new MenuItem('My profile', 'profile', faUser);
@@ -43,6 +43,6 @@ export class NavBarComponent implements OnInit {
     }
 
     logout(): void {
-        this.authService.logout();
+        this.#authService.logout();
     }
 }

@@ -8,9 +8,9 @@ export class MenuBuilder {
     build(): MenuItem[] {
 
         return [
-            this.getMenuItem('Tickets', 'tickets', faTicket, () => this.getTicketsSubItems()),
-            this.getMenuItem('Ticket groups', 'ticket_groups', faClock, () => this.getSubItemsByPath('ticket_groups')),
-            this.getMenuItem('Events', 'events', faCalendarDays, () => this.getSubItemsByPath('events')),
+            this.#getMenuItem('Tickets', 'tickets', faTicket, () => this.getTicketsSubItems()),
+            this.#getMenuItem('Ticket groups', 'ticket_groups', faClock, () => this.getSubItemsByPath('ticket_groups')),
+            this.#getMenuItem('Events', 'events', faCalendarDays, () => this.getSubItemsByPath('events')),
         ].filter(o => o);
     }
 
@@ -30,7 +30,7 @@ export class MenuBuilder {
         return result;
     }
 
-    private getMenuItem(
+    #getMenuItem(
         name: string, defaultLink: string, icon: IconDefinition, getSubItems: () => MenuSubItem[]
     ): MenuItem {
         const menuItem = new MenuItem(name, defaultLink, icon);

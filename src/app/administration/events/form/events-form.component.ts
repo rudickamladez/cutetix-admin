@@ -11,10 +11,10 @@ import { ActivatedRoute, Router } from '@angular/router';
     standalone: false
 })
 export class EventsFormComponent {
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private eventService = inject(EventService);
-  private toastr = inject(ToastrService);
+  readonly #router = inject(Router);
+  readonly #route = inject(ActivatedRoute);
+  readonly #eventService = inject(EventService);
+  readonly #toastr = inject(ToastrService);
 
   public id: string | null;
   public form = new FormGroup({
@@ -34,10 +34,10 @@ export class EventsFormComponent {
 
   constructor() {
     // Check detail view
-    if (this.router.url.includes('edit')) {
+    if (this.#router.url.includes('edit')) {
       this.title = 'Event edit'
       this.editButtonText = 'Edit';
-    } else if (this.router.url.includes('detail')) {
+    } else if (this.#router.url.includes('detail')) {
       this.title = 'Event detail';
       this.editButtonEnabled = false;
       this.form.get('name')?.disable();
@@ -51,7 +51,7 @@ export class EventsFormComponent {
     }
 
     // Get ID from query
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.id = this.#route.snapshot.paramMap.get('id');
     
     // Editing event
     if (this.id != null) {
@@ -59,10 +59,10 @@ export class EventsFormComponent {
       this.formMethod = this.editEvent;
 
       // Load event object from database
-      this.eventService.getById(this.id).subscribe({
+      this.#eventService.getById(this.id).subscribe({
         // Success
         next: (event) => {
-          this.toastr.info(
+          this.#toastr.info(
             'Loaded successfully.',
             'Event',
             {
@@ -85,7 +85,7 @@ export class EventsFormComponent {
           this.form.get('name')?.disable();
           this.form.get('ticketsSalesStart')?.disable();
           this.form.get('ticketsSalesEnd')?.disable();
-          this.toastr.error(
+          this.#toastr.error(
             err.message,
             'Cannot load ticket group',
             {
@@ -101,7 +101,7 @@ export class EventsFormComponent {
   ngOnInit(): void {}
 
   public createEvent() {
-    this.eventService.create(
+    this.#eventService.create(
       {
         name: this.form.value.name || '',
         tickets_sales_start: this.form.value.ticketsSalesStart || new Date().toISOString().substring(0, 16),
@@ -114,17 +114,17 @@ export class EventsFormComponent {
       }
     ).subscribe({
       next: (event) => {
-        this.toastr.info(
+        this.#toastr.info(
           'Successfully created.',
           `Event called '${event.name}'`,
           {
             progressBar: true
           }
         );
-        this.router.navigate(['/events/detail/' + event.id]);
+        this.#router.navigate(['/events/detail/' + event.id]);
       },
       error: (err) => {
-        this.toastr.error(
+        this.#toastr.error(
           `NOT CREATED! Error: ${err.message}`,
           'Event',
           {
@@ -136,7 +136,7 @@ export class EventsFormComponent {
   }
 
   public editEvent() {
-    this.eventService.update(
+    this.#eventService.update(
       this.id || '',
       {
         name: this.form.value.name || '',
@@ -150,17 +150,17 @@ export class EventsFormComponent {
       }
     ).subscribe({
       next: (event) => {
-        this.toastr.info(
+        this.#toastr.info(
           'Successfully edited.',
           `Event called '${event.name}'`,
           {
             progressBar: true
           }
         );
-        this.router.navigate(['/events/detail/' + event.id]);
+        this.#router.navigate(['/events/detail/' + event.id]);
       },
       error: (err) => {
-        this.toastr.error(
+        this.#toastr.error(
           `NOT EDITED! Error: ${err.message}`,
           'Event',
           {

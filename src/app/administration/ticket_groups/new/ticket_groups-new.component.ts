@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketGroupService } from '../ticket_groups.service';
 import { ToastrService } from 'ngx-toastr';
@@ -12,11 +12,11 @@ import { Event } from '../../events/events.types';
     styleUrls: ['./ticket_groups-new.component.scss'],
     standalone: false
 })
-export class TicketGroupsNewComponent {
-  private router = inject(Router);
-  private ticket_groupService = inject(TicketGroupService);
-  private eventService = inject(EventService);
-  private toastr = inject(ToastrService);
+export class TicketGroupsNewComponent implements OnInit{
+  readonly #router = inject(Router);
+  readonly #ticket_groupService = inject(TicketGroupService);
+  readonly #eventService = inject(EventService);
+  readonly #toastr = inject(ToastrService);
 
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -26,7 +26,7 @@ export class TicketGroupsNewComponent {
   public events: Array<Event> = [];
 
   ngOnInit(): void {
-    this.eventService.get().subscribe({
+    this.#eventService.get().subscribe({
       next: (events) => {
         this.events = events;
       }
@@ -34,23 +34,23 @@ export class TicketGroupsNewComponent {
   }
 
   public newTicketGroup() {
-    this.ticket_groupService.create({
+    this.#ticket_groupService.create({
       name: this.form.value.name || '',
       capacity: this.form.value.capacity || 0,
       event_id: this.form.value.eventId || 0
     }).subscribe({
       next: (ticket_group) => {
-        this.toastr.info(
+        this.#toastr.info(
           'Successfully created.',
           `TicketGroup called '${ticket_group.name}'`,
           {
             progressBar: true
           }
         );
-        this.router.navigate(['/ticket_groups/list']);
+        this.#router.navigate(['/ticket_groups/list']);
       },
       error: (err) => {
-        this.toastr.error(
+        this.#toastr.error(
           `NOT CREATED! Error: ${err.message}`,
           'TicketGroup',
           {

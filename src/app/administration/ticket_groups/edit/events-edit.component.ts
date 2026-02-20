@@ -13,11 +13,11 @@ import { Event } from '../../events/events.types';
     standalone: false
 })
 export class TicketGroupsEditComponent {
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private ticket_groupService = inject(TicketGroupService);
-  private eventService = inject(EventService);
-  private toastr = inject(ToastrService);
+  readonly #router = inject(Router);
+  readonly #route = inject(ActivatedRoute);
+  readonly #ticket_groupService = inject(TicketGroupService);
+  readonly #eventService = inject(EventService);
+  readonly #toastr = inject(ToastrService);
 
   public id: string | null;
   public form = new FormGroup({
@@ -30,7 +30,7 @@ export class TicketGroupsEditComponent {
 
   constructor() {
     // Check detail view
-    if (this.router.url.includes('detail')) {
+    if (this.#router.url.includes('detail')) {
       this.showDetail = true;
       this.form.get('name')?.disable();
       this.form.get('capacity')?.disable();
@@ -38,11 +38,11 @@ export class TicketGroupsEditComponent {
     }
 
     // Get ID from query
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.id = this.#route.snapshot.paramMap.get('id');
     if (this.id == null) {
       this.form.get('name')?.disable();
       this.form.get('capacity')?.disable();
-      this.toastr.error(
+      this.#toastr.error(
         'Cannot load',
         'Ticket group',
         {
@@ -53,10 +53,10 @@ export class TicketGroupsEditComponent {
     }
 
     // Load ticket_group object from database
-    this.ticket_groupService.getById(this.id).subscribe({
+    this.#ticket_groupService.getById(this.id).subscribe({
       // Success
       next: (ticket_group) => {
-        this.toastr.info(
+        this.#toastr.info(
           'Loaded successfully.',
           'Ticket group',
           {
@@ -74,7 +74,7 @@ export class TicketGroupsEditComponent {
         this.form.get('name')?.disable();
         this.form.get('capacity')?.disable();
         this.form.get('eventId')?.disable();
-        this.toastr.error(
+        this.#toastr.error(
           err.message,
           'Cannot load ticket group',
           {
@@ -87,7 +87,7 @@ export class TicketGroupsEditComponent {
   }
 
   ngOnInit(): void {
-    this.eventService.get().subscribe({
+    this.#eventService.get().subscribe({
       next: (events) => {
         this.events = events;
       }
@@ -95,7 +95,7 @@ export class TicketGroupsEditComponent {
   }
 
   public editTicketGroup() {
-    this.ticket_groupService.update(
+    this.#ticket_groupService.update(
       this.id || '',
       {
         name: this.form.value.name || '',
@@ -104,17 +104,17 @@ export class TicketGroupsEditComponent {
       }
     ).subscribe({
       next: (ticket_group) => {
-        this.toastr.info(
+        this.#toastr.info(
           'Successfully edited.',
           `TicketGroup called '${ticket_group.name}'`,
           {
             progressBar: true
           }
         );
-        this.router.navigate(['/ticket_groups/list']);
+        this.#router.navigate(['/ticket_groups/list']);
       },
       error: (err) => {
-        this.toastr.error(
+        this.#toastr.error(
           `NOT EDITED! Error: ${err.message}`,
           'TicketGroup',
           {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketService } from '../tickets.service';
 import { ToastrService } from 'ngx-toastr';
@@ -13,11 +13,11 @@ import { TicketStatusEnum } from '../tickets.types';
     styleUrls: ['./tickets-new.component.scss'],
     standalone: false
 })
-export class TicketsNewComponent {
-  private router = inject(Router);
-  private ticketService = inject(TicketService);
-  private ticketgroupService = inject(TicketGroupService);
-  private toastr = inject(ToastrService);
+export class TicketsNewComponent implements OnInit {
+  readonly #router = inject(Router);
+  readonly #ticketService = inject(TicketService);
+  readonly #ticketgroupService = inject(TicketGroupService);
+  readonly #toastr = inject(ToastrService);
 
   public form = new FormGroup({
     firstname: new FormControl('', Validators.required),
@@ -30,7 +30,7 @@ export class TicketsNewComponent {
   public groups: Array<TicketGroup> = [];
 
   ngOnInit(): void {
-    this.ticketgroupService.get().subscribe({
+    this.#ticketgroupService.get().subscribe({
       next: (ticket_groups) => {
         this.groups = ticket_groups;
       }
@@ -38,7 +38,7 @@ export class TicketsNewComponent {
   }
 
   public newTicketGroup() {
-    this.ticketService.create({
+    this.#ticketService.create({
       firstname: this.form.value.firstname || '',
       lastname: this.form.value.lastname || '',
       email: this.form.value.email || '',
@@ -46,17 +46,17 @@ export class TicketsNewComponent {
       group_id: this.form.value.groupId || 0
     }).subscribe({
       next: (ticket) => {
-        this.toastr.info(
+        this.#toastr.info(
           'Successfully created.',
           `Ticket for '${ticket.email}'`,
           {
             progressBar: true
           }
         );
-        this.router.navigate(['/tickets/list']);
+        this.#router.navigate(['/tickets/list']);
       },
       error: (err) => {
-        this.toastr.error(
+        this.#toastr.error(
           `NOT CREATED! Error: ${err.message}`,
           'Ticket',
           {
