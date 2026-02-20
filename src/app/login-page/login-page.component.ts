@@ -1,7 +1,6 @@
-import { Component, effect, inject, OnDestroy, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
 import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
@@ -15,7 +14,7 @@ import { faCircleNotch, faCog, faSignInAlt } from '@fortawesome/free-solid-svg-i
 export class LoginPageComponent {
   readonly #auth = inject(AuthService);
   readonly #router = inject(Router);
-  readonly #storageService = inject(StorageService);
+  readonly storageService = inject(StorageService);
 
   public loggingIn: boolean = false;
   public loginFailed: boolean = false;
@@ -30,14 +29,14 @@ export class LoginPageComponent {
   readonly keys = StorageKeys;
 
   // icons
-  loginIcon = faSignInAlt;
-  loadingIcon = faCircleNotch;
-  settingsIcon = faCog;
+  protected readonly loginIcon = faSignInAlt;
+  protected readonly loadingIcon = faCircleNotch;
+  protected readonly settingsIcon = faCog;
 
 
   constructor() {
     // Check if browser is chromium based and version >= 132
-    if (this.#storageService.getBoolean(StorageKeys.BROWSER_CORE_CHECK) === false) {
+    if (this.storageService.getBoolean(StorageKeys.BROWSER_CORE_CHECK) === false) {
       this.canRun.set(true);
     } else {
       // eslint-disable-next-line  @typescript-eslint/no-explicit-any

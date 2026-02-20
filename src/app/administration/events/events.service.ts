@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResourceRef, httpResource } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Event, EventCapacitySummary } from './events.types';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Event, EventCapacitySummary, EventCreate } from './events.types';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { StorageService } from 'src/app/services/storage.service';
 
@@ -10,115 +10,64 @@ import { StorageService } from 'src/app/services/storage.service';
   providedIn: 'root'
 })
 export class EventService {
-  private API_PATH: string = 'events';
+  readonly #httpClient = inject(HttpClient);
+
+  readonly #API_PATH = 'events';
   readonly #storageService = inject(StorageService);
 
-  private eventSource = new Subject<Event>();
+  readonly events = httpResource<Event[]>(
+    () => this.#endpoint('/'),
+    {
+      defaultValue: [],
+    }
+  );
 
-  public asObservable() {
-    return this.eventSource.asObservable();
+  #endpoint(path: string): string {
+    return new URL(`${this.#API_PATH}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
-  public register(event: Event) {
-    this.eventSource.next(event);
+  public eventByIdResource(
+    getId: () => string | null | undefined
+  ): HttpResourceRef<Event | undefined> {
+    return httpResource<Event>(() => {
+      const id = getId();
+      if (!id) {
+        return undefined;
+      }
+      return this.#endpoint(`/${id}/`);
+    });
   }
 
-  private deleteSource = new Subject<Event>();
-
-  public deleteAsObservable() {
-    return this.deleteSource.asObservable();
+  public eventCapacitySummaryByIdResource(
+    getId: () => string | null | undefined
+  ): HttpResourceRef<EventCapacitySummary | undefined> {
+    return httpResource<EventCapacitySummary>(() => {
+      const id = getId();
+      if (!id) {
+        return undefined;
+      }
+      return this.#endpoint(`/capacity_summary/${id}/`);
+    });
   }
 
-  public ticketDelete(event: Event) {
-    this.deleteSource.next(event);
-  }
-
-  constructor(
-    private readonly httpClient: HttpClient
-  ) {
-
-  }
-
-  public get(): Observable<Event[]> {
-    return this.httpClient.get(
-      new URL(`${this.API_PATH}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
-    ).pipe(
-      map(
-        (res: any) => {
-          return res.map(
-            (result: any) => <Event[]>result
-          );
-        }
-      )
-    );
-  }
-
-  public getById(
-    id: string
-  ): Observable<Event> {
-    return this.httpClient.get(
-      new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
-    ).pipe(
-      map(
-        (res: any) => {
-          return <Event>res;
-        }
-      )
-    )
-  }
-
-  public create(event: Event): Observable<Event> {
-    return this.httpClient.post(
-      new URL(`${this.API_PATH}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+  public create(event: EventCreate): Observable<Event> {
+    return this.#httpClient.post<Event>(
+      this.#endpoint('/'),
       event
     ).pipe(
-      map(
-        (res: any) => {
-          return <Event>res;
-        }
-      )
-    )
+      tap(() => this.events.reload())
+    );
   }
 
   public update(
     id: string,
-    body: Event
+    body: EventCreate
   ): Observable<Event> {
-    return this.httpClient.patch(
-      new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+    return this.#httpClient.patch<Event>(
+      this.#endpoint(`/${id}/`),
       body
     ).pipe(
-      map(
-        (res: any) => {
-          return <Event>res;
-        }
-      )
-    )
-  }
-
-  // public delete(id: string): Observable<Event> {
-  //   return this.httpClient.delete(
-  //     new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
-  //   ).pipe(
-  //     map(
-  //       (res: any) => {
-  //         return <Event>res;
-  //       }
-  //     )
-  //   )
-  // }
-
-  public capacitySummaryById(
-    id: string
-  ): Observable<EventCapacitySummary> {
-    return this.httpClient.get(
-      new URL(`${this.API_PATH}/capacity_summary/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
-    ).pipe(
-      map(
-        (res: any) => {
-          return <EventCapacitySummary>res;
-        }
-      )
-    )
+      tap(() => this.events.reload())
+    );
   }
 }

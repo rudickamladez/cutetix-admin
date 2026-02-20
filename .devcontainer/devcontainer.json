@@ -24,8 +24,9 @@
         "Angular.ng-template",
         "dbaeumer.vscode-eslint",
         "PKief.material-icon-theme",
-				"GitHub.vscode-github-actions",
-				"GitHub.vscode-pull-request-github"
+        "GitHub.vscode-github-actions",
+        "GitHub.vscode-pull-request-github",
+        "openai.chatgpt"
       ]
     }
   }

@@ -13,7 +13,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { provideHttpClient, withFetch, withInterceptors } from "@angular/common/http";
 import { authInterceptor } from './interceptors/auth.interceptor';
-import { LocalStorageFieldComponent } from './components/local-storage-field/component';
+import { LocalStorageFieldComponent } from './components/local-storage-field/local-storage-field.component';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from './shared/shared.module';
 import { ServiceWorkerModule } from '@angular/service-worker';

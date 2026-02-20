@@ -1,0 +1,51 @@
+<div class="container">
+  @if (event.isLoading()) {
+    <p>Loading event...</p>
+  }
+  @if (event.error() || eventCapacitySummary.error()) {
+    <p>{{ eventErrorText() }}</p>
+  }
+  <h1 class="title">{{ event.value()?.name ?? "Event not found" }}</h1>
+  @if (event.hasValue() && eventCapacitySummary.hasValue()) {
+    <div class="cards">
+      <div class="card">
+        <p>Free tickets</p>
+        <fa-icon [icon]="freeTicketsIcon"></fa-icon>
+        <span>
+          {{ eventCapacitySummary.value()!.free }}
+        </span>
+      </div>
+      <div class="card paid">
+        <p>Reserved tickets</p>
+        <fa-icon [icon]="reservedTicketsIcon"></fa-icon>
+        <span>
+          {{ eventCapacitySummary.value()!.reserved }}
+        </span>
+      </div>
+      <div class="card cancelled">
+        <p>Cancelled tickets</p>
+        <fa-icon [icon]="cancelledTicketsIcon"></fa-icon>
+        <span>
+          {{ eventCapacitySummary.value()!.cancelled }}
+        </span>
+      </div>
+      <div class="card">
+        <p>Total tickets</p>
+        <fa-icon [icon]="totalTicketsIcon"></fa-icon>
+        <span>
+          {{ eventCapacitySummary.value()!.total }}
+        </span>
+      </div>
+      @let paid = eventCapacitySummary.value()!.paid;
+      @if (paid > 0) {
+        <div class="card disabled paid">
+          <p>Paid tickets</p>
+          <fa-icon [icon]="paidTicketsIcon"></fa-icon>
+          <span>
+            {{ paid }}
+          </span>
+        </div>
+      }
+    </div>
+  }
+</div>

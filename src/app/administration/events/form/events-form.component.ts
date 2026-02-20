@@ -1,17 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../events.service';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-    selector: 'app-events-edit',
-    templateUrl: './component.html',
-    styleUrls: ['./component.scss'],
+    selector: 'app-events-form',
+    templateUrl: './events-form.component.html',
+    styleUrls: ['./events-form.component.scss'],
     standalone: false
 })
 export class EventsFormComponent {
-  public id: string | null;
+  readonly #router = inject(Router);
+  readonly #route = inject(ActivatedRoute);
+  readonly #eventService = inject(EventService);
+  readonly #toastr = inject(ToastrService);
+  readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
+  readonly #eventResource = this.#eventService.eventByIdResource(() => this.#id());
+  #loadErrorShown = false;
+
+  public readonly event = this.#eventResource;
+  public readonly isEditing = this.#id() != null;
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
     ticketsSalesStart: new FormControl(new Date().toISOString().substring(0, 16), Validators.required),
@@ -25,19 +34,14 @@ export class EventsFormComponent {
   public title: string = 'New event';
   public editButtonEnabled: boolean = true;
   public editButtonText: string = 'Create';
-  public formMethod: Function = this.createEvent;
+  public formMethod: () => void = this.createEvent;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private eventService: EventService,
-    private toastr: ToastrService
-  ) {
+  constructor() {
     // Check detail view
-    if (this.router.url.includes('edit')) {
+    if (this.#router.url.includes('edit')) {
       this.title = 'Event edit'
       this.editButtonText = 'Edit';
-    } else if (this.router.url.includes('detail')) {
+    } else if (this.#router.url.includes('detail')) {
       this.title = 'Event detail';
       this.editButtonEnabled = false;
       this.form.get('name')?.disable();
@@ -50,58 +54,50 @@ export class EventsFormComponent {
       this.form.get('mailHtmlCancelledTicket')?.disable();
     }
 
-    // Get ID from query
-    this.id = this.route.snapshot.paramMap.get('id');
-    
     // Editing event
-    if (this.id != null) {
+    if (this.isEditing) {
       // Update form submit method
       this.formMethod = this.editEvent;
 
-      // Load event object from database
-      this.eventService.getById(this.id).subscribe({
-        // Success
-        next: (event) => {
-          this.toastr.info(
-            'Loaded successfully.',
-            'Event',
-            {
-              progressBar: true
-            }
-          )
-          this.form.setValue({
-            name: event.name,
-            ticketsSalesStart: event.tickets_sales_start,
-            ticketsSalesEnd: event.tickets_sales_end,
-            smtpMailFrom: event.smtp_mail_from,
-            mailTextNewTicket: event.mail_text_new_ticket,
-            mailHtmlNewTicket: event.mail_html_new_ticket,
-            mailTextCancelledTicket: event.mail_text_cancelled_ticket,
-            mailHtmlCancelledTicket: event.mail_html_cancelled_ticket,
-          });
-        },
-        // Error
-        error: (err) => {
+      effect(() => {
+        const event = this.#eventResource.value();
+        if (!event) {
+          return;
+        }
+        this.form.setValue({
+          name: event.name,
+          ticketsSalesStart: event.tickets_sales_start,
+          ticketsSalesEnd: event.tickets_sales_end,
+          smtpMailFrom: event.smtp_mail_from,
+          mailTextNewTicket: event.mail_text_new_ticket,
+          mailHtmlNewTicket: event.mail_html_new_ticket,
+          mailTextCancelledTicket: event.mail_text_cancelled_ticket,
+          mailHtmlCancelledTicket: event.mail_html_cancelled_ticket,
+        });
+      });
+
+      effect(() => {
+        const err = this.#eventResource.error();
+        if (!err || this.#loadErrorShown) {
+          return;
+        }
+        this.#loadErrorShown = true;
           this.form.get('name')?.disable();
           this.form.get('ticketsSalesStart')?.disable();
           this.form.get('ticketsSalesEnd')?.disable();
-          this.toastr.error(
+          this.#toastr.error(
             err.message,
             'Cannot load ticket group',
             {
               progressBar: true,
             }
           );
-          return
-        }
       });
     }
   }
 
-  ngOnInit(): void {}
-
   public createEvent() {
-    this.eventService.create(
+    this.#eventService.create(
       {
         name: this.form.value.name || '',
         tickets_sales_start: this.form.value.ticketsSalesStart || new Date().toISOString().substring(0, 16),
@@ -114,17 +110,17 @@ export class EventsFormComponent {
       }
     ).subscribe({
       next: (event) => {
-        this.toastr.info(
+        this.#toastr.info(
           'Successfully created.',
           `Event called '${event.name}'`,
           {
             progressBar: true
           }
         );
-        this.router.navigate(['/events/detail/' + event.id]);
+        this.#router.navigate(['/events/detail/' + event.id]);
       },
       error: (err) => {
-        this.toastr.error(
+        this.#toastr.error(
           `NOT CREATED! Error: ${err.message}`,
           'Event',
           {
@@ -136,8 +132,12 @@ export class EventsFormComponent {
   }
 
   public editEvent() {
-    this.eventService.update(
-      this.id || '',
+    const id = this.#id();
+    if (!id) {
+      return;
+    }
+    this.#eventService.update(
+      id,
       {
         name: this.form.value.name || '',
         tickets_sales_start: this.form.value.ticketsSalesStart || new Date().toISOString().substring(0, 16),
@@ -150,17 +150,17 @@ export class EventsFormComponent {
       }
     ).subscribe({
       next: (event) => {
-        this.toastr.info(
+        this.#toastr.info(
           'Successfully edited.',
           `Event called '${event.name}'`,
           {
             progressBar: true
           }
         );
-        this.router.navigate(['/events/detail/' + event.id]);
+        this.#router.navigate(['/events/detail/' + event.id]);
       },
       error: (err) => {
-        this.toastr.error(
+        this.#toastr.error(
           `NOT EDITED! Error: ${err.message}`,
           'Event',
           {
@@ -169,5 +169,16 @@ export class EventsFormComponent {
         )
       }
     })
+  }
+
+  protected loadErrorText(): string {
+    const err = this.event.error();
+    if (!err) {
+      return '';
+    }
+    if (err instanceof Error) {
+      return err.message;
+    }
+    return String(err);
   }
 }

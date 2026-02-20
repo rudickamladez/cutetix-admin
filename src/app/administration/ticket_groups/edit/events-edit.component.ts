@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketGroupService } from '../ticket_groups.service';
 import { ToastrService } from 'ngx-toastr';
@@ -8,11 +8,17 @@ import { Event } from '../../events/events.types';
 
 @Component({
     selector: 'app-ticket_groups-edit',
-    templateUrl: './component.html',
-    styleUrls: ['./component.scss'],
+    templateUrl: './events-edit.component.html',
+    styleUrls: ['./events-edit.component.scss'],
     standalone: false
 })
 export class TicketGroupsEditComponent {
+  readonly #router = inject(Router);
+  readonly #route = inject(ActivatedRoute);
+  readonly #ticket_groupService = inject(TicketGroupService);
+  readonly #eventService = inject(EventService);
+  readonly #toastr = inject(ToastrService);
+
   public id: string | null;
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -20,17 +26,11 @@ export class TicketGroupsEditComponent {
     eventId: new FormControl(0, Validators.required),
   });
   public showDetail: boolean = false;
-  public events: Array<Event> = [];
+  protected readonly eventsResource = this.#eventService.events;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private ticket_groupService: TicketGroupService,
-    private eventService: EventService,
-    private toastr: ToastrService
-  ) {
+  constructor() {
     // Check detail view
-    if (this.router.url.includes('detail')) {
+    if (this.#router.url.includes('detail')) {
       this.showDetail = true;
       this.form.get('name')?.disable();
       this.form.get('capacity')?.disable();
@@ -38,11 +38,11 @@ export class TicketGroupsEditComponent {
     }
 
     // Get ID from query
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.id = this.#route.snapshot.paramMap.get('id');
     if (this.id == null) {
       this.form.get('name')?.disable();
       this.form.get('capacity')?.disable();
-      this.toastr.error(
+      this.#toastr.error(
         'Cannot load',
         'Ticket group',
         {
@@ -53,10 +53,10 @@ export class TicketGroupsEditComponent {
     }
 
     // Load ticket_group object from database
-    this.ticket_groupService.getById(this.id).subscribe({
+    this.#ticket_groupService.getById(this.id).subscribe({
       // Success
       next: (ticket_group) => {
-        this.toastr.info(
+        this.#toastr.info(
           'Loaded successfully.',
           'Ticket group',
           {
@@ -74,7 +74,7 @@ export class TicketGroupsEditComponent {
         this.form.get('name')?.disable();
         this.form.get('capacity')?.disable();
         this.form.get('eventId')?.disable();
-        this.toastr.error(
+        this.#toastr.error(
           err.message,
           'Cannot load ticket group',
           {
@@ -87,15 +87,11 @@ export class TicketGroupsEditComponent {
   }
 
   ngOnInit(): void {
-    this.eventService.get().subscribe({
-      next: (events) => {
-        this.events = events;
-      }
-    })
+    this.eventsResource.reload();
   }
 
   public editTicketGroup() {
-    this.ticket_groupService.update(
+    this.#ticket_groupService.update(
       this.id || '',
       {
         name: this.form.value.name || '',
@@ -104,17 +100,17 @@ export class TicketGroupsEditComponent {
       }
     ).subscribe({
       next: (ticket_group) => {
-        this.toastr.info(
+        this.#toastr.info(
           'Successfully edited.',
           `TicketGroup called '${ticket_group.name}'`,
           {
             progressBar: true
           }
         );
-        this.router.navigate(['/ticket_groups/list']);
+        this.#router.navigate(['/ticket_groups/list']);
       },
       error: (err) => {
-        this.toastr.error(
+        this.#toastr.error(
           `NOT EDITED! Error: ${err.message}`,
           'TicketGroup',
           {
@@ -123,5 +119,9 @@ export class TicketGroupsEditComponent {
         )
       }
     })
+  }
+
+  protected events(): Array<Event> {
+    return this.eventsResource.value();
   }
 }

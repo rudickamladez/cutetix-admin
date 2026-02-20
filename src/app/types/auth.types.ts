@@ -1,3 +1,5 @@
+import { Event } from "../administration/events/events.types";
+
 export type AuthTokenResponse = {
     access_token: string;
     refrresh_token: string;
@@ -17,4 +19,5 @@ export type User = {
     disabled: boolean;
     scopes?: string[];
     uuid?: string;
+    favorite_events: Event[];
 }

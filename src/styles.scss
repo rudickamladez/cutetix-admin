@@ -55,3 +55,37 @@ body.alt-font {
         width: 350px;
     }
 }
+
+.d-none {
+    display: none !important;
+}
+
+@media screen and (max-width: 575.98px) {
+    .d-sm-none {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 767.98px) {
+    .d-md-none {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 991.98px) {
+    .d-lg-none {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 1199.98px) {
+    .d-xl-none {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 1399.98px) {
+    .d-xxl-none {
+        display: none !important;
+    }
+}

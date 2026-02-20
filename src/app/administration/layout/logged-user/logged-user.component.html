@@ -1,22 +1,29 @@
 <div class="user">
-    <p class="name">{{username}}</p>
+    @if (usersService.user.isLoading()) {
+        <p class="name">{{authService.getUsername()}}</p>
+    } @else {
+        <!-- User is loaded -->
+        @let user = usersService.user.value()!;
+        <p class="name">{{ user.full_name }}</p>
+    }
+
     <div class="picture">
         <fa-icon [icon]="userIcon"></fa-icon>
     </div>
 </div>
 
 <div class="details">
-    <app-user-info></app-user-info>
+    <app-user-info show_favorite_events="false"></app-user-info>
     <div class="button-container">
         <button (click)="toggleTheme()">
             <fa-icon [icon]="switchThemeIcon"></fa-icon>
             Switch theme
         </button>
-        <button (click)="logout()">
+        <button (click)="authService.logout();">
             <fa-icon [icon]="logoutIcon"></fa-icon>
             Log out
         </button>
-        <button (click)="openProfile()">
+        <button routerLink="/profile">
             <fa-icon [icon]="myProfileIcon"></fa-icon>
             My profile
         </button>
