@@ -1,1 +1,21 @@
 @use '../../common/styles';
+
+.spacer {
+    margin: 15px 0px;
+    border-top: 1px solid var(--color-foreground-medium);
+}
+
+.legend {
+    div {
+        display: inline-flex;
+
+        div {
+            padding: 5px;
+            border-right: 2.5px solid var(--color-foreground-medium);
+
+            &:last-child {
+                border: none;
+            }
+        }
+    }
+}
