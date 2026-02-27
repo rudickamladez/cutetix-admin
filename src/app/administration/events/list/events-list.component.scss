@@ -6,10 +6,11 @@
 }
 
 .legend {
-    > div {
+    > ul {
         display: inline-flex;
+        list-style-type: none;
 
-        > div {
+        > li {
             padding: 5px;
             border-right: 2.5px solid var(--color-foreground-medium);
 
