@@ -25,9 +25,9 @@ export class EventsListComponent {
 
   favoriteIcon(eventId: string) {
     if (this.#usersService.isEventFavorited(eventId)) {
-      return faStarHalfStroke; // icon for removal
+      return this.unfavoriteEventIcon; // icon for removal
     }
-    return faStar; // icon for adding
+    return this.favoriteEventIcon; // icon for adding
   }
 
   favorite(eventId: string) {
