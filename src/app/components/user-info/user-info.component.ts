@@ -77,28 +77,17 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     return `${m}:${pad(s)}`;
   }
 
-  #formatTokenExpirationDate(exp: number): string {
-    const userLocale = navigator.languages?.[0] || navigator.language || 'cs-CZ';
-    return new Intl.DateTimeFormat(
-      userLocale,
-      {
-        dateStyle: 'short',
-        timeStyle: 'medium'
-      }
-    ).format(new Date(exp * 1000));
-  }
-
   protected get_access_token_expiration() {
     const exp = this.authService.getDecodedAccessToken()?.exp;
-    if (!exp) return 'undefined';
-    return this.#formatTokenExpirationDate(exp);
+    if (!exp) return undefined;
+    return exp * 1000;
   }
 
   protected refresh_token_expire() {
     const exp = this.authService.getDecodedRefreshToken()?.exp;
-    if (!exp) return 'undefined';
+    if (!exp) return undefined;
 
-    return this.#formatTokenExpirationDate(exp);
+    return exp * 1000;
   }
 
   protected readonly show_user_dependended_info = computed<boolean>(() => {

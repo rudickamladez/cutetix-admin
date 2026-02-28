@@ -1,7 +1,9 @@
 <div class="info" label="Username">{{ authService.getUsername() }}</div>
 <div class="info" label="Scopes in token">{{ authService.getScopes() }}</div>
-<div class="info" label="Access token expires on">{{ get_access_token_expiration() }} ‒ {{ time_to_access_token_expire }}</div>
-<div class="info" label="Refresh token expires on">{{ refresh_token_expire() }} ‒ {{ time_to_refresh_token_expire }}
+@let accessTokenExpiration = get_access_token_expiration();
+@let refreshTokenExpiration = refresh_token_expire();
+<div class="info" label="Access token expires on">{{ accessTokenExpiration ? (accessTokenExpiration | date : 'short') : 'undefined' }} ‒ {{ time_to_access_token_expire }}</div>
+<div class="info" label="Refresh token expires on">{{ refreshTokenExpiration ? (refreshTokenExpiration | date : 'short') : 'undefined' }} ‒ {{ time_to_refresh_token_expire }}
 </div>
 
 @if (usersService.user.isLoading()) {
