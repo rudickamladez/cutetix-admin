@@ -1,0 +1,48 @@
+@if (events.isLoading()) {
+<app-loading></app-loading>
+}
+<div>
+  @if (events.error()) {
+  <div class="error">
+    <p>
+      There's problem loading table.<br />
+      {{ loadErrorText() }}
+    </p>
+  </div>
+  }
+  @if (!events.error()) {
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th class="d-none">ID</th>
+        <th class="d-sm-none">Ticket sales start</th>
+        <th class="d-sm-none">Ticket sales end</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (event of events.value(); track event) {
+      <tr>
+        <td>{{ event.name }}</td>
+        <!-- so hidden column with IDs is second -->
+        <td class="d-none">{{ event.id }}</td>
+        <td class="d-sm-none">{{ event.tickets_sales_start | date : "medium" }}</td>
+        <td class="d-sm-none">{{ event.tickets_sales_end | date : "medium" }}</td>
+        <td class="actions">
+          <button class="favorite" (click)="favorite(event.id!)">
+            <fa-icon [icon]="favoriteIcon(event.id!)"></fa-icon>
+          </button>
+          <button class="edit" (click)="edit(event)">
+            <fa-icon [icon]="editIcon"></fa-icon>
+          </button>
+          <button class="delete" (click)="delete(event)" [disabled]="true">
+            <fa-icon [icon]="deleteIcon"></fa-icon>
+          </button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  }
+</div>

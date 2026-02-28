@@ -15,7 +15,7 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th style="display: none;">ID</th>
+        <th class="d-none">ID</th>
         <th>Capacity</th>
         <th>Event</th>
         <th>Actions</th>
@@ -26,7 +26,7 @@
       <tr>
         <td>{{ ticket_group.name }}</td>
         <!-- so hidden column with IDs is second -->
-        <td style="display: none;">{{ ticket_group.id }}</td>
+        <td class="d-none">{{ ticket_group.id }}</td>
         <td>{{ ticket_group.capacity }}</td>
         <td>
           @if (ticket_group.event != null) {
@@ -40,12 +40,12 @@
           </span>
           }
         </td>
-        <td>
+        <td class="actions">
           <button class="edit" (click)="edit(ticket_group)">
-            <fa-icon [icon]="faPen"></fa-icon>
+            <fa-icon [icon]="editIcon"></fa-icon>
           </button>
           <button class="delete" (click)="delete(ticket_group)">
-            <fa-icon [icon]="faTrash"></fa-icon>
+            <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
         </td>
       </tr>

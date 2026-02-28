@@ -14,7 +14,8 @@
   <p>You must be logged in to enter the system.</p>
   <form [formGroup]="loginForm" (submit)="loginWithPassword()">
     <input type="text" formControlName="username" placeholder="Username">
-    <input type="password" formControlName="password" placeholder="Password" class="password">
+    <input type="password" formControlName="password" placeholder="Password"
+      [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}">
     <button class="alt" [disabled]="(!loginForm.value.username) || (!loginForm.value.password) || loggingIn">
       @if (!loggingIn) {
       <fa-icon [icon]="loginIcon"></fa-icon>
@@ -39,5 +40,7 @@
   <h2 class="ignore-mobile">Config</h2>
   <app-local-storage-field [key]="keys.API_URL" label="API URL" type="url" />
   <app-local-storage-field [key]="keys.BROWSER_CORE_CHECK" label="BROWSER_CORE_CHECK" type="checkbox" />
+  <app-local-storage-field [key]="keys.SUDO_PASSWORD_MODE" label="SUDO_PASSWORD_MODE" type="checkbox" />
 </div>
 }
+<app-copyright></app-copyright>

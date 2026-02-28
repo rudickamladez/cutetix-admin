@@ -1,3 +1,4 @@
+@use "../administration/common/styles.scss" as *;
 @use "../../styles/colors" as *;
 
 :host {
@@ -14,10 +15,11 @@
         "title"
         "error"
         "window"
-        ".";
+        "."
+        "copyright";
 
     @media (max-width: 650px) {
-        grid-template-rows: auto auto;
+        grid-template-rows: 1fr 0.5fr 1fr 1fr;
         align-items: initial;
     }
 }
@@ -26,7 +28,7 @@
     color: $foreColor;
     font-size: 56px;
     z-index: 1;
-    grid-area: "title";
+    grid-area: title;
     text-align: center;
     margin: auto;
 
@@ -74,7 +76,7 @@ h2 {
     margin-top: auto;
     z-index: 1;
     width: 100%;
-    grid-area: "error";
+    grid-area: error;
     text-align: center;
 
     p {
@@ -88,21 +90,20 @@ button.config {
     position: fixed;
     right: 0px;
     bottom: 0px;
-    width: 100%;
-    padding: 0px;
-    padding-right: 15px;
+    min-width: auto;
+    width: auto;
+    padding: 0px 15px;
+
+    z-index: 1000; // more than window
+    pointer-events: auto;
 
     display: flex;
     justify-content: flex-end;
     align-items: center;
 
     background-color: transparent;
-    border-color: transparent;
-    box-shadow: inset 0px 0px 0px transparent;
-
-    i {
-        margin: 0;
-    }
+    border: none;
+    box-shadow: none;
 }
 
 .window {
@@ -115,7 +116,7 @@ button.config {
     background: $backColorMedium;
     box-shadow: 0 0 70px rgba($color: $foreColor, $alpha: 0.15);
     text-align: center;
-    grid-area: "window";
+    grid-area: window;
     margin: auto;
     animation-delay: 350ms;
 
@@ -124,50 +125,13 @@ button.config {
     }
 
     form {
-        display: flex;
-        flex-direction: column;
         margin: 0px auto;
+        background-color: transparent;
+        padding: none;
+        max-width: 100%;
 
         input {
-            border: 2px solid black;
-            font-size: 1.25rem;
-            line-height: 1rem;
-            padding: .5rem .75rem;
-            width: 100%;
-            margin: .25rem 0px;
             text-align: center;
-            outline: none;
-
-            // sudo mode
-            &.password {
-                color: transparent;
-
-                &:focus-within {
-                    color: transparent;
-
-                    &::selection {
-                        color: transparent;
-                    }
-                }
-            }
-
-            &:focus-within {
-                border: 2px solid rgba($color: black, $alpha: .75);
-                background-color: rgba($color: black, $alpha: .25);
-                color: $foreColor;
-
-                &::placeholder {
-                    color: $foreColor;
-                }
-            }
-        }
-
-        button {
-            margin-top: 10px;
-
-            fa-icon {
-                margin-right: 5px;
-            }
         }
     }
 }
@@ -223,4 +187,8 @@ button.large {
             display: block;
         }
     }
+}
+
+app-copyright {
+    grid-area: copyright;
 }

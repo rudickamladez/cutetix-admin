@@ -1,0 +1,34 @@
+.info {
+    &:before {
+        content: attr(label);
+        font-size: 14px;
+        display: block;
+        font-weight: 400;
+    }
+
+    font-size: 18px;
+    font-weight: 500;
+    margin: 10px 0px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    &:last-child {
+        margin-bottom: 0px;
+    }
+
+    ul {
+        display: inline-flex;
+        li {
+            list-style: none;
+            &::after {
+                content: ', ';
+                display: inline-block;
+                margin-right: 2.5px;
+            }
+
+            &:last-child::after {
+                display: none;
+            }
+        }
+    }
+}

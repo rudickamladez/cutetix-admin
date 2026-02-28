@@ -16,7 +16,6 @@
             "stylePreprocessorOptions": {
               "sass": {
                 "silenceDeprecations": [
-                  "mixed-decls",
                   "color-functions",
                   "global-builtin",
                   "import"
@@ -27,32 +26,37 @@
               "base": "dist/cutetix-admin"
             },
             "index": "src/index.html",
+            "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
             ],
             "styles": [
               "src/styles.scss"
             ],
-            "browser": "src/main.ts"
+            "scripts": []
           },
           "configurations": {
             "production": {
-              "optimization": true,
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "750kb",
+                  "maximumError": "900kb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "5kb",
+                  "maximumError": "8kb"
                 }
               ],
               "outputHashing": "all",
@@ -62,7 +66,6 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -85,12 +88,6 @@
           },
           "defaultConfiguration": "development"
         },
-        "extract-i18n": {
-          "builder": "@angular/build:extract-i18n",
-          "options": {
-            "buildTarget": "cutetix-admin:build"
-          }
-        },
         "test": {
           "builder": "@angular/build:karma",
           "options": {
@@ -99,9 +96,11 @@
               "zone.js/testing"
             ],
             "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "public/manifest.webmanifest"
             ],
             "styles": [
               "src/styles.scss"

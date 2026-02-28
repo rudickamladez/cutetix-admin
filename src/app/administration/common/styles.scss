@@ -1,50 +1,65 @@
 @use '../../../styles/colors' as *;
 
-tr.odd {
-    background-color: $backColorMediumDarkTran;
-}
 
 table {
-    margin: 0px !important;
-    width: 100% !important;
+    margin: 0px;
+    width: 100%;
+    border-collapse: collapse;
+    --padding-left-for-cells: 10px;
 
     th {
         text-align: left;
-    }
-}
-
-td {
-    button {
-        min-width: 0px !important;
-        max-width: 100px !important;
-        box-shadow: none;
-        padding: 10px;
-        margin: auto 2.5px;
-
-        &.delete {
-            background-color: tomato;
-        }
-
-        &.edit {
-            background-color: #BF40BF;
-        }
+        padding-left: var(--padding-left-for-cells);
     }
 
-    span {
-        &.new {
-            color: green;
+    tr:nth-child(2n) {
+        background-color: $backColorMediumDarkTran;
+    }
+
+
+    td {
+        padding-left: var(--padding-left-for-cells);
+
+        &.actions {
+            display: inline-flex;
         }
 
-        &.confirmed {
-            color: $foreColorMediumLight;
+        button {
+            min-width: 0px;
+            max-width: 100px;
+            box-shadow: none;
+            padding: 10px;
+            margin: 2.5px;
+
+            &.favorite {
+                background-color: #1E90ED;
+            }
+
+            &.edit {
+                background-color: #BF40BF;
+            }
+
+            &.delete {
+                background-color: tomato;
+            }
         }
 
-        &.paid {
-            color: greenyellow;
-        }
+        span {
+            &.new {
+                color: green;
+            }
 
-        &.cancelled {
-            color: red;
+            &.confirmed {
+                color: $foreColorMediumLight;
+            }
+
+            &.paid {
+                color: greenyellow;
+            }
+
+            &.cancelled {
+                color: red;
+            }
         }
     }
 }
@@ -60,9 +75,8 @@ td {
 form {
     display: flex;
     flex-direction: column;
-    max-width: 80%;
     padding: 1rem 1.5rem;
-    margin: auto;
+    margin: 0px auto 15px auto;
     background-color: $foreColorMediumLight;
 
     label {
@@ -73,12 +87,24 @@ form {
     select,
     textarea {
         border: 2px solid black;
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         line-height: 1rem;
         padding: .5rem .75rem;
-        min-height: 15px;
-        margin: .25rem;
+        width: 100%;
+        margin: .25rem 0px;
         outline: none;
+
+        &.sudo-mode {
+            color: transparent;
+
+            &:focus-within {
+                color: transparent;
+
+                &::selection {
+                    color: transparent;
+                }
+            }
+        }
 
         &:focus-within {
             border: 2px solid rgba($color: black, $alpha: .75);
@@ -92,7 +118,10 @@ form {
     }
 
     button {
-        max-width: 99%;
-        margin: 10px 0px;
+        margin-top: 10px;
+
+        fa-icon {
+            margin-right: 5px;
+        }
     }
 }

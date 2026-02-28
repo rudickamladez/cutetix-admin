@@ -7,8 +7,14 @@
   <input type="number" name="capacity" formControlName="capacity" required>
 
   <label for="eventId">Count of tickets</label>
+  @if (eventsResource.isLoading()) {
+    <p>Loading events...</p>
+  }
+  @if (eventsResource.error()) {
+    <p>{{ $any(eventsResource.error()).message || eventsResource.error() }}</p>
+  }
   <select name="eventId" formControlName="eventId">
-    @for (event of events; track event) {
+    @for (event of events(); track event) {
       <option [ngValue]="event.id">{{ event.name }}</option>
     }
   </select>

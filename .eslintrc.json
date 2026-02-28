@@ -19,7 +19,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "norcus",
+            "prefix": "app",
             "style": "camelCase"
           }
         ],
@@ -27,7 +27,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "norcus",
+            "prefix": "app",
             "style": "kebab-case"
           }
         ]

@@ -12,15 +12,15 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoadingComponent } from './loading/loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TicketGroupsListComponent } from './ticket_groups/list/component';
-import { TicketGroupsEditComponent } from './ticket_groups/edit/component';
-import { TicketGroupsNewComponent } from './ticket_groups/new/component';
-import { EventsListComponent } from './events/list/component';
-import { TicketsListComponent } from './tickets/list/component';
-import { TicketsNewComponent } from './tickets/new/component';
-import { EventsFormComponent } from './events/form/component';
+import { TicketGroupsListComponent } from './ticket_groups/list/ticket_groups-list.component';
+import { TicketGroupsEditComponent } from './ticket_groups/edit/events-edit.component';
+import { TicketGroupsNewComponent } from './ticket_groups/new/ticket_groups-new.component';
+import { EventsListComponent } from './events/list/events-list.component';
+import { TicketsListComponent } from './tickets/list/tickets-list.component';
+import { TicketsNewComponent } from './tickets/new/tickets-new.component';
+import { EventsFormComponent } from './events/form/events-form.component';
 import { SharedModule } from '../shared/shared.module';
-import { DashboardEventOverviewComponent } from './dashboard/event-overview/component';
+import { DashboardEventOverviewComponent } from './dashboard/event-overview/dashboard-event-overview.component';
 
 @NgModule({
     declarations: [

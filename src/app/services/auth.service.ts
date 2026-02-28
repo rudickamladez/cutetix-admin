@@ -2,7 +2,7 @@ import { Injectable, type OnDestroy, effect, inject, signal } from "@angular/cor
 import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
 
 import { jwtDecode } from "jwt-decode";
-import { timeout, filter, type Subscription } from "rxjs";
+import { timeout, type Subscription } from "rxjs";
 // import { Socket } from "ngx-socket-io";
 import { ToastrService } from "ngx-toastr";
 
@@ -120,13 +120,13 @@ export class AuthService implements OnDestroy {
                 if (err.error.detail) {
                     this.#toastr.error(
                         err.error.detail,
-                        'Login'
+                        "Login"
                     );
                     return;
                 }
                 this.#toastr.error(
                     err.statusText,
-                    'Login'
+                    "Login"
                 );
             }
         });
@@ -293,6 +293,23 @@ export class AuthService implements OnDestroy {
         } catch (err) {
             return null;
         }
+    }
+
+    getUsername(): string {
+        return this.getDecodedAccessToken()!.sub!;
+    }
+
+    getScopes(): string {
+        const scope = Object(this.getDecodedAccessToken())?.scope as string | undefined;
+
+        const ss = (scope ?? "")
+            .toString()
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean)
+            .join(", ") || "undefined";
+
+        return ss;
     }
 
     getRefreshToken(): string | null {
