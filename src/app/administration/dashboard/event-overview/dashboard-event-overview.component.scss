@@ -1,5 +1,9 @@
 @import "../../../../styles/colors";
 
+h1:hover {
+    color: $foreColorMedium;
+}
+
 div.container {
     display: flex;
     height: 100%;
