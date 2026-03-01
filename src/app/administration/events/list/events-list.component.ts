@@ -20,12 +20,14 @@ export class EventsListComponent {
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   protected readonly events = this.#eventsService.events;
+  protected readonly favoriteEventIcon = faStar;
+  protected readonly unfavoriteEventIcon = faStarHalfStroke;
 
   favoriteIcon(eventId: string) {
     if (this.#usersService.isEventFavorited(eventId)) {
-      return faStarHalfStroke; // icon for removal
+      return this.unfavoriteEventIcon; // icon for removal
     }
-    return faStar; // icon for adding
+    return this.favoriteEventIcon; // icon for adding
   }
 
   favorite(eventId: string) {
