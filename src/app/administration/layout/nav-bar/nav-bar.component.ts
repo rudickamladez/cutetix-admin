@@ -1,10 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { MenuItem } from './menu-items';
 import { MenuBuilder } from './menu-builder';
 import { AuthService } from 'src/app/services/auth.service';
 import { faBars, faChartLine, faSignOutAlt, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { StorageService } from 'src/app/services/storage.service';
+import { StorageKeys } from 'src/app/tokens/storage.tokens';
 
 @Component({
     selector: 'app-nav-bar',
@@ -15,6 +18,8 @@ import { filter } from 'rxjs';
 export class NavBarComponent implements OnInit {
     readonly #authService = inject(AuthService);
     readonly #router = inject(Router);
+    readonly #storageService = inject(StorageService);
+    readonly #destroyRef = inject(DestroyRef);
 
     dashboardItem = new MenuItem('Dashboard', 'dashboard', faChartLine);
     userProfileItem = new MenuItem('My profile', 'profile', faUser);
@@ -33,8 +38,15 @@ export class NavBarComponent implements OnInit {
 
         this.#router.events.pipe(
             filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+            takeUntilDestroyed(this.#destroyRef),
         ).subscribe(event => {
             this.#rebuildMenu(event.urlAfterRedirects);
+        });
+
+        this.#storageService.storageEvent$(StorageKeys.ADMIN_MODE).pipe(
+            takeUntilDestroyed(this.#destroyRef),
+        ).subscribe(() => {
+            this.#rebuildMenu(this.#router.url);
         });
     }
 
