@@ -3,9 +3,13 @@ import { MenuItem, MenuSubItem } from './menu-items';
 import { IconDefinition } from '@fortawesome/angular-fontawesome';
 import { inject } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
+import { AdminModeService } from 'src/app/services/adminMode.service';
 
 export class MenuBuilder {
     readonly #auth = inject(AuthService);
+    readonly #adminMode = inject(AdminModeService);
+
+
     #defaultMenu: MenuItem[] = [
         this.#getMenuItem('My events', 'my-events', faCalendarDay, () => this.getSubItemsByPath('my-events')),
     ].filter(o => o);
@@ -20,11 +24,7 @@ export class MenuBuilder {
     ];
 
     build(currentUrl: string = ''): MenuItem[] {
-        let scopes = this.#auth.getScopes();
-        let username = this.#auth.getUsername();
-
-        // TODO: Add admin mode to condition
-        if (scopes.includes('admin') || username.includes('admin')) {
+        if (this.#adminMode.status()) {
             // user is admin and should have access to all things
             return this.#adminMenu.filter(o => o);
         }
@@ -51,8 +51,7 @@ export class MenuBuilder {
         const result: MenuSubItem[] = [];
         result.push(new MenuSubItem('List', `/${path}/list`));
 
-        // TODO: Add admin mode to condition
-        if (this.#auth.getScopes().includes(`${path}:edit`)) {
+        if (this.#adminMode.status() || this.#auth.getScopes().includes(`${path}:edit`)) {
             result.push(new MenuSubItem('New', `/${path}/add`));
         }
         return result;
