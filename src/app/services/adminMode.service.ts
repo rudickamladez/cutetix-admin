@@ -18,7 +18,7 @@ export class AdminModeService {
   }
 
   status(): boolean {
-    return this.#storageService.get(StorageKeys.ADMIN_MODE) == String(true);
+    return this.#storageService.get(StorageKeys.ADMIN_MODE) === "true";
   }
 
   on(silent: boolean = false): void {
