@@ -32,6 +32,7 @@ export class MenuBuilder {
         // user has restricted access
         let menu: MenuItem[] = [];
 
+        // add menu item when user opened some page defaultly not in menu
         for (let i = 0; i < this.#adminMenu.length; i++) {
             const menuItem = this.#adminMenu[i];
             if (currentUrl.startsWith(`/${menuItem.link}`)) {
@@ -39,6 +40,7 @@ export class MenuBuilder {
             }
         }
 
+        // return merged menu
         return [
             ...menu,
             ...this.#defaultMenu,
