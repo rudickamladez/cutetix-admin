@@ -5,8 +5,10 @@
   @if (event.error() || eventCapacitySummary.error()) {
     <p>{{ eventErrorText() }}</p>
   }
-  <h1 [routerLink]="['/events', 'detail', event.value()?.id]" class="title">{{ event.value()?.name ?? "Event not found" }}</h1>
   @if (event.hasValue() && eventCapacitySummary.hasValue()) {
+    <h1 [routerLink]="['/events', 'detail', event.value().id]" class="title">
+      {{ event.value().name }}
+    </h1>
     <div class="cards">
       <div class="card">
         <p>Free tickets</p>
