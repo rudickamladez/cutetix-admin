@@ -15,6 +15,30 @@ import { EventsFormComponent } from './administration/events/form/events-form.co
 import { authGuard } from './guards/auth.guard';
 import { logoutGuard } from './guards/logout.guard';
 
+let eventsChildren: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'list',
+  },
+  {
+    path: 'list',
+    component: EventsListComponent
+  },
+  {
+    path: 'add',
+    component: EventsFormComponent
+  },
+  {
+    path: 'edit/:id',
+    component: EventsFormComponent
+  },
+  {
+    path: 'detail/:id',
+    component: EventsFormComponent
+  },
+];
+
 export let APP_ROUTES: Routes = [
   {
     path: '',
@@ -97,30 +121,12 @@ export let APP_ROUTES: Routes = [
         ]
       },
       {
+        path: 'my-events',
+        children: eventsChildren,
+      },
+      {
         path: 'events',
-        children: [
-          {
-            path: '',
-            pathMatch: 'full',
-            redirectTo: 'list',
-          },
-          {
-            path: 'list',
-            component: EventsListComponent
-          },
-          {
-            path: 'add',
-            component: EventsFormComponent
-          },
-          {
-            path: 'edit/:id',
-            component: EventsFormComponent
-          },
-          {
-            path: 'detail/:id',
-            component: EventsFormComponent
-          },
-        ]
+        children: eventsChildren,
       },
       {
         path: '**',
