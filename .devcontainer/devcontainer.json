@@ -1,17 +1,9 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:0-18",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {}
   },
   "postCreateCommand": "npm install -g @angular/cli && ng --version",
-  "appPort": [
-    4000,
-    4200,
-    4433,
-    5000,
-    8080,
-    9876
-  ],
   "forwardPorts": [
     4200
   ],

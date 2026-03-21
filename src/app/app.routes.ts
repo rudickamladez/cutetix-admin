@@ -18,7 +18,31 @@ import { authGuard } from './guards/auth.guard';
 import { logoutGuard } from './guards/logout.guard';
 import { usersSectionGuard } from './guards/users-section.guard';
 
-export const APP_ROUTES: Routes = [
+let eventsChildren: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'list',
+  },
+  {
+    path: 'list',
+    component: EventsListComponent
+  },
+  {
+    path: 'add',
+    component: EventsFormComponent
+  },
+  {
+    path: 'edit/:id',
+    component: EventsFormComponent
+  },
+  {
+    path: 'detail/:id',
+    component: EventsFormComponent
+  },
+];
+
+export let APP_ROUTES: Routes = [
   {
     path: '',
     redirectTo: 'home',
@@ -100,30 +124,12 @@ export const APP_ROUTES: Routes = [
         ]
       },
       {
+        path: 'my-events',
+        children: eventsChildren,
+      },
+      {
         path: 'events',
-        children: [
-          {
-            path: '',
-            pathMatch: 'full',
-            redirectTo: 'list',
-          },
-          {
-            path: 'list',
-            component: EventsListComponent
-          },
-          {
-            path: 'add',
-            component: EventsFormComponent
-          },
-          {
-            path: 'edit/:id',
-            component: EventsFormComponent
-          },
-          {
-            path: 'detail/:id',
-            component: EventsFormComponent
-          },
-        ]
+        children: eventsChildren,
       },
       {
         path: 'users',

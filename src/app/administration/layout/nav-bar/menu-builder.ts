@@ -1,17 +1,49 @@
-import { faCalendarDays, faClock, faTicket, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDay, faCalendarDays, faClock, faTicket } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem, MenuSubItem } from './menu-items';
 import { IconDefinition } from '@fortawesome/angular-fontawesome';
+import { inject } from '@angular/core';
+import { AuthService } from 'src/app/services/auth.service';
+import { AdminModeService } from 'src/app/services/adminMode.service';
 
 export class MenuBuilder {
-    constructor() { }
+    readonly #auth = inject(AuthService);
+    readonly #adminMode = inject(AdminModeService);
 
-    build(): MenuItem[] {
 
+    #defaultMenu: MenuItem[] = [
+        this.#getMenuItem('My events', 'my-events', faCalendarDay, () => this.getSubItemsByPath('my-events')),
+    ].filter(o => o);
+
+    ticketsMenuItem: MenuItem = this.#getMenuItem('Tickets', 'tickets', faTicket, () => this.getSubItemsByPath('tickets'));
+    ticketGroupsMenuItem: MenuItem = this.#getMenuItem('Ticket groups', 'ticket_groups', faClock, () => this.getSubItemsByPath('ticket_groups'));
+    eventsMenuItem: MenuItem = this.#getMenuItem('Events', 'events', faCalendarDays, () => this.getSubItemsByPath('events'));
+    #adminMenu: MenuItem[] = [
+        this.ticketsMenuItem,
+        this.ticketGroupsMenuItem,
+        this.eventsMenuItem,
+    ];
+
+    build(currentUrl: string = ''): MenuItem[] {
+        if (this.#adminMode.status()) {
+            // user is admin and should have access to all things
+            return this.#adminMenu.filter(o => o);
+        }
+
+        // user has restricted access
+        let menu: MenuItem[] = [];
+
+        // add menu item when user opened some page defaultly not in menu
+        for (let i = 0; i < this.#adminMenu.length; i++) {
+            const menuItem = this.#adminMenu[i];
+            if (currentUrl.startsWith(`/${menuItem.link}`)) {
+                menu.push(menuItem);
+            }
+        }
+
+        // return merged menu
         return [
-            this.#getMenuItem('Tickets', 'tickets', faTicket, () => this.getTicketsSubItems()),
-            this.#getMenuItem('Ticket groups', 'ticket_groups', faClock, () => this.getSubItemsByPath('ticket_groups')),
-            this.#getMenuItem('Events', 'events', faCalendarDays, () => this.getSubItemsByPath('events')),
-            this.#getMenuItem('Users', 'users', faUsers, () => this.getUsersSubItems()),
+            ...menu,
+            ...this.#defaultMenu,
         ].filter(o => o);
     }
 
@@ -20,14 +52,10 @@ export class MenuBuilder {
     ): MenuSubItem[] {
         const result: MenuSubItem[] = [];
         result.push(new MenuSubItem('List', `/${path}/list`));
-        result.push(new MenuSubItem('New', `/${path}/add`));
-        return result;
-    }
 
-    getTicketsSubItems(): MenuSubItem[] {
-        const result: MenuSubItem[] = [];
-        result.push(new MenuSubItem('List', '/tickets/list'));
-        result.push(new MenuSubItem('New', '/tickets/add'));
+        if (this.#adminMode.status() || this.#auth.getScopes().includes(`${path}:edit`)) {
+            result.push(new MenuSubItem('New', `/${path}/add`));
+        }
         return result;
     }
 
