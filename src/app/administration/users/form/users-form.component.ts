@@ -42,7 +42,7 @@ export class UsersFormComponent {
     }
 
     if (this.isDetailMode) {
-      this.disableEditableControls();
+      this.form.disable();
     }
 
     effect(() => {
@@ -68,7 +68,7 @@ export class UsersFormComponent {
       }
 
       this.#loadErrorShown = true;
-      this.disableEditableControls();
+      this.form.disable();
       this.#toastr.error(err.message, 'Cannot load user', {
         progressBar: true,
       });
@@ -168,15 +168,6 @@ export class UsersFormComponent {
       .split(/[,\s]+/)
       .map(scope => scope.trim())
       .filter(scope => scope.length > 0);
-  }
-
-  private disableEditableControls(): void {
-    this.form.get('username')?.disable();
-    this.form.get('email')?.disable();
-    this.form.get('fullName')?.disable();
-    this.form.get('disabled')?.disable();
-    this.form.get('scopes')?.disable();
-    this.form.get('plaintextPassword')?.disable();
   }
 
   protected loadErrorText(): string {
