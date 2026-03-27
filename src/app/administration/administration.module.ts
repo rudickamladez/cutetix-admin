@@ -11,7 +11,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoadingComponent } from './loading/loading.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { TicketGroupsListComponent } from './ticket_groups/list/ticket_groups-list.component';
 import { TicketGroupsEditComponent } from './ticket_groups/edit/events-edit.component';
 import { TicketGroupsNewComponent } from './ticket_groups/new/ticket_groups-new.component';
@@ -46,7 +46,6 @@ import { DashboardEventOverviewComponent } from './dashboard/event-overview/dash
         FontAwesomeModule,
         BrowserAnimationsModule,
         ToastrModule.forRoot(),
-        FormsModule,
         ReactiveFormsModule,
         SharedModule,
     ]
