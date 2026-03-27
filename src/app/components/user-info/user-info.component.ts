@@ -114,7 +114,16 @@ export class UserInfoComponent implements OnInit, OnDestroy {
 
   protected format_scopes(scopes: string | string[] | undefined): string {
     if (!scopes) return '';
-    if (typeof scopes === 'string') return scopes.split(',').join(', ');
-    return scopes.join(', ');
+    if (typeof scopes === 'string'){
+      if (scopes.includes(',')) {
+        scopes = scopes.split(',');
+      } else {
+        return scopes.trim();
+      }
+    }
+    return scopes
+      .map(s => s.trim())
+      .sort((a, b) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
+      .join(', ');
   }
 }
