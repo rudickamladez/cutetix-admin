@@ -1,0 +1,46 @@
+name: Close Dependabot PR
+
+on:
+  workflow_run:
+    workflows:
+      - Publish Docker
+    types:
+      - completed
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  close-pr:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Close Dependabot pull request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pullRequest = context.payload.workflow_run.pull_requests[0];
+
+            if (pullRequest === undefined) {
+              core.info('Workflow run is not attached to a pull request.');
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pullRequest.number,
+              body: 'Build prosel, tento Dependabot PR automaticky zaviram.'
+            });
+
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pullRequest.number,
+              state: 'closed'
+            });
