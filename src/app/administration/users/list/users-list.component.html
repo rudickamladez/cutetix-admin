@@ -29,7 +29,7 @@
         >
         Include disabled users
       </label>
-      <button type="button" class="default-style" (click)="clearFilters()">
+      <button type="button" (click)="clearFilters()">
         Reset
       </button>
       <span class="count">{{ filteredUsers.length }} / {{ users.value().length }}</span>
