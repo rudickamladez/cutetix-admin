@@ -14,35 +14,35 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class UsersListComponent {
   readonly #usersService = inject(UserService);
-  protected readonly router = inject(Router);
   readonly #toastr = inject(ToastrService);
+  protected readonly router = inject(Router);
   protected readonly authService = inject(AuthService);
   protected readonly editIcon = faPen;
   protected readonly detailIcon = faEye;
   protected readonly deleteIcon = faTrash;
   protected readonly users = this.#usersService.users;
 
-  public filteredUsers: User[] = [];
-  public search = '';
-  public includeDisabled = true;
+  protected filteredUsers: User[] = this.users.value();
+  protected search = '';
+  protected includeDisabled = true;
 
-  public onSearchChange(value: string): void {
+  protected onSearchChange(value: string): void {
     this.search = value;
     this.#applyFilters();
   }
 
-  public onDisabledFilterChange(checked: boolean): void {
+  protected onDisabledFilterChange(checked: boolean): void {
     this.includeDisabled = checked;
     this.#applyFilters();
   }
 
-  public clearFilters(): void {
+  protected clearFilters(): void {
     this.search = '';
     this.includeDisabled = true;
     this.#applyFilters();
   }
 
-  public delete(user: User): void {
+  protected delete(user: User): void {
     if (!user.uuid) {
       this.#toastr.error(
         `Cannot delete user '${user.username}'. Missing UUID.`,
