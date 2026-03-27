@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -19,8 +19,9 @@ export class UsersFormComponent {
   readonly #formBuilder = inject(FormBuilder);
   readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
   readonly #userResource = this.#usersService.userByIdResource(() => this.#id());
-  protected readonly user = this.#userResource;
+  #loadErrorShown = false;
 
+  protected readonly user = this.#userResource;
   protected readonly isCreateMode = this.#router.url.includes('/add');
   protected readonly isDetailMode = this.#router.url.includes('/detail');
 
@@ -45,36 +46,33 @@ export class UsersFormComponent {
       this.disableEditableControls();
     }
 
-    if (!this.#id) {
-      this.errorLoading.enabled = true;
-      this.errorLoading.text = 'User identifier is missing from route.';
-      this.loadingState--;
-      this.#toastr.error('Cannot load user detail', 'User');
-      return;
-    }
-
-    this.#usersService.getByUsernameResource(() => this.#username()).subscribe({
-      next: (user) => {
-        this.userFromDb = user;
-        this.errorLoading.enabled = false;
-        this.form.setValue({
-          username: user.username,
-          email: user.email,
-          fullName: user.full_name,
-          disabled: user.disabled,
-          scopes: (user.scopes ?? []).join(', '),
-          plaintextPassword: '',
-        });
-        this.loadingState--;
-      },
-      error: (err: Error) => {
-        console.error(err);
-        this.errorLoading.enabled = true;
-        this.errorLoading.text = err.message;
-        this.disableEditableControls();
-        this.loadingState--;
-        this.#toastr.error(err.message, 'Cannot load user');
+    effect(() => {
+      const user = this.#userResource.value();
+      if (!user) {
+        return;
       }
+
+      this.form.setValue({
+        username: user.username,
+        email: user.email,
+        fullName: user.full_name,
+        disabled: user.disabled,
+        scopes: (user.scopes ?? []).join(', '),
+        plaintextPassword: '',
+      });
+    });
+
+    effect(() => {
+      const err = this.#userResource.error();
+      if (!err || this.#loadErrorShown) {
+        return;
+      }
+
+      this.#loadErrorShown = true;
+      this.disableEditableControls();
+      this.#toastr.error(err.message, 'Cannot load user', {
+        progressBar: true,
+      });
     });
   }
 
@@ -84,43 +82,37 @@ export class UsersFormComponent {
       return;
     }
 
-    if (!this.#id) {
-      return;
-    }
-
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    if (this.userFromDb === null) {
+    const currentUser = this.#userResource.value();
+    if (!currentUser) {
       return;
     }
 
     const formValue = this.form.getRawValue();
     const payload: UserUpdate = {
-      ...this.userFromDb,
+      ...currentUser,
       email: formValue.email,
-      full_name: formValue.fullName,
+      full_name: formValue.fullName.trim(),
       disabled: formValue.disabled,
       scopes: this.parseScopes(formValue.scopes),
-      favorite_events: this.userFromDb.favorite_events ?? [],
+      favorite_events: currentUser.favorite_events ?? [],
     };
 
-    const password = formValue.plaintextPassword;
+    const password = formValue.plaintextPassword.trim();
     if (password.length > 0) {
       payload.plaintext_password = password;
-    } else {
-      delete payload.plaintext_password;
     }
 
-    this.#usersService.update(this.userFromDb.uuid, payload).subscribe({
+    this.#usersService.update(currentUser.uuid, payload).subscribe({
       next: (user: User) => {
-        this.userFromDb = user;
         this.#toastr.info('Successfully edited.', `User '${user.username}'`, {
           progressBar: true,
         });
-        this.#router.navigate(['/users/detail', user.username]);
+        this.#router.navigate(['/users/detail', user.uuid]);
       },
       error: (err: Error) => {
         console.error(err);
@@ -147,20 +139,20 @@ export class UsersFormComponent {
 
     const payload: UserCreate = {
       username,
-      email: formValue.email,
+      email: formValue.email.trim(),
       full_name: formValue.fullName.trim(),
       disabled: formValue.disabled,
       scopes: this.parseScopes(formValue.scopes),
+      favorite_events: [],
       plaintext_password: password,
     };
 
     this.#usersService.create(payload).subscribe({
-      next: (user) => {
-
+      next: (user: User) => {
         this.#toastr.info('Successfully created.', `User '${user.username}'`, {
           progressBar: true,
         });
-        this.#router.navigate(['/users/detail', user.username]);
+        this.#router.navigate(['/users/detail', user.uuid]);
       },
       error: (err: Error) => {
         console.error(err);
