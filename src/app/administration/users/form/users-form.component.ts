@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { AdministrationUsersService } from '../users.service';
-import { AdministrationUser, AdministrationUserCreate } from '../users.types';
+import { UserService } from '../users.service';
+import { User, UserCreate } from '../users.types';
 
 @Component({
   selector: 'app-users-form',
@@ -14,12 +14,12 @@ import { AdministrationUser, AdministrationUserCreate } from '../users.types';
 export class UsersFormComponent {
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
-  readonly #usersService = inject(AdministrationUsersService);
+  readonly #usersService = inject(UserService);
   readonly #toastr = inject(ToastrService);
   readonly #formBuilder = inject(FormBuilder);
 
   public readonly isCreateMode = this.#router.url.includes('/add');
-  public readonly isDetailMode = this.#router.url.includes('/detail/');
+  public readonly isDetailMode = this.#router.url.includes('/detail');
   public username: string | null = null;
   public loadingState = 1;
   public errorLoading = {
@@ -29,7 +29,7 @@ export class UsersFormComponent {
   public title = this.isCreateMode ? 'New user' : this.isDetailMode ? 'User detail' : 'User edit';
   public submitButtonEnabled = !this.isDetailMode;
   public submitButtonText = this.isCreateMode ? 'Create' : 'Save';
-  private userFromDb: AdministrationUser | null = null;
+  private userFromDb: User | null = null;
 
   public form = this.#formBuilder.nonNullable.group({
     username: ['', [Validators.required]],
@@ -62,7 +62,7 @@ export class UsersFormComponent {
       return;
     }
 
-    this.#usersService.getByUsername(this.username).subscribe({
+    this.#usersService.getByUsernameResource(this.username).subscribe({
       next: (user) => {
         this.userFromDb = user;
         this.errorLoading.enabled = false;
@@ -107,7 +107,7 @@ export class UsersFormComponent {
     }
 
     const formValue = this.form.getRawValue();
-    const payload: AdministrationUser = {
+    const payload: User = {
       ...this.userFromDb,
       email: formValue.email,
       full_name: formValue.fullName,
@@ -124,7 +124,7 @@ export class UsersFormComponent {
     }
 
     this.#usersService.update(this.userFromDb.uuid, payload).subscribe({
-      next: (user: AdministrationUser) => {
+      next: (user: User) => {
         this.userFromDb = user;
         this.#toastr.info('Successfully edited.', `User '${user.username}'`, {
           progressBar: true,
@@ -154,7 +154,7 @@ export class UsersFormComponent {
       return;
     }
 
-    const payload: AdministrationUserCreate = {
+    const payload: UserCreate = {
       username,
       email: formValue.email,
       full_name: formValue.fullName,

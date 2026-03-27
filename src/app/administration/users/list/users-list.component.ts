@@ -2,8 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
-import { AdministrationUsersService } from '../users.service';
-import { AdministrationUser } from '../users.types';
+import { UserService } from '../users.service';
+import { User } from '../users.types';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -12,72 +12,41 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./users-list.component.scss'],
   standalone: false
 })
-export class UsersListComponent implements OnInit {
-  readonly #usersService = inject(AdministrationUsersService);
-  readonly #router = inject(Router);
+export class UsersListComponent {
+  readonly #usersService = inject(UserService);
+  protected readonly router = inject(Router);
   readonly #toastr = inject(ToastrService);
-  readonly #authService = inject(AuthService);
-
+  protected readonly authService = inject(AuthService);
   protected readonly editIcon = faPen;
   protected readonly detailIcon = faEye;
   protected readonly deleteIcon = faTrash;
+  protected readonly users = this.#usersService.users;
 
-  public users: AdministrationUser[] = [];
-  public filteredUsers: AdministrationUser[] = [];
+  public filteredUsers: User[] = [];
   public search = '';
   public includeDisabled = true;
-  public loadingState = 1;
-  public errorLoading = {
-    enabled: false,
-    text: '',
-  };
-
-  ngOnInit(): void {
-    this.#usersService.get().subscribe({
-      next: (users) => {
-        this.errorLoading.enabled = false;
-        this.users = [...users].sort((left, right) => (left.username ?? '').localeCompare(right.username ?? ''));
-        this.applyFilters();
-        this.loadingState--;
-      },
-      error: (err: Error) => {
-        console.error(err);
-        this.errorLoading.enabled = true;
-        this.errorLoading.text = err.message;
-        this.loadingState--;
-      }
-    });
-  }
 
   public onSearchChange(value: string): void {
     this.search = value;
-    this.applyFilters();
+    this.#applyFilters();
   }
 
   public onDisabledFilterChange(checked: boolean): void {
     this.includeDisabled = checked;
-    this.applyFilters();
+    this.#applyFilters();
   }
 
   public clearFilters(): void {
     this.search = '';
     this.includeDisabled = true;
-    this.applyFilters();
+    this.#applyFilters();
   }
 
-  public edit(user: AdministrationUser): void {
-    this.#router.navigate(['/users/edit', user.username]);
-  }
-
-  public detail(user: AdministrationUser): void {
-    this.#router.navigate(['/users/detail', user.username]);
-  }
-
-  public delete(user: AdministrationUser): void {
+  public delete(user: User): void {
     if (!user.uuid) {
       this.#toastr.error(
         `Cannot delete user '${user.username}'. Missing UUID.`,
-        'User NOT deleted!',
+        'User wasn\'t deleted!',
         {
           progressBar: true,
         }
@@ -92,7 +61,7 @@ export class UsersListComponent implements OnInit {
     this.#usersService.delete(user.uuid).subscribe({
       next: () => {
         this.users = this.users.filter(existingUser => existingUser.uuid !== user.uuid);
-        this.applyFilters();
+        this.#applyFilters();
         this.#toastr.info(
           user.username,
           'User deleted',
@@ -104,8 +73,8 @@ export class UsersListComponent implements OnInit {
       error: (err: Error) => {
         console.error(err);
         this.#toastr.error(
-          `NOT DELETED! Error: ${err.message}`,
-          'User',
+          `Error: ${err.message}`,
+          'User wasn\'t deleted!',
           {
             progressBar: true,
           }
@@ -114,26 +83,10 @@ export class UsersListComponent implements OnInit {
     });
   }
 
-  public canViewUser(): boolean {
-    return this.hasScope('users:read');
-  }
-
-  public canEditUser(): boolean {
-    return this.hasScope('users:read') && this.hasScope('users:edit');
-  }
-
-  public canDeleteUser(): boolean {
-    return this.hasScope('users:edit');
-  }
-
-  private hasScope(scope: string): boolean {
-    return this.#authService.hasScope(scope);
-  }
-
-  private applyFilters(): void {
+  #applyFilters(): void {
     const search = this.search.trim().toLowerCase();
 
-    this.filteredUsers = this.users.filter((user) => {
+    this.filteredUsers = this.users.value().filter((user) => {
       if (!this.includeDisabled && user.disabled) {
         return false;
       }
@@ -148,5 +101,16 @@ export class UsersListComponent implements OnInit {
         || (user.email ?? '').toLowerCase().includes(search)
         || scopes.includes(search);
     });
+  }
+
+  protected loadErrorText(): string {
+    const err = this.users.error();
+    if (!err) {
+      return '';
+    }
+    if (err instanceof Error) {
+      return err.message;
+    }
+    return String(err);
   }
 }

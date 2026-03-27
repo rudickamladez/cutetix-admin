@@ -1,16 +1,16 @@
-@if (this.loadingState > 0) {
+@if (users.isLoading()) {
 <app-loading></app-loading>
 }
 <div>
-  @if (this.errorLoading.enabled) {
+  @if (users.error()) {
   <div class="error">
     <p>
       There's a problem loading table.<br />
-      {{ this.errorLoading.text }}
+      {{ loadErrorText() }}
     </p>
   </div>
   }
-  @if (!this.errorLoading.enabled) {
+  @if (!users.error()) {
   <div class="toolbar">
     <div class="filters">
       <div label="Search">
@@ -32,7 +32,7 @@
       <button type="button" class="default-style" (click)="clearFilters()">
         Reset
       </button>
-      <span class="count">{{ filteredUsers.length }} / {{ users.length }}</span>
+      <span class="count">{{ filteredUsers.length }} / {{ users.value().length }}</span>
     </div>
   </div>
   <table>
@@ -62,23 +62,20 @@
         </td>
         <td>{{ user.disabled ? 'Yes' : 'No' }}</td>
         <td class="actions">
-          @if (canViewUser()) {
-          <button class="detail" (click)="detail(user)">
+          @if (this.authService.hasScope('users:read')) {
+          <button class="detail" (click)="this.router.navigate(['/users/detail', user.username]);">
             <fa-icon [icon]="detailIcon"></fa-icon>
           </button>
           }
-          @if (canEditUser()) {
-          <button class="edit" (click)="edit(user)">
+          @if (this.authService.hasScope('users:edit')) {
+          <button class="edit" (click)="this.router.navigate(['/users/edit', user.username]);">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
           }
-          @if (canDeleteUser()) {
+          @if (this.authService.hasScope('users:delete')) {
           <button class="delete" (click)="delete(user)">
             <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
-          }
-          @if (!canViewUser() && !canEditUser() && !canDeleteUser()) {
-          <span>No actions</span>
           }
         </td>
       </tr>

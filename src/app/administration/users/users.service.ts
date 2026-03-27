@@ -1,52 +1,85 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, httpResource, HttpResourceRef } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { StorageService } from 'src/app/services/storage.service';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
-import { AdministrationUser, AdministrationUserCreate } from './users.types';
+import { User, UserCreate, UserUpdate } from './users.types';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AdministrationUsersService {
+export class UserService {
   readonly #httpClient = inject(HttpClient);
-  readonly #storageService = inject(StorageService);
+
   readonly #apiPath = 'users';
+  readonly #storageService = inject(StorageService);
 
-  private endpoint(path = ''): string {
-    const suffix = path.length > 0 ? `/${path}` : '/';
-    return new URL(`${this.#apiPath}${suffix}`, this.#storageService.get(StorageKeys.API_URL)!).href;
+  readonly users = httpResource<User[]>(
+    () => this.#endpoint('/'),
+    {
+      defaultValue: [],
+    }
+  );
+
+  #endpoint(path: string): string {
+    return new URL(`${this.#apiPath}${encodeURIComponent(path)}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
-  public get(): Observable<AdministrationUser[]> {
-    return this.#httpClient.get<AdministrationUser[]>(
-      this.endpoint('')
+  public userByIdResource(
+    getId: () => string | null | undefined
+  ): HttpResourceRef<User | undefined> {
+    return httpResource<User>(() => {
+      const id = getId();
+      if (!id) {
+        return undefined;
+      }
+      return this.#endpoint(`/${id}/`);
+    });
+  }
+
+  public getByUsernameResource(
+    username: () => string | null | undefined
+  ): HttpResourceRef<User | undefined> {
+    return httpResource<User | undefined>(() => {
+      const usernameValue = username();
+      if (!usernameValue) {
+        return undefined;
+      }
+      return this.#endpoint(`/by-username/${usernameValue}/`);
+    });
+  }
+
+  public create(
+    user: UserCreate
+  ): Observable<User> {
+    return this.#httpClient.post<User>(
+      this.#endpoint('/'),
+      user
+    ).pipe(
+      tap(() => this.users.reload())
     );
   }
 
-  public getByUsername(username: string): Observable<AdministrationUser> {
-    return this.#httpClient.get<AdministrationUser>(
-      this.endpoint(`by-username/${encodeURIComponent(username)}`)
-    );
-  }
-
-  public create(body: AdministrationUserCreate): Observable<AdministrationUser> {
-    return this.#httpClient.post<AdministrationUser>(
-      this.endpoint(''),
+  public update(
+    id: string,
+    body: UserUpdate
+  ): Observable<User> {
+    return this.#httpClient.put<User>(
+      this.#endpoint(`/${id}/`),
       body
+    ).pipe(
+      tap(() => this.users.reload())
     );
   }
 
-  public update(id: string, body: AdministrationUser): Observable<AdministrationUser> {
-    return this.#httpClient.put<AdministrationUser>(
-      this.endpoint(`${encodeURIComponent(id)}`),
-      body
-    );
-  }
-
-  public delete(id: string): Observable<void> {
+  public delete(
+    id: string
+  ): Observable<void> {
     return this.#httpClient.delete<void>(
-      this.endpoint(`${encodeURIComponent(id)}`)
+      this.#endpoint(`/${id}/`)
+    ).pipe(
+      tap(() => this.users.reload())
     );
   }
 }
