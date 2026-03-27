@@ -149,11 +149,11 @@ export let APP_ROUTES: Routes = [
             component: UsersFormComponent
           },
           {
-            path: 'edit/:username',
+            path: 'edit/:id',
             component: UsersFormComponent
           },
           {
-            path: 'detail/:username',
+            path: 'detail/:id',
             component: UsersFormComponent
           },
         ]

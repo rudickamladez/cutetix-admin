@@ -38,7 +38,7 @@ export class UserService {
     });
   }
 
-  public getByUsernameResource(
+  public userByUsernameResource(
     username: () => string | null | undefined
   ): HttpResourceRef<User | undefined> {
     return httpResource<User | undefined>(() => {

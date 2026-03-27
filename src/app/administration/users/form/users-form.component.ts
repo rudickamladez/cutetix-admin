@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../users.service';
-import { User, UserCreate } from '../users.types';
+import { User, UserCreate, UserUpdate } from '../users.types';
 
 @Component({
   selector: 'app-users-form',
@@ -17,21 +17,14 @@ export class UsersFormComponent {
   readonly #usersService = inject(UserService);
   readonly #toastr = inject(ToastrService);
   readonly #formBuilder = inject(FormBuilder);
+  readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
+  readonly #userResource = this.#usersService.userByIdResource(() => this.#id());
+  protected readonly user = this.#userResource;
 
-  public readonly isCreateMode = this.#router.url.includes('/add');
-  public readonly isDetailMode = this.#router.url.includes('/detail');
-  public username: string | null = null;
-  public loadingState = 1;
-  public errorLoading = {
-    enabled: false,
-    text: '',
-  };
-  public title = this.isCreateMode ? 'New user' : this.isDetailMode ? 'User detail' : 'User edit';
-  public submitButtonEnabled = !this.isDetailMode;
-  public submitButtonText = this.isCreateMode ? 'Create' : 'Save';
-  private userFromDb: User | null = null;
+  protected readonly isCreateMode = this.#router.url.includes('/add');
+  protected readonly isDetailMode = this.#router.url.includes('/detail');
 
-  public form = this.#formBuilder.nonNullable.group({
+  protected form = this.#formBuilder.nonNullable.group({
     username: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     fullName: ['', [Validators.required]],
@@ -44,7 +37,6 @@ export class UsersFormComponent {
     if (this.isCreateMode) {
       this.form.controls.plaintextPassword.addValidators(Validators.required);
       this.form.controls.plaintextPassword.updateValueAndValidity({ emitEvent: false });
-      this.loadingState = 0;
       return;
     }
 
@@ -53,8 +45,7 @@ export class UsersFormComponent {
       this.disableEditableControls();
     }
 
-    this.username = this.#route.snapshot.paramMap.get('username');
-    if (!this.username) {
+    if (!this.#id) {
       this.errorLoading.enabled = true;
       this.errorLoading.text = 'User identifier is missing from route.';
       this.loadingState--;
@@ -62,7 +53,7 @@ export class UsersFormComponent {
       return;
     }
 
-    this.#usersService.getByUsernameResource(this.username).subscribe({
+    this.#usersService.getByUsernameResource(() => this.#username()).subscribe({
       next: (user) => {
         this.userFromDb = user;
         this.errorLoading.enabled = false;
@@ -93,7 +84,7 @@ export class UsersFormComponent {
       return;
     }
 
-    if (!this.username) {
+    if (!this.#id) {
       return;
     }
 
@@ -107,7 +98,7 @@ export class UsersFormComponent {
     }
 
     const formValue = this.form.getRawValue();
-    const payload: User = {
+    const payload: UserUpdate = {
       ...this.userFromDb,
       email: formValue.email,
       full_name: formValue.fullName,
@@ -157,7 +148,7 @@ export class UsersFormComponent {
     const payload: UserCreate = {
       username,
       email: formValue.email,
-      full_name: formValue.fullName,
+      full_name: formValue.fullName.trim(),
       disabled: formValue.disabled,
       scopes: this.parseScopes(formValue.scopes),
       plaintext_password: password,
@@ -193,5 +184,16 @@ export class UsersFormComponent {
     this.form.get('disabled')?.disable();
     this.form.get('scopes')?.disable();
     this.form.get('plaintextPassword')?.disable();
+  }
+
+  protected loadErrorText(): string {
+    const err = this.user.error();
+    if (!err) {
+      return '';
+    }
+    if (err instanceof Error) {
+      return err.message;
+    }
+    return String(err);
   }
 }

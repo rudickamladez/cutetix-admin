@@ -58,29 +58,29 @@ export class UsersListComponent {
       return;
     }
 
-    this.#usersService.delete(user.uuid).subscribe({
-      next: () => {
-        this.users = this.users.filter(existingUser => existingUser.uuid !== user.uuid);
-        this.#applyFilters();
-        this.#toastr.info(
-          user.username,
-          'User deleted',
-          {
-            progressBar: true,
-          }
-        );
-      },
-      error: (err: Error) => {
-        console.error(err);
-        this.#toastr.error(
-          `Error: ${err.message}`,
-          'User wasn\'t deleted!',
-          {
-            progressBar: true,
-          }
-        );
-      }
-    });
+    // this.#usersService.delete(user.uuid).subscribe({
+    //   next: () => {
+    //     this.users = this.users.filter(existingUser => existingUser.uuid !== user.uuid);
+    //     this.#applyFilters();
+    //     this.#toastr.info(
+    //       user.username,
+    //       'User deleted',
+    //       {
+    //         progressBar: true,
+    //       }
+    //     );
+    //   },
+    //   error: (err: Error) => {
+    //     console.error(err);
+    //     this.#toastr.error(
+    //       `Error: ${err.message}`,
+    //       'User wasn\'t deleted!',
+    //       {
+    //         progressBar: true,
+    //       }
+    //     );
+    //   }
+    // });
   }
 
   #applyFilters(): void {

@@ -1,17 +1,17 @@
-@if (this.loadingState > 0) {
+@if (!this.isCreateMode && user.isLoading()) {
 <app-loading></app-loading>
 }
-@if (this.errorLoading.enabled) {
+@if (!this.isCreateMode && user.error()) {
 <div class="error">
   <p>
     There was a problem loading user.<br />
-    {{ this.errorLoading.text }}
+    {{ loadErrorText() }}
   </p>
 </div>
 }
-@if (!this.errorLoading.enabled) {
+@if (!this.isCreateMode || (!user.isLoading() && !user.error())) {
 <form [formGroup]="form" (submit)="saveUser()">
-  <h1>{{ title }}</h1>
+  <h1>{{ this.isCreateMode ? 'New user' : this.isDetailMode ? 'User detail' : 'User edit' }}</h1>
 
   <label for="username">Username</label>
   <input type="text" name="username" formControlName="username" [readonly]="!isCreateMode" required>
@@ -36,11 +36,8 @@
   <p class="hint">
     {{ isCreateMode ? 'Password is required for new user.' : 'Leave empty to keep current password.' }}
   </p>
-
-  @if (submitButtonEnabled) {
-  <button class="alt" [disabled]="form.invalid">
-    {{ submitButtonText }}
+  <button class="alt" [disabled]="form.invalid || !this.isDetailMode && form.pristine">
+    {{ isCreateMode ? 'Create' : 'Save' }}
   </button>
-  }
 </form>
 }
