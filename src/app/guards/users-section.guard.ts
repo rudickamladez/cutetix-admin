@@ -6,9 +6,5 @@ export const usersSectionGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.hasAnyScope('users:read', 'users:edit')) {
-    return true;
-  }
-
-  return router.createUrlTree(['/dashboard']);
+return authService.hasAnyScope('users:read', 'users:edit') || router.createUrlTree(['/dashboard']);
 };
