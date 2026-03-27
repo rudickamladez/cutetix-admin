@@ -32,3 +32,13 @@
         }
     }
 }
+
+.admin-mode-container {
+    display: inline-flex;
+
+    button {
+        margin: auto 5px;
+        padding: 0px 10px;
+        min-width: 0px;
+    }
+}
