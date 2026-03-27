@@ -19,8 +19,8 @@
   <label for="email">E-mail</label>
   <input type="email" name="email" formControlName="email" required>
 
-  <label for="fullName">Full name</label>
-  <input type="text" name="fullName" formControlName="fullName" required>
+  <label for="full_name">Full name</label>
+  <input type="text" name="full_name" formControlName="full_name" required>
 
   <div class="checkbox">
     <input id="disabled" type="checkbox" name="disabled" formControlName="disabled">
@@ -32,14 +32,14 @@
   <p class="hint">Separate scopes by comma.</p>
 
   @if (isCreateMode) {
-    <label for="plaintextPassword">Password</label>
-    <input type="password" name="plaintextPassword" formControlName="plaintextPassword" autocomplete="new-password" [required]="isCreateMode">
+    <label for="plaintext_password">Password</label>
+    <input type="password" name="plaintext_password" formControlName="plaintext_password" autocomplete="new-password" [required]="isCreateMode">
     <p class="hint">
       Password is required for new user.
     </p>
   }
   @if (!isDetailMode) {
-  <button class="alt" [disabled]="form.invalid || form.pristine || !form.dirty">
+  <button class="alt" [disabled]="form.invalid || form.pristine">
     {{ isCreateMode ? 'Create' : 'Save' }}
   </button>
 }

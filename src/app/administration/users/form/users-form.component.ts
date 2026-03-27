@@ -28,16 +28,16 @@ export class UsersFormComponent {
   protected form = this.#formBuilder.nonNullable.group({
     username: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
-    fullName: ['', [Validators.required]],
+    full_name: ['', [Validators.required]],
     disabled: [false],
     scopes: [''],
-    plaintextPassword: [''],
+    plaintext_password: [''],
   });
 
   constructor() {
     if (this.isCreateMode) {
-      this.form.controls.plaintextPassword.addValidators(Validators.required);
-      this.form.controls.plaintextPassword.updateValueAndValidity({ emitEvent: false });
+      this.form.controls.plaintext_password.addValidators(Validators.required);
+      this.form.controls.plaintext_password.updateValueAndValidity({ emitEvent: false });
       return;
     }
 
@@ -54,10 +54,10 @@ export class UsersFormComponent {
       this.form.setValue({
         username: user.username,
         email: user.email,
-        fullName: user.full_name,
+        full_name: user.full_name,
         disabled: user.disabled,
         scopes: (user.scopes ?? []).join(', '),
-        plaintextPassword: '',
+        plaintext_password: '',
       });
     });
 
@@ -94,18 +94,9 @@ export class UsersFormComponent {
     const formValue = this.form.getRawValue();
     const payload: UserUpdate = {
       ...currentUser,
-      username: formValue.username.trim(),
-      email: formValue.email.trim(),
-      full_name: formValue.fullName.trim(),
-      disabled: formValue.disabled,
+      ...formValue,
       scopes: this.parseScopes(formValue.scopes),
-      favorite_events: currentUser.favorite_events ?? [],
     };
-
-    const password = formValue.plaintextPassword.trim();
-    if (password.length > 0) {
-      payload.plaintext_password = password;
-    }
 
     this.#usersService.update(currentUser.uuid, payload).subscribe({
       next: (user: User) => {
@@ -130,21 +121,18 @@ export class UsersFormComponent {
     }
 
     const formValue = this.form.getRawValue();
-    const username = formValue.username.trim();
-    const password = formValue.plaintextPassword.trim();
-    if (username.length === 0 || password.length === 0) {
+    if (
+      formValue.username.length === 0 ||
+      formValue.plaintext_password.length === 0
+    ) {
       this.form.markAllAsTouched();
       return;
     }
 
     const payload: UserCreate = {
-      username,
-      email: formValue.email.trim(),
-      full_name: formValue.fullName.trim(),
-      disabled: formValue.disabled,
-      scopes: this.parseScopes(formValue.scopes),
+      ...formValue,
       favorite_events: [],
-      plaintext_password: password,
+      scopes: this.parseScopes(formValue.scopes),
     };
 
     this.#usersService.create(payload).subscribe({
@@ -152,7 +140,7 @@ export class UsersFormComponent {
         this.#toastr.info('Successfully created.', `User '${user.username}'`, {
           progressBar: true,
         });
-        this.#router.navigate(['/users/detail', user.uuid]);
+        this.#router.navigate(['/users/edit', user.uuid]);
       },
       error: (err: Error) => {
         console.error(err);
