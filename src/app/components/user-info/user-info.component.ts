@@ -111,4 +111,10 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     if (!this.show_favorite_events()) { return false };
     return true;
   });
+
+  protected format_scopes(scopes: string | string[] | undefined): string {
+    if (!scopes) return '';
+    if (typeof scopes === 'string') return scopes.split(',').join(', ');
+    return scopes.join(', ');
+  }
 }
