@@ -14,7 +14,7 @@
   <h1>{{ this.isCreateMode ? 'New user' : this.isDetailMode ? 'User detail' : 'User edit' }}</h1>
 
   <label for="username">Username</label>
-  <input type="text" name="username" formControlName="username" [readonly]="!isCreateMode" required>
+  <input type="text" name="username" formControlName="username" required>
 
   <label for="email">E-mail</label>
   <input type="email" name="email" formControlName="email" required>
@@ -31,13 +31,17 @@
   <input type="text" name="scopes" formControlName="scopes" placeholder="admin, events:write, tickets:read">
   <p class="hint">Separate scopes by comma.</p>
 
-  <label for="plaintextPassword">{{ isCreateMode ? 'Password' : 'New password' }}</label>
-  <input type="password" name="plaintextPassword" formControlName="plaintextPassword" autocomplete="new-password" [required]="isCreateMode">
-  <p class="hint">
-    {{ isCreateMode ? 'Password is required for new user.' : 'Leave empty to keep current password.' }}
-  </p>
-  <button class="alt" [disabled]="form.invalid || !this.isDetailMode && form.pristine">
+  @if (isCreateMode) {
+    <label for="plaintextPassword">Password</label>
+    <input type="password" name="plaintextPassword" formControlName="plaintextPassword" autocomplete="new-password" [required]="isCreateMode">
+    <p class="hint">
+      Password is required for new user.
+    </p>
+  }
+  @if (!isDetailMode) {
+  <button class="alt" [disabled]="form.invalid || form.pristine || !form.dirty">
     {{ isCreateMode ? 'Create' : 'Save' }}
   </button>
+}
 </form>
 }

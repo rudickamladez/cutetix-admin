@@ -41,7 +41,6 @@ export class UsersFormComponent {
       return;
     }
 
-    this.form.controls.username.disable({ emitEvent: false });
     if (this.isDetailMode) {
       this.disableEditableControls();
     }
@@ -95,7 +94,8 @@ export class UsersFormComponent {
     const formValue = this.form.getRawValue();
     const payload: UserUpdate = {
       ...currentUser,
-      email: formValue.email,
+      username: formValue.username.trim(),
+      email: formValue.email.trim(),
       full_name: formValue.fullName.trim(),
       disabled: formValue.disabled,
       scopes: this.parseScopes(formValue.scopes),
@@ -112,7 +112,7 @@ export class UsersFormComponent {
         this.#toastr.info('Successfully edited.', `User '${user.username}'`, {
           progressBar: true,
         });
-        this.#router.navigate(['/users/detail', user.uuid]);
+        this.#router.navigate(['/users/edit', user.uuid]);
       },
       error: (err: Error) => {
         console.error(err);
@@ -171,6 +171,7 @@ export class UsersFormComponent {
   }
 
   private disableEditableControls(): void {
+    this.form.get('username')?.disable();
     this.form.get('email')?.disable();
     this.form.get('fullName')?.disable();
     this.form.get('disabled')?.disable();
