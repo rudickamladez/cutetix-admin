@@ -5,6 +5,7 @@ import { faPen, faStar, faStarHalfStroke, faTrash } from '@fortawesome/free-soli
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-events-list',
@@ -15,6 +16,7 @@ import { UsersService } from 'src/app/services/users.service';
 export class EventsListComponent {
   readonly #eventsService = inject(EventService);
   readonly #usersService = inject(UsersService);
+  protected readonly authService = inject(AuthService);
   readonly #toastr = inject(ToastrService);
   readonly #router = inject(Router);
   protected readonly editIcon = faPen;
@@ -41,39 +43,38 @@ export class EventsListComponent {
   public delete(event: Event) {
     if (!event.id) {
       this.#toastr.error(
-        `<div><b>Event wasn't deleted!</b><br/>Can't delete! Didn't receive event id.</div>`,
-        '',
+        `Cannot delete event "${event.name}"! Didn't receive event id.`,
+        'Event wasn\'t deleted!',
         {
-          enableHtml: true,
           progressBar: true,
         }
       );
       return;
     }
-    // this.eventsService.delete(event.id).subscribe(
-    //   (event) => {
-    //     if (!event) {
-    //       this.toastr.error(
-    //         `<div><b>Event wasn't deleted!</b></div>`,
-    //         '',
-    //         {
-    //           enableHtml: true,
-    //           progressBar: true,
-    //         }
-    //       );
-    //       return
-    //     }
-    //     this.events.splice(this.events.indexOf(event), 1);
-    //     this.toastr.info(
-    //       `<b>Event "${event.name}" deleted</b>`,
-    //       '',
-    //       {
-    //         enableHtml: true,
-    //         progressBar: true
-    //       }
-    //     );
-    //   }
-    // )
+    if (!confirm(`Are you sure to delete event "${event.name}"?`)) {
+      return;
+    }
+    this.#eventsService.delete(event.id).subscribe({
+      next: () => {
+        this.#toastr.info(
+          event.name,
+          'Event deleted',
+          {
+            progressBar: true
+          }
+        );
+      },
+      error: (err: Error) => {
+        console.error(err);
+        this.#toastr.error(
+          `Error: ${err.message}`,
+          'Event wasn\'t deleted!',
+          {
+            progressBar: true,
+          }
+        );
+      }
+    })
   }
 
   protected loadErrorText(): string {
