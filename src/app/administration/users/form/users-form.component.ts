@@ -78,7 +78,7 @@ export class UsersFormComponent {
     });
   }
 
-  public saveUser(): void {
+  protected saveUser(): void {
     if (this.isCreateMode) {
       this.createUser();
       return;
@@ -107,7 +107,7 @@ export class UsersFormComponent {
       favorite_events: this.userFromDb.favorite_events ?? [],
     };
 
-    const password = formValue.plaintextPassword.trim();
+    const password = formValue.plaintextPassword;
     if (password.length > 0) {
       payload.plaintext_password = password;
     } else {

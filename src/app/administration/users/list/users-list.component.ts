@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
