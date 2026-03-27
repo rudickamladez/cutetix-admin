@@ -71,8 +71,6 @@
           <button class="edit" (click)="this.router.navigate(['/users/edit', user.uuid]);">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
-          }
-          @if (this.authService.hasScope('users:delete')) {
           <button class="delete" (click)="delete(user)">
             <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
