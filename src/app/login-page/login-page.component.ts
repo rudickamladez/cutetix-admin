@@ -1,15 +1,15 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
-import { faCircleNotch, faCog, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCircleNotch, faCog, faPersonCirclePlus, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-    templateUrl: './login-page.component.html',
-    styleUrls: ['./login-page.component.scss'],
-    standalone: false
+  templateUrl: './login-page.component.html',
+  styleUrls: ['./login-page.component.scss'],
+  standalone: false
 })
 export class LoginPageComponent {
   readonly #auth = inject(AuthService);
@@ -24,14 +24,26 @@ export class LoginPageComponent {
     password: new FormControl('')
   });
 
+  readonly #formBuilder = inject(FormBuilder);
+  protected registerForm = this.#formBuilder.group({
+    email: ['', [Validators.required, Validators.email]],
+    username: ['', [Validators.required]],
+    full_name: ['', [Validators.required]],
+    disabled: [false],
+    scopes: [[]],
+    plaintext_password: ['']
+  });
+
   protected readonly canRun = signal(false);
   protected readonly showConfig = signal(false);
   readonly keys = StorageKeys;
+  protected readonly mode = signal<'login' | 'register'>('login');
 
   // icons
   protected readonly loginIcon = faSignInAlt;
   protected readonly loadingIcon = faCircleNotch;
   protected readonly settingsIcon = faCog;
+  protected readonly registerIcon = faPersonCirclePlus;
 
 
   constructor() {
@@ -74,4 +86,12 @@ export class LoginPageComponent {
     this.showConfig.update(value => !value);
   }
 
+  protected register() {
+    const formValue = this.registerForm.getRawValue();
+    console.log('Registering user with data:', formValue);
+  }
+
+  protected toggleMode() {
+    this.mode.update(mode => mode === 'login' ? 'register' : 'login');
+  }
 }

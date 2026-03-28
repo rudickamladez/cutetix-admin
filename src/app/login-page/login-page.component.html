@@ -9,6 +9,8 @@
 }
 
 @if (canRun() && !showConfig()) {
+@switch (mode()) {
+@case ('login') {
 <div class="window">
   <h2 class="ignore-mobile">Login</h2>
   <p>You must be logged in to enter the system.</p>
@@ -30,10 +32,24 @@
   </form>
 </div>
 }
+@case ('register') {
+<div class="window">
+  <h2 class="ignore-mobile">Register</h2>
+  <p>Welcome to the jungle!</p>
 
-<button class="config" (click)="toggleConfigVisibility()">
-  <fa-icon [icon]="settingsIcon"></fa-icon>
-</button>
+  <form [formGroup]="registerForm" (submit)="register()">
+    <input type="text" formControlName="full_name" placeholder="Full name">
+    <input type="text" formControlName="username" placeholder="Username">
+    <input type="email" formControlName="email" placeholder="E-mail">
+    <input type="password" formControlName="plaintext_password" placeholder="Password">
+    <button class="alt" [disabled]="!registerForm.valid">
+      Register
+    </button>
+  </form>
+</div>
+}
+}
+}
 
 @if (showConfig()) {
 <div class="window">
@@ -43,4 +59,14 @@
   <app-local-storage-field [key]="keys.SUDO_PASSWORD_MODE" label="SUDO_PASSWORD_MODE" type="checkbox" />
 </div>
 }
+
+<div class="buttons">
+  <button (click)="toggleMode()">
+    <fa-icon [icon]="registerIcon"></fa-icon>
+  </button>
+  <button (click)="toggleConfigVisibility()">
+    <fa-icon [icon]="settingsIcon"></fa-icon>
+  </button>
+</div>
+
 <app-copyright></app-copyright>
