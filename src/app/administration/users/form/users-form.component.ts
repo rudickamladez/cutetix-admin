@@ -140,7 +140,7 @@ export class UsersFormComponent {
         this.#toastr.info('Successfully created.', `User '${user.username}'`, {
           progressBar: true,
         });
-        this.#router.navigate(['/users/edit', user.uuid]);
+        this.#router.navigate(['users', 'edit', user.uuid]);
       },
       error: (err: Error) => {
         console.error(err);

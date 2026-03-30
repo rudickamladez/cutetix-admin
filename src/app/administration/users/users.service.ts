@@ -11,9 +11,9 @@ import { User, UserCreate, UserUpdate } from './users.types';
 })
 export class UserService {
   readonly #httpClient = inject(HttpClient);
+  readonly #storageService = inject(StorageService);
 
   readonly #apiPath = 'users';
-  readonly #storageService = inject(StorageService);
 
   readonly users = httpResource<User[]>(
     () => this.#endpoint('/'),
