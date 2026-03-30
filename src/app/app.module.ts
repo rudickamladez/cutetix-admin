@@ -6,7 +6,7 @@ import { HelloComponent } from './hello/hello.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { provideRouter, RouterModule, withComponentInputBinding } from '@angular/router';
 import { APP_ROUTES } from './app.routes';
 import { AdministrationModule } from './administration/administration.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -34,7 +34,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
         BrowserModule,
         CommonModule,
         ReactiveFormsModule,
-        RouterModule.forRoot(APP_ROUTES, { useHash: false }),
+        RouterModule,
         FontAwesomeModule,
         SharedModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
@@ -48,6 +48,10 @@ import { ServiceWorkerModule } from '@angular/service-worker';
         provideHttpClient(
             withFetch(),
             withInterceptors([authInterceptor]),
+        ),
+        provideRouter(
+            APP_ROUTES,
+            withComponentInputBinding(),
         ),
     ]
 })

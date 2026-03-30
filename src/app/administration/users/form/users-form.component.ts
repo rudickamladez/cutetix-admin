@@ -1,6 +1,6 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, Input, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../users.service';
 import { User, UserCreate, UserUpdate } from '../users.types';
@@ -13,15 +13,15 @@ import { User, UserCreate, UserUpdate } from '../users.types';
 })
 export class UsersFormComponent {
   readonly #router = inject(Router);
-  readonly #route = inject(ActivatedRoute);
   readonly #usersService = inject(UserService);
   readonly #toastr = inject(ToastrService);
   readonly #formBuilder = inject(FormBuilder);
-  readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
-  readonly #userResource = this.#usersService.userByIdResource(() => this.#id());
-  #loadErrorShown = false;
+  readonly #id = signal<string | null>(null);
+  protected readonly user = this.#usersService.userByIdResource(() => this.#id());
+  @Input({}) id(value: string | undefined) {
+    this.#id.set(value ?? null);
+  }
 
-  protected readonly user = this.#userResource;
   protected readonly isCreateMode = this.#router.url.includes('/add');
   protected readonly isDetailMode = this.#router.url.includes('/detail');
 
@@ -46,7 +46,12 @@ export class UsersFormComponent {
     }
 
     effect(() => {
-      const user = this.#userResource.value();
+      const id = this.#id();
+      if (!id) {
+        return;
+      }
+
+      const user = this.user.value();
       if (!user) {
         return;
       }
@@ -62,12 +67,15 @@ export class UsersFormComponent {
     });
 
     effect(() => {
-      const err = this.#userResource.error();
-      if (!err || this.#loadErrorShown) {
+      const id = this.#id();
+      if (!id || this.isCreateMode) {
         return;
       }
 
-      this.#loadErrorShown = true;
+      const err = this.user.error();
+      if (!err) {
+        return;
+      }
       this.form.disable();
       this.#toastr.error(err.message, 'Cannot load user', {
         progressBar: true,
@@ -86,7 +94,7 @@ export class UsersFormComponent {
       return;
     }
 
-    const currentUser = this.#userResource.value();
+    const currentUser = this.user.value();
     if (!currentUser) {
       return;
     }
@@ -153,7 +161,7 @@ export class UsersFormComponent {
 
   private parseScopes(scopesInput: string): string[] {
     return scopesInput
-      .split(/[,\s]+/)
+      .split(/[\,\s]+/)
       .map(scope => scope.trim())
       .filter(scope => scope.length > 0);
   }
