@@ -1,7 +1,7 @@
-@if (!this.isCreateMode && user.isLoading()) {
+@if (!isCreateMode && user.isLoading()) {
 <app-loading></app-loading>
 }
-@if (!this.isCreateMode && user.error()) {
+@if (!isCreateMode && user.error()) {
 <div class="error">
   <p>
     There was a problem loading user.<br />
@@ -9,9 +9,9 @@
   </p>
 </div>
 }
-@if (!this.isCreateMode || (!user.isLoading() && !user.error())) {
+@if (!isCreateMode || (!user.isLoading() && !user.error())) {
 <form [formGroup]="form" (submit)="saveUser()">
-  <h1>{{ this.isCreateMode ? 'New user' : this.isDetailMode ? 'User detail' : 'User edit' }}</h1>
+  <h1>{{ isCreateMode ? 'New user' : this.isDetailMode ? 'User detail' : 'User edit' }}</h1>
 
   <label for="username">Username</label>
   <input type="text" name="username" formControlName="username" required>
