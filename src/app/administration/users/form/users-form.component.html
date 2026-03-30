@@ -11,7 +11,7 @@
 }
 @if (!isCreateMode || (!user.isLoading() && !user.error())) {
 <form [formGroup]="form" (submit)="saveUser()">
-  <h1>{{ isCreateMode ? 'New user' : this.isDetailMode ? 'User detail' : 'User edit' }}</h1>
+  <h1>{{ isCreateMode ? 'New user' : isDetailMode ? 'User detail' : 'User edit' }}</h1>
 
   <label for="username">Username</label>
   <input type="text" name="username" formControlName="username" required>

@@ -62,13 +62,13 @@
         </td>
         <td>{{ user.disabled ? 'Yes' : 'No' }}</td>
         <td class="actions">
-          @if (this.authService.hasScope('users:read')) {
-          <button class="detail" (click)="this.router.navigate(['/users/detail', user.uuid]);">
+          @if (authService.hasScope('users:read')) {
+          <button class="detail" (click)="router.navigate(['users', 'detail', user.uuid]);">
             <fa-icon [icon]="detailIcon"></fa-icon>
           </button>
           }
-          @if (this.authService.hasScope('users:edit')) {
-          <button class="edit" (click)="this.router.navigate(['/users/edit', user.uuid]);">
+          @if (authService.hasScope('users:edit')) {
+          <button class="edit" (click)="router.navigate(['users', 'edit', user.uuid]);">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
           <button class="delete" (click)="delete(user)">
