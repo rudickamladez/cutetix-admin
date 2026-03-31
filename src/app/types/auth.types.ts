@@ -21,3 +21,10 @@ export type User = {
     uuid?: string;
     favorite_events: Event[];
 }
+
+export type UserRegister = {
+    email: string;
+    username: string;
+    full_name: string;
+    plaintext_password: string;
+}

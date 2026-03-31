@@ -1,15 +1,17 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
+import { debounce, email, form, required } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
 import { faCircleNotch, faCog, faPersonCirclePlus, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { UserRegister } from '../types/auth.types';
 
 @Component({
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class LoginPageComponent {
   readonly #auth = inject(AuthService);
@@ -24,15 +26,24 @@ export class LoginPageComponent {
     password: new FormControl('')
   });
 
-  readonly #formBuilder = inject(FormBuilder);
-  protected registerForm = this.#formBuilder.group({
-    email: ['', [Validators.required, Validators.email]],
-    username: ['', [Validators.required]],
-    full_name: ['', [Validators.required]],
-    disabled: [false],
-    scopes: [[]],
-    plaintext_password: ['']
+  protected registerModel = signal<UserRegister>({
+    email: '',
+    username: '',
+    full_name: '',
+    plaintext_password: '',
   });
+  protected registerForm = form(
+    this.registerModel,
+    (schemaPath) => {
+      debounce(schemaPath.email, 500);
+      required(schemaPath.email);
+      email(schemaPath.email);
+
+      required(schemaPath.username, { message: 'Username is required.' });
+      required(schemaPath.full_name);
+      required(schemaPath.plaintext_password);
+    }
+  );
 
   protected readonly canRun = signal(false);
   protected readonly showConfig = signal(false);
@@ -86,9 +97,10 @@ export class LoginPageComponent {
     this.showConfig.update(value => !value);
   }
 
-  protected register() {
-    const formValue = this.registerForm.getRawValue();
-    console.log('Registering user with data:', formValue);
+  protected register(event: Event) {
+    event.preventDefault();
+    
+    this.#auth.register(this.registerModel());
   }
 
   protected toggleMode() {

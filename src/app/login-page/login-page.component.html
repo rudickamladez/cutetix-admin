@@ -37,12 +37,12 @@
   <h2 class="ignore-mobile">Register</h2>
   <p>Welcome to the jungle!</p>
 
-  <form [formGroup]="registerForm" (submit)="register()">
-    <input type="text" formControlName="full_name" placeholder="Full name">
-    <input type="text" formControlName="username" placeholder="Username">
-    <input type="email" formControlName="email" placeholder="E-mail">
-    <input type="password" formControlName="plaintext_password" placeholder="Password">
-    <button class="alt" [disabled]="!registerForm.valid">
+  <form (submit)="register($event)">
+    <input type="text" [formField]="registerForm.full_name" placeholder="Full name" />
+    <input type="text" [formField]="registerForm.username" placeholder="Username" />
+    <input type="email" [formField]="registerForm.email" placeholder="E-mail" />
+    <input type="password" [formField]="registerForm.plaintext_password" placeholder="Password" />
+    <button class="alt">
       Register
     </button>
   </form>
