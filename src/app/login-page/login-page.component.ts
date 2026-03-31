@@ -26,8 +26,8 @@ export class LoginPageComponent {
   protected loginForm = form(
     this.loginModel,
     (schemaPath) => {
-      required(schemaPath.username);
-      required(schemaPath.password);
+      required(schemaPath.username, { message: 'Username is required.' });
+      required(schemaPath.password, { message: 'Password is required.' });
     }
   );
 
@@ -41,12 +41,12 @@ export class LoginPageComponent {
     this.registerModel,
     (schemaPath) => {
       debounce(schemaPath.email, 500);
-      required(schemaPath.email);
+      required(schemaPath.email, { message: 'Email is required.' });
       email(schemaPath.email);
 
       required(schemaPath.username, { message: 'Username is required.' });
-      required(schemaPath.full_name);
-      required(schemaPath.plaintext_password);
+      required(schemaPath.full_name, { message: 'Full name is required.' });
+      required(schemaPath.plaintext_password, { message: 'Password is required.' });
     }
   );
 
