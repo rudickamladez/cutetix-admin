@@ -1,6 +1,6 @@
 <h1 class="title">CuteTix admin interface</h1>
 
-@if (loginFailed || !canRun()) {
+@if (!canRun()) {
 <div class="error">
   <p>
     {{ errorText }}
@@ -14,20 +14,12 @@
 <div class="window">
   <h2 class="ignore-mobile">Login</h2>
   <p>You must be logged in to enter the system.</p>
-  <form [formGroup]="loginForm" (submit)="loginWithPassword()">
-    <input type="text" formControlName="username" placeholder="Username">
-    <input type="password" formControlName="password" placeholder="Password"
+  <form (submit)="login($event)">
+    <input type="text" [formField]="loginForm.username" placeholder="Username">
+    <input type="password" [formField]="loginForm.password" placeholder="Password"
       [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}">
-    <button class="alt" [disabled]="(!loginForm.value.username) || (!loginForm.value.password) || loggingIn">
-      @if (!loggingIn) {
-      <fa-icon [icon]="loginIcon"></fa-icon>
-      }
-      @if (!loggingIn) {
+    <button class="alt">
       <span>Log in</span>
-      }
-      @if (loggingIn) {
-      <fa-icon [icon]="loadingIcon"></fa-icon>
-      }
     </button>
   </form>
 </div>
@@ -35,7 +27,7 @@
 @case ('register') {
 <div class="window">
   <h2 class="ignore-mobile">Register</h2>
-  <p>Welcome to the jungle!</p>
+  <p>All fields are required.</p>
 
   <form (submit)="register($event)">
     <input type="text" [formField]="registerForm.full_name" placeholder="Full name" />

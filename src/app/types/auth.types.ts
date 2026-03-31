@@ -28,3 +28,8 @@ export type UserRegister = {
     full_name: string;
     plaintext_password: string;
 }
+
+export type UserLogin = {
+    username: string,
+    password: string,
+}

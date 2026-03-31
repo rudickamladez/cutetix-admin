@@ -1,12 +1,11 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
 import { debounce, email, form, required } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
 import { faCircleNotch, faCog, faPersonCirclePlus, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
-import { UserRegister } from '../types/auth.types';
+import { UserLogin, UserRegister } from '../types/auth.types';
 
 @Component({
   templateUrl: './login-page.component.html',
@@ -18,13 +17,19 @@ export class LoginPageComponent {
   readonly #router = inject(Router);
   readonly storageService = inject(StorageService);
 
-  public loggingIn: boolean = false;
-  public loginFailed: boolean = false;
-  public errorText?: string;
-  public loginForm = new FormGroup({
-    username: new FormControl(''),
-    password: new FormControl('')
+  protected errorText?: string;
+
+  protected loginModel = signal<UserLogin>({
+    username: '',
+    password: '',
   });
+  protected loginForm = form(
+    this.loginModel,
+    (schemaPath) => {
+      required(schemaPath.username);
+      required(schemaPath.password);
+    }
+  );
 
   protected registerModel = signal<UserRegister>({
     email: '',
@@ -80,17 +85,12 @@ export class LoginPageComponent {
     });
   }
 
-  protected loginWithPassword() {
-    // Show loading spinner
-    this.loggingIn = true;
-
+  protected login(event: Event) {
+    event.preventDefault();
     this.#auth.login(
-      this.loginForm.value.username ?? '',
-      this.loginForm.value.password ?? ''
+      this.loginModel().username,
+      this.loginModel().password,
     );
-
-    // Hide loading spinner
-    this.loggingIn = false;
   }
 
   public toggleConfigVisibility() {
@@ -99,7 +99,6 @@ export class LoginPageComponent {
 
   protected register(event: Event) {
     event.preventDefault();
-    
     this.#auth.register(this.registerModel());
   }
 
