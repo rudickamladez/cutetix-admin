@@ -18,7 +18,7 @@
     <input type="text" [formField]="loginForm.username" placeholder="Username">
     <input type="password" [formField]="loginForm.password" placeholder="Password"
       [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}">
-    <button class="alt">
+    <button class="alt" [disabled]="loginForm().invalid()">
       <span>Log in</span>
     </button>
   </form>
@@ -35,7 +35,7 @@
     <input type="email" [formField]="registerForm.email" placeholder="E-mail" />
     <input type="password" [formField]="registerForm.plaintext_password" placeholder="Password"
       [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}" />
-    <button class="alt">
+    <button class="alt" [disabled]="registerForm().invalid()">
       Register
     </button>
   </form>

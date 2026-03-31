@@ -1,10 +1,10 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { debounce, email, form, required } from '@angular/forms/signals';
+import { debounce, email, form, required, submit } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
-import { faCircleNotch, faCog, faPersonCirclePlus, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faPersonCirclePlus, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import { UserLogin, UserRegister } from '../types/auth.types';
 
 @Component({
@@ -57,7 +57,6 @@ export class LoginPageComponent {
 
   // icons
   protected readonly loginIcon = faSignInAlt;
-  protected readonly loadingIcon = faCircleNotch;
   protected readonly settingsIcon = faCog;
   protected readonly registerIcon = faPersonCirclePlus;
 
@@ -87,22 +86,28 @@ export class LoginPageComponent {
 
   protected login(event: Event) {
     event.preventDefault();
-    this.#auth.login(
-      this.loginModel().username,
-      this.loginModel().password,
-    );
-  }
 
-  public toggleConfigVisibility() {
-    this.showConfig.update(value => !value);
+    submit(this.loginForm, async () => {
+      this.#auth.login(
+        this.loginModel().username,
+        this.loginModel().password,
+      );
+    });
   }
 
   protected register(event: Event) {
     event.preventDefault();
-    this.#auth.register(this.registerModel());
+
+    submit(this.registerForm, async () => {
+      this.#auth.register(this.registerModel());
+    });
   }
 
   protected toggleMode() {
     this.mode.update(mode => mode === 'login' ? 'register' : 'login');
+  }
+
+  public toggleConfigVisibility() {
+    this.showConfig.update(value => !value);
   }
 }
