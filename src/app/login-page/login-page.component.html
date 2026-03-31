@@ -41,7 +41,8 @@
     <input type="text" [formField]="registerForm.full_name" placeholder="Full name" />
     <input type="text" [formField]="registerForm.username" placeholder="Username" />
     <input type="email" [formField]="registerForm.email" placeholder="E-mail" />
-    <input type="password" [formField]="registerForm.plaintext_password" placeholder="Password" />
+    <input type="password" [formField]="registerForm.plaintext_password" placeholder="Password"
+      [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}" />
     <button class="alt">
       Register
     </button>
