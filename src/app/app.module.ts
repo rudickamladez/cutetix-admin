@@ -17,6 +17,7 @@ import { LocalStorageFieldComponent } from './components/local-storage-field/loc
 import { CommonModule } from '@angular/common';
 import { SharedModule } from './shared/shared.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { FormField } from '@angular/forms/signals';
 
 
 @NgModule({
@@ -43,6 +44,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
             // or after 30 seconds (whichever comes first).
             registrationStrategy: 'registerWhenStable:30000'
         }),
+        FormField,
     ],
     providers: [
         provideHttpClient(
