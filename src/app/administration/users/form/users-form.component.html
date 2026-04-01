@@ -10,38 +10,45 @@
 </div>
 }
 @if (!isCreateMode || (!user.isLoading() && !user.error())) {
-<form [formGroup]="form" (submit)="saveUser()">
+<form (submit)="saveUser($event)">
   <h1>{{ isCreateMode ? 'New user' : isDetailMode ? 'User detail' : 'User edit' }}</h1>
 
   <label for="username">Username</label>
-  <input type="text" name="username" formControlName="username" required>
+  <input type="text" [formField]="userForm.username">
 
   <label for="email">E-mail</label>
-  <input type="email" name="email" formControlName="email" required>
+  <input type="email" [formField]="userForm.email">
 
   <label for="full_name">Full name</label>
-  <input type="text" name="full_name" formControlName="full_name" required>
+  <input type="text" [formField]="userForm.full_name">
 
   <div class="checkbox">
-    <input id="disabled" type="checkbox" name="disabled" formControlName="disabled">
+    <input id="disabled" type="checkbox" [formField]="userForm.disabled">
     <label for="disabled">Disabled</label>
   </div>
 
   <label for="scopes">Scopes</label>
-  <input type="text" name="scopes" formControlName="scopes" placeholder="admin, events:write, tickets:read">
-  <p class="hint">Separate scopes by comma.</p>
+  <!-- <option [value]="scope" [selected]="userForm.scopes().includes(scope)">{{ scope }}</option> -->
+  <!-- <input type="text" [formField]="userForm.scopes" placeholder="admin, events:write, tickets:read"> -->
+   <!-- TODO: Change to multi-select to return string[] -->
+  <!-- <select multiple [formField]="userForm.scopes">
+    @for (scope of scopesList; track scope) {
+    <option [value]="scope">{{ scope }}</option>
+    }
+  </select> -->
 
   @if (isCreateMode) {
-    <label for="plaintext_password">Password</label>
-    <input type="password" name="plaintext_password" formControlName="plaintext_password" autocomplete="new-password" [required]="isCreateMode">
-    <p class="hint">
-      Password is required for new user.
-    </p>
+  <label for="plaintext_password">Password</label>
+  <input type="password" [formField]="userForm.plaintext_password" autocomplete="new-password">
+  <p class="hint">
+    Password is required for new user.
+  </p>
   }
   @if (!isDetailMode) {
-  <button class="alt" [disabled]="form.invalid || form.pristine">
+  <!-- <button class="alt" [disabled]="userForm.invalid() || userForm.pristine()"> -->
+  <button class="alt">
     {{ isCreateMode ? 'Create' : 'Save' }}
   </button>
-}
+  }
 </form>
 }

@@ -19,5 +19,5 @@ export type UserCreate = UserBase & {
 
 export type UserUpdate = UserBase & {
   uuid?: string;
-  plaintext_password?: string;
+  plaintext_password: string;
 }

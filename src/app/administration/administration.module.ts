@@ -23,6 +23,7 @@ import { SharedModule } from '../shared/shared.module';
 import { DashboardEventOverviewComponent } from './dashboard/event-overview/dashboard-event-overview.component';
 import { UsersListComponent } from './users/list/users-list.component';
 import { UsersFormComponent } from './users/form/users-form.component';
+import { FormField } from '@angular/forms/signals';
 
 @NgModule({
     declarations: [
@@ -52,6 +53,7 @@ import { UsersFormComponent } from './users/form/users-form.component';
         ToastrModule.forRoot(),
         ReactiveFormsModule,
         SharedModule,
+        FormField,
     ]
 })
 export class AdministrationModule { }
