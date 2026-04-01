@@ -23,7 +23,7 @@ export class UserService {
   );
 
   #endpoint(path: string): string {
-    return new URL(`${this.#apiPath}${encodeURIComponent(path)}`, this.#storageService.get(StorageKeys.API_URL)!).href;
+    return new URL(`${this.#apiPath}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
   public userByIdResource(

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../users.service';
 import { User, UserCreate, UserUpdate } from '../users.types';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-users-form',
@@ -150,11 +151,15 @@ export class UsersFormComponent {
         });
         this.#router.navigate(['users', 'edit', user.uuid]);
       },
-      error: (err: Error) => {
+      error: (err: HttpErrorResponse) => {
         console.error(err);
-        this.#toastr.error(`NOT CREATED! Error: ${err.message}`, 'User', {
-          progressBar: true,
-        });
+        this.#toastr.error(
+          err.error.detail ? err.error.detail : err.message,
+          'User not created',
+          {
+            progressBar: true,
+          }
+        );
       }
     });
   }
