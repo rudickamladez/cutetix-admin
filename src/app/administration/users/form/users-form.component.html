@@ -15,12 +15,33 @@
 
   <label for="username">Username</label>
   <input type="text" [formField]="userForm.username">
+  @if (userForm.username().invalid() && userForm.username().touched()) {
+  <p class="hint">
+    @for (error of userForm.username().errors(); track error.kind) {
+    <span>{{ error.message }}</span>
+    }
+  </p>
+  }
 
   <label for="email">E-mail</label>
   <input type="email" [formField]="userForm.email">
+  @if (userForm.email().invalid() && userForm.email().touched()) {
+  <p class="hint">
+    @for (error of userForm.email().errors(); track error.kind) {
+    <span>{{ error.message }}</span>
+    }
+  </p>
+  }
 
   <label for="full_name">Full name</label>
   <input type="text" [formField]="userForm.full_name">
+  @if (userForm.full_name().invalid() && userForm.full_name().touched()) {
+  <p class="hint">
+    @for (error of userForm.full_name().errors(); track error.kind) {
+    <span>{{ error.message }}</span>
+    }
+  </p>
+  }
 
   <div class="checkbox">
     <input id="disabled" type="checkbox" [formField]="userForm.disabled">
@@ -30,7 +51,7 @@
   <label for="scopes">Scopes</label>
   <!-- <option [value]="scope" [selected]="userForm.scopes().includes(scope)">{{ scope }}</option> -->
   <!-- <input type="text" [formField]="userForm.scopes" placeholder="admin, events:write, tickets:read"> -->
-   <!-- TODO: Change to multi-select to return string[] -->
+  <!-- TODO: Change to multi-select to return string[] -->
   <!-- <select multiple [formField]="userForm.scopes">
     @for (scope of scopesList; track scope) {
     <option [value]="scope">{{ scope }}</option>
@@ -40,13 +61,17 @@
   @if (isCreateMode) {
   <label for="plaintext_password">Password</label>
   <input type="password" [formField]="userForm.plaintext_password" autocomplete="new-password">
+  @if (userForm.plaintext_password().invalid() && userForm.plaintext_password().touched()) {
   <p class="hint">
-    Password is required for new user.
+    @for (error of userForm.plaintext_password().errors(); track error.kind) {
+    <span>{{ error.message }}</span>
+    }
   </p>
+  }
   }
   @if (!isDetailMode) {
   <!-- <button class="alt" [disabled]="userForm.invalid() || userForm.pristine()"> -->
-  <button class="alt">
+  <button class="alt" [disabled]="userForm().invalid()">
     {{ isCreateMode ? 'Create' : 'Save' }}
   </button>
   }

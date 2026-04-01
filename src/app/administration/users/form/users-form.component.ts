@@ -45,9 +45,9 @@ export class UsersFormComponent {
       required(schemaPath.email, { message: 'Email is required' });
       email(schemaPath.email, { message: 'Invalid email format' });
       required(schemaPath.full_name, { message: 'Full name is required' });
-      // if (this.isCreateMode) {
-      // required(schemaPath.plaintext_password, { message: 'Password is required' });
-      // }
+      if (this.isCreateMode) {
+        required(schemaPath.plaintext_password, { message: 'Password is required' });
+      }
     }
   );
 
