@@ -22,6 +22,10 @@ export class UserService {
     }
   );
 
+  constructor() {
+    this.users.reload();
+  }
+
   #endpoint(path: string): string {
     return new URL(`${this.#apiPath}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
