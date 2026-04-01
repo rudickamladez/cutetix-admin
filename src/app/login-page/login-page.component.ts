@@ -88,7 +88,7 @@ export class LoginPageComponent {
     event.preventDefault();
 
     submit(this.loginForm, async () => {
-      this.#auth.login(
+      await this.#auth.login(
         this.loginModel().username,
         this.loginModel().password,
       );
@@ -99,7 +99,7 @@ export class LoginPageComponent {
     event.preventDefault();
 
     submit(this.registerForm, async () => {
-      this.#auth.register(this.registerModel());
+      await this.#auth.register(this.registerModel());
     });
   }
 
