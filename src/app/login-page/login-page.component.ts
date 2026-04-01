@@ -1,37 +1,64 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { debounce, email, form, required, submit } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
-import { faCircleNotch, faCog, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faPersonCirclePlus, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { UserLogin, UserRegister } from '../types/auth.types';
 
 @Component({
-    templateUrl: './login-page.component.html',
-    styleUrls: ['./login-page.component.scss'],
-    standalone: false
+  templateUrl: './login-page.component.html',
+  styleUrls: ['./login-page.component.scss'],
+  standalone: false,
 })
 export class LoginPageComponent {
   readonly #auth = inject(AuthService);
   readonly #router = inject(Router);
   readonly storageService = inject(StorageService);
 
-  public loggingIn: boolean = false;
-  public loginFailed: boolean = false;
-  public errorText?: string;
-  public loginForm = new FormGroup({
-    username: new FormControl(''),
-    password: new FormControl('')
+  protected errorText?: string;
+
+  protected loginModel = signal<UserLogin>({
+    username: '',
+    password: '',
   });
+  protected loginForm = form(
+    this.loginModel,
+    (schemaPath) => {
+      required(schemaPath.username, { message: 'Username is required.' });
+      required(schemaPath.password, { message: 'Password is required.' });
+    }
+  );
+
+  protected registerModel = signal<UserRegister>({
+    email: '',
+    username: '',
+    full_name: '',
+    plaintext_password: '',
+  });
+  protected registerForm = form(
+    this.registerModel,
+    (schemaPath) => {
+      debounce(schemaPath.email, 500);
+      required(schemaPath.email, { message: 'Email is required.' });
+      email(schemaPath.email);
+
+      required(schemaPath.username, { message: 'Username is required.' });
+      required(schemaPath.full_name, { message: 'Full name is required.' });
+      required(schemaPath.plaintext_password, { message: 'Password is required.' });
+    }
+  );
 
   protected readonly canRun = signal(false);
   protected readonly showConfig = signal(false);
   readonly keys = StorageKeys;
+  protected readonly mode = signal<'login' | 'register'>('login');
 
   // icons
   protected readonly loginIcon = faSignInAlt;
-  protected readonly loadingIcon = faCircleNotch;
   protected readonly settingsIcon = faCog;
+  protected readonly registerIcon = faPersonCirclePlus;
 
 
   constructor() {
@@ -57,21 +84,30 @@ export class LoginPageComponent {
     });
   }
 
-  protected loginWithPassword() {
-    // Show loading spinner
-    this.loggingIn = true;
+  protected login(event: Event) {
+    event.preventDefault();
 
-    this.#auth.login(
-      this.loginForm.value.username ?? '',
-      this.loginForm.value.password ?? ''
-    );
+    submit(this.loginForm, async () => {
+      await this.#auth.login(
+        this.loginModel().username,
+        this.loginModel().password,
+      );
+    });
+  }
 
-    // Hide loading spinner
-    this.loggingIn = false;
+  protected register(event: Event) {
+    event.preventDefault();
+
+    submit(this.registerForm, async () => {
+      await this.#auth.register(this.registerModel());
+    });
+  }
+
+  protected toggleMode() {
+    this.mode.update(mode => mode === 'login' ? 'register' : 'login');
   }
 
   public toggleConfigVisibility() {
     this.showConfig.update(value => !value);
   }
-
 }
