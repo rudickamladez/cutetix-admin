@@ -86,7 +86,6 @@ export class UsersFormComponent {
         plaintext_password: '',
         ...this.user.value()
       });
-      console.log(this.user.value());
     });
   }
 
@@ -95,16 +94,16 @@ export class UsersFormComponent {
 
     if (this.isCreateMode()) {
       submit(this.userForm, async () => {
-        this.#usersService.create(this.userModel()).subscribe({
-          next: (user: User) => {
+        await this.#usersService.create(this.userModel()).subscribe({
+          next: () => {
             this.#toastr.info(
               'Successfully created.',
-              `User '${user.username}'`,
+              'User',
               {
                 progressBar: true,
               }
             );
-            this.#router.navigate(['users', 'edit', user.uuid]);
+            this.#router.navigate(['users']);
           },
           error: (err: HttpErrorResponse) => {
             console.error(err);
@@ -125,7 +124,7 @@ export class UsersFormComponent {
           return;
         }
 
-        this.#usersService.update(currentUser.uuid, this.userModel()).subscribe({
+        await this.#usersService.update(currentUser.uuid, this.userModel()).subscribe({
           next: (user: User) => {
             this.#toastr.info(
               'Successfully edited.',

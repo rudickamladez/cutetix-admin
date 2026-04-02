@@ -56,8 +56,8 @@ export class UserService {
 
   public create(
     user: UserCreate
-  ): Observable<User> {
-    return this.#httpClient.post<User>(
+  ): Observable<void> {
+    return this.#httpClient.post<void>(
       this.#endpoint('/'),
       user
     ).pipe(
