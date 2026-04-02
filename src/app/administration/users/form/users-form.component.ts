@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
-import { form, required, email, submit } from '@angular/forms/signals';
+import { form, required, email, submit, disabled } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../users.service';
@@ -21,7 +21,7 @@ export class UsersFormComponent {
 
   readonly id = input<string | null>(null);
   protected readonly isCreateMode = computed(() => !Boolean(this.id()));
-  protected readonly isDetailMode = this.#router.url.includes('/detail');
+  protected readonly isDetailMode = computed(() => this.#router.url.includes('/detail'));
   protected readonly user = this.#usersService.userByIdResource(() => this.id());
 
   protected userModel = signal<UserUpdate>({
@@ -45,6 +45,8 @@ export class UsersFormComponent {
       if (this.isCreateMode()) {
         required(schemaPath.plaintext_password, { message: 'Password is required' });
       }
+
+      disabled(schemaPath, () => this.isDetailMode());
     }
   );
 

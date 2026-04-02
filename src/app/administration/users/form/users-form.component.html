@@ -3,7 +3,7 @@
 }
 @if (!isCreateMode() || (!user.isLoading() && !user.error())) {
 <form (submit)="saveUser($event)">
-  <h1>{{ isCreateMode() ? 'New user' : isDetailMode ? 'User detail' : 'User edit' }}</h1>
+  <h1>{{ isCreateMode() ? 'New user' : isDetailMode() ? 'User detail' : 'User edit' }}</h1>
 
   <label for="username">Username</label>
   <input type="text" [formField]="userForm.username">
@@ -58,7 +58,7 @@
   </p>
   }
   }
-  @if (!isDetailMode) {
+  @if (!isDetailMode()) {
   <button class="alt" [disabled]="userForm().invalid()">
     {{ isCreateMode() ? 'Create' : 'Save' }}
   </button>
