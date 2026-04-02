@@ -1,11 +1,11 @@
-import { Component, effect, inject, Input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { form, required, email, submit } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../users.service';
 import { User, UserUpdate } from '../users.types';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SCOPES_LIST } from '../../../types/auth.types';
+import { SCOPES_ENTRIES } from '../../../types/auth.types';
 
 @Component({
   selector: 'app-users-form',
@@ -17,15 +17,12 @@ export class UsersFormComponent {
   readonly #router = inject(Router);
   readonly #usersService = inject(UserService);
   readonly #toastr = inject(ToastrService);
-  protected readonly isCreateMode = this.#router.url.includes('/add');
-  protected readonly isDetailMode = this.#router.url.includes('/detail');
-  protected readonly scopesList = SCOPES_LIST;
+  protected readonly scopesEntries = SCOPES_ENTRIES;
 
-  readonly #id = signal<string | null>(null);
-  protected readonly user = this.#usersService.userByIdResource(() => this.#id());
-  @Input({}) id(value: string | undefined) {
-    this.#id.set(value ?? null);
-  }
+  readonly id = input<string | null>(null);
+  protected readonly isCreateMode = computed(() => !Boolean(this.id()));
+  protected readonly isDetailMode = this.#router.url.includes('/detail');
+  protected readonly user = this.#usersService.userByIdResource(() => this.id());
 
   protected userModel = signal<UserUpdate>({
     email: '',
@@ -45,7 +42,7 @@ export class UsersFormComponent {
       required(schemaPath.email, { message: 'Email is required' });
       email(schemaPath.email, { message: 'Invalid email format' });
       required(schemaPath.full_name, { message: 'Full name is required' });
-      if (this.isCreateMode) {
+      if (this.isCreateMode()) {
         required(schemaPath.plaintext_password, { message: 'Password is required' });
       }
     }
@@ -54,10 +51,14 @@ export class UsersFormComponent {
   constructor() {
 
     effect(() => {
-      if (!this.#id() || this.isCreateMode) {
+      this.id();
+      if (this.isCreateMode()) {
         return;
       }
+      this.user.reload();
+    });
 
+    effect(() => {
       const err = this.user.error();
       if (!err) {
         return;
@@ -70,12 +71,29 @@ export class UsersFormComponent {
         }
       );
     });
+
+    effect(() => {
+      if (untracked(() => this.isCreateMode())) {
+        return;
+      }
+      this.userModel.set({
+        email: '',
+        username: '',
+        full_name: '',
+        disabled: false,
+        scopes: [],
+        favorite_events: [],
+        plaintext_password: '',
+        ...this.user.value()
+      });
+      console.log(this.user.value());
+    });
   }
 
   protected saveUser(event: Event): void {
     event.preventDefault();
 
-    if (this.isCreateMode) {
+    if (this.isCreateMode()) {
       submit(this.userForm, async () => {
         this.#usersService.create(this.userModel()).subscribe({
           next: (user: User) => {
@@ -131,17 +149,5 @@ export class UsersFormComponent {
         });
       });
     }
-  }
-
-
-  protected loadErrorText(): string {
-    const err = this.user.error();
-    if (!err) {
-      return '';
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return String(err);
   }
 }

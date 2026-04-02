@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
@@ -22,24 +22,13 @@ export class UsersListComponent {
   protected readonly deleteIcon = faTrash;
   protected readonly users = this.#usersService.users;
 
-  protected filteredUsers: User[] = this.users.value();
-  protected search = '';
-  protected includeDisabled = true;
-
-  protected onSearchChange(value: string): void {
-    this.search = value;
-    this.#applyFilters();
-  }
-
-  protected onDisabledFilterChange(checked: boolean): void {
-    this.includeDisabled = checked;
-    this.#applyFilters();
-  }
+  protected filteredUsers = computed(() => this.#filterUsers());
+  protected search = signal('');
+  protected includeDisabled = signal(true);
 
   protected clearFilters(): void {
-    this.search = '';
-    this.includeDisabled = true;
-    this.#applyFilters();
+    this.search.set('');
+    this.includeDisabled.set(true);
   }
 
   protected delete(user: User): void {
@@ -60,7 +49,7 @@ export class UsersListComponent {
 
     this.#usersService.delete(user.uuid).subscribe({
       next: () => {
-        this.#applyFilters();
+        this.#filterUsers();
         this.#toastr.info(
           user.username,
           'User deleted',
@@ -82,11 +71,11 @@ export class UsersListComponent {
     });
   }
 
-  #applyFilters(): void {
-    const search = this.search.trim().toLowerCase();
+  #filterUsers(): User[] {
+    const search = this.search().trim().toLowerCase();
 
-    this.filteredUsers = this.users.value().filter((user) => {
-      if (!this.includeDisabled && user.disabled) {
+    return this.users.value().filter((user) => {
+      if (!this.includeDisabled() && user.disabled) {
         return false;
       }
 

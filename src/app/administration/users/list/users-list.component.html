@@ -16,23 +16,23 @@
       <div label="Search">
         <input
           type="search"
-          [value]="search"
-          (input)="onSearchChange($any($event.target).value)"
+          [value]="search()"
+          (input)="search.set($event.target.value)"
           placeholder="Username, full name, e-mail, scope"
         >
       </div>
       <label class="include-disabled">
         <input
           type="checkbox"
-          [checked]="includeDisabled"
-          (change)="onDisabledFilterChange($any($event.target).checked)"
+          [checked]="includeDisabled()"
+          (change)="includeDisabled.set($event.target.checked)"
         >
         Include disabled users
       </label>
       <button type="button" (click)="clearFilters()">
         Reset
       </button>
-      <span class="count">{{ filteredUsers.length }} / {{ users.value().length }}</span>
+      <span class="count">{{ filteredUsers().length }} / {{ users.value().length }}</span>
     </div>
   </div>
   <table>
@@ -51,7 +51,7 @@
         <td colspan="5">No users found.</td>
       </tr>
       }
-      @for (user of filteredUsers; track user.username) {
+      @for (user of filteredUsers(); track user.username) {
       <tr>
         <td>{{ user.username }}</td>
         <td>{{ user.full_name }}</td>

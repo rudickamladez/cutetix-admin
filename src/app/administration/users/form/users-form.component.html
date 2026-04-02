@@ -1,17 +1,9 @@
-@if (!isCreateMode && user.isLoading()) {
+@if (!isCreateMode() && user.isLoading()) {
 <app-loading></app-loading>
 }
-@if (!isCreateMode && user.error()) {
-<div class="error">
-  <p>
-    There was a problem loading user.<br />
-    {{ loadErrorText() }}
-  </p>
-</div>
-}
-@if (!isCreateMode || (!user.isLoading() && !user.error())) {
+@if (!isCreateMode() || (!user.isLoading() && !user.error())) {
 <form (submit)="saveUser($event)">
-  <h1>{{ isCreateMode ? 'New user' : isDetailMode ? 'User detail' : 'User edit' }}</h1>
+  <h1>{{ isCreateMode() ? 'New user' : isDetailMode ? 'User detail' : 'User edit' }}</h1>
 
   <label for="username">Username</label>
   <input type="text" [formField]="userForm.username">
@@ -49,16 +41,13 @@
   </div>
 
   <label for="scopes">Scopes</label>
-  <!-- <option [value]="scope" [selected]="userForm.scopes().includes(scope)">{{ scope }}</option> -->
-  <!-- <input type="text" [formField]="userForm.scopes" placeholder="admin, events:write, tickets:read"> -->
-  <!-- TODO: Change to multi-select to return string[] -->
-  <!-- <select multiple [formField]="userForm.scopes">
-    @for (scope of scopesList; track scope) {
-    <option [value]="scope">{{ scope }}</option>
+  <select multiple >
+    @for (scope of scopesEntries; track scope[0]) {
+    <option [value]="scope[0]">{{ scope[1] }}</option>
     }
-  </select> -->
+  </select>
 
-  @if (isCreateMode) {
+  @if (isCreateMode()) {
   <label for="plaintext_password">Password</label>
   <input type="password" [formField]="userForm.plaintext_password" autocomplete="new-password">
   @if (userForm.plaintext_password().invalid() && userForm.plaintext_password().touched()) {
@@ -70,9 +59,8 @@
   }
   }
   @if (!isDetailMode) {
-  <!-- <button class="alt" [disabled]="userForm.invalid() || userForm.pristine()"> -->
   <button class="alt" [disabled]="userForm().invalid()">
-    {{ isCreateMode ? 'Create' : 'Save' }}
+    {{ isCreateMode() ? 'Create' : 'Save' }}
   </button>
   }
 </form>
