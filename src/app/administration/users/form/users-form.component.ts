@@ -20,7 +20,7 @@ export class UsersFormComponent {
   protected readonly scopesEntries = SCOPES_ENTRIES;
 
   readonly id = input<string | null>(null);
-  protected readonly isCreateMode = computed(() => !Boolean(this.id()));
+  protected readonly isCreateMode = computed(() => this.#router.url.includes('/new'));
   protected readonly isDetailMode = computed(() => this.#router.url.includes('/detail'));
   protected readonly user = this.#usersService.userByIdResource(() => this.id());
 
