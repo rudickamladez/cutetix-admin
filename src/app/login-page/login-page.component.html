@@ -24,7 +24,7 @@
       </div>
     }
     <input type="password" [formField]="loginForm.password" placeholder="Password"
-      [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}">
+      [class.sudo-mode]="storageService.getBoolean(keys.SUDO_PASSWORD_MODE)">
     @if (loginForm.password().invalid() && loginForm.password().touched()) {
       <div class="error">
         @for (error of loginForm.password().errors(); track error.kind) {
