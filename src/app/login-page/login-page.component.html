@@ -69,7 +69,7 @@
       </div>
     }
     <input type="password" [formField]="registerForm.plaintext_password" placeholder="Password"
-      [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}" />
+      [class.sudo-mode]="storageService.getBoolean(keys.SUDO_PASSWORD_MODE)" />
     @if (registerForm.plaintext_password().invalid() && registerForm.plaintext_password().touched()) {
       <div class="error">
         @for (error of registerForm.plaintext_password().errors(); track error.kind) {
