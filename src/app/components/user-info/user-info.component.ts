@@ -111,19 +111,4 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     if (!this.show_favorite_events()) { return false };
     return true;
   });
-
-  protected format_scopes(scopes: string | string[] | undefined): string {
-    if (!scopes) return '';
-    if (typeof scopes === 'string'){
-      if (scopes.includes(',')) {
-        scopes = scopes.split(',');
-      } else {
-        return scopes.trim();
-      }
-    }
-    return scopes
-      .map(s => s.trim())
-      .sort((a, b) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
-      .join(', ');
-  }
 }

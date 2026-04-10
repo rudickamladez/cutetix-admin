@@ -20,7 +20,7 @@
 <div class="info" label="UUID">{{ user.uuid }}</div>
 <div class="info" label="Full name">{{ user.full_name }}</div>
 <div class="info" label="E-mail">{{ user.email }}</div>
-<div class="info" label="Scopes in database">{{ format_scopes(user.scopes) }}</div>
+<div class="info" label="Scopes in database">{{ user.scopes | formatScopes }}</div>
 @if (show_favorite_events()) {
 
 <div class="info" label="Favorite events">
