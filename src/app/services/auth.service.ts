@@ -109,7 +109,7 @@ export class AuthService implements OnDestroy {
                 this.#canGoToPrivate.set(true);
             },
             error: (err: HttpErrorResponse) => {
-                this.#logging.log("auth", "User register failed.", err);
+                this.#logging.error("auth", "User register failed.", err);
                 console.error(err);
                 if (err.error.detail) {
                     this.#toastr.error(
@@ -170,7 +170,7 @@ export class AuthService implements OnDestroy {
                 this.#canGoToPrivate.set(true);
             },
             error: (err: HttpErrorResponse) => {
-                this.#logging.log("auth", "User login failed.", err);
+                this.#logging.error("auth", "User login failed.", err);
                 console.error(err);
                 if (err.error.detail) {
                     this.#toastr.error(
@@ -180,7 +180,7 @@ export class AuthService implements OnDestroy {
                     return;
                 }
                 this.#toastr.error(
-                    err.statusText,
+                    err.message,
                     "Login"
                 );
             }
@@ -231,7 +231,7 @@ export class AuthService implements OnDestroy {
                 },
             });
         } catch (err) {
-            this.#logging.log("auth", "Error while refreshing token.", err);
+            this.#logging.error("auth", "Error while refreshing token.", err);
             this.#isRefreshingToken = false;
             this.logout();
         }
