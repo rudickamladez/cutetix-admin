@@ -13,6 +13,7 @@ import { LockNames } from "../tokens/lock.tokens";
 import { VisibilityService } from "./visibility.service";
 import { environment } from "src/environments/environment";
 import { UserRegister } from "../types/auth.types";
+import { Router } from "@angular/router";
 // import { NgxIndexedDBService } from "ngx-indexed-db";
 
 type TokensFromApi = {
@@ -26,6 +27,7 @@ type TokensFromApi = {
 export class AuthService implements OnDestroy {
     readonly #http = inject(HttpClient);
     readonly #toastr = inject(ToastrService);
+    readonly #router = inject(Router);
     // readonly #socket = inject(Socket);
     readonly #logging = inject(LoggingService);
     readonly #storageService = inject(StorageService);
@@ -71,6 +73,12 @@ export class AuthService implements OnDestroy {
                 this.#refreshingTimer = null;
             }
         }, { allowSignalWrites: true });
+
+        effect(() => {
+            if(!this.canGoToPrivate()) {
+                this.#router.navigate(["/login"]);
+            }
+        })
     }
 
     ngOnDestroy(): void {
