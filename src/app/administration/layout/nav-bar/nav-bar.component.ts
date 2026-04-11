@@ -35,7 +35,7 @@ export class NavBarComponent implements OnInit {
     protected readonly menuOpenIcon = faTimes;
 
     ngOnInit(): void {
-        this.#menuOpen.set(history.state.navBarVisible ?? false);
+        this.#menuOpen.update(m => history.state.navBarVisible ?? m);
         this.#rebuildMenu(this.#router.url);
 
         this.#router.events.pipe(
