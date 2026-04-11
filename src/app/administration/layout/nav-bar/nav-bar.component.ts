@@ -27,15 +27,15 @@ export class NavBarComponent implements OnInit {
     builder = new MenuBuilder()
     availableItems: MenuItem[] = [];
     
-    #menuOpen = signal<boolean>(false);
-    menuOpen = this.#menuOpen.asReadonly();
+    readonly #menuOpen = signal<boolean>(false);
+    protected readonly menuOpen = this.#menuOpen.asReadonly();
 
     // icons
     protected readonly menuClosedIcon = faBars;
     protected readonly menuOpenIcon = faTimes;
 
     ngOnInit(): void {
-        this.#menuOpen = history.state.navBarVisible ?? false;
+        this.#menuOpen.set(history.state.navBarVisible ?? false);
         this.#rebuildMenu(this.#router.url);
 
         this.#router.events.pipe(
