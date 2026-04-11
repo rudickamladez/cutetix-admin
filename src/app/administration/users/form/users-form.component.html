@@ -1,9 +1,9 @@
-@if (!isCreateMode() && user.isLoading()) {
+@if (mode() !== 'new' && user.isLoading()) {
 <app-loading></app-loading>
 }
-@if (!isCreateMode() || (!user.isLoading() && !user.error())) {
+@if (mode() === 'new' || (!user.isLoading() && !user.error())) {
 <form (submit)="saveUser($event)">
-  <h1>{{ isCreateMode() ? 'New user' : isDetailMode() ? 'User detail' : 'User edit' }}</h1>
+  <h1>{{ mode() === 'new' ? 'New user' : mode() === 'detail' ? 'User detail' : 'User edit' }}</h1>
 
   <label for="username">Username</label>
   <input type="text" [formField]="userForm.username">
@@ -47,7 +47,7 @@
     }
   </select>
 
-  @if (isCreateMode()) {
+  @if (mode() === 'new') {
   <label for="plaintext_password">Password</label>
   <input type="password" [formField]="userForm.plaintext_password" autocomplete="new-password">
   @if (userForm.plaintext_password().invalid() && userForm.plaintext_password().touched()) {
@@ -58,9 +58,9 @@
   </p>
   }
   }
-  @if (!isDetailMode()) {
+  @if (mode() !== 'detail') {
   <button class="alt" [disabled]="userForm().invalid()">
-    {{ isCreateMode() ? 'Create' : 'Save' }}
+    {{ mode() === 'new' ? 'Create' : 'Save' }}
   </button>
   }
 </form>

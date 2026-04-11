@@ -6,7 +6,7 @@ import { HelloComponent } from './hello/hello.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { provideRouter, RouterModule, withComponentInputBinding } from '@angular/router';
+import { provideRouter, RouterLink, RouterOutlet, withComponentInputBinding } from '@angular/router';
 import { APP_ROUTES } from './app.routes';
 import { AdministrationModule } from './administration/administration.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -35,7 +35,8 @@ import { FormField } from '@angular/forms/signals';
         BrowserModule,
         CommonModule,
         ReactiveFormsModule,
-        RouterModule,
+        RouterLink,
+        RouterOutlet,
         FontAwesomeModule,
         SharedModule,
         ServiceWorkerModule.register('ngsw-worker.js', {

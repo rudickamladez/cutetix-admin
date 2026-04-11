@@ -146,15 +146,24 @@ export let APP_ROUTES: Routes = [
           },
           {
             path: 'add',
-            component: UsersFormComponent
+            component: UsersFormComponent,
+            data: {
+              mode: 'new',
+            },
           },
           {
             path: 'edit/:id',
-            component: UsersFormComponent
+            component: UsersFormComponent,
+            data: {
+              mode: 'edit',
+            },
           },
           {
             path: 'detail/:id',
-            component: UsersFormComponent
+            component: UsersFormComponent,
+            data: {
+              mode: 'detail',
+            },
           },
         ]
       },

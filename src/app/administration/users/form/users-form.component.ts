@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { form, required, email, submit, disabled } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -20,8 +20,7 @@ export class UsersFormComponent {
   protected readonly scopesEntries = SCOPES_ENTRIES;
 
   readonly id = input<string | null>(null);
-  protected readonly isCreateMode = computed(() => this.#router.url.includes('/new'));
-  protected readonly isDetailMode = computed(() => this.#router.url.includes('/detail'));
+  readonly mode = input.required<'new' | 'edit' | 'detail'>();
   protected readonly user = this.#usersService.userByIdResource(() => this.id());
 
   protected userModel = signal<UserUpdate>({
@@ -42,11 +41,12 @@ export class UsersFormComponent {
       required(schemaPath.email, { message: 'Email is required' });
       email(schemaPath.email, { message: 'Invalid email format' });
       required(schemaPath.full_name, { message: 'Full name is required' });
-      if (this.isCreateMode()) {
-        required(schemaPath.plaintext_password, { message: 'Password is required' });
-      }
+      
+      // if (this.mode() == 'new') {
+        // required(schemaPath.plaintext_password, { message: 'Password is required' });
+      // }
 
-      disabled(schemaPath, () => this.isDetailMode());
+      disabled(schemaPath, () => { return this.mode() === 'detail'; });
     }
   );
 
@@ -54,7 +54,7 @@ export class UsersFormComponent {
 
     effect(() => {
       this.id();
-      if (this.isCreateMode()) {
+      if (this.mode() === 'new') {
         return;
       }
       this.user.reload();
@@ -75,7 +75,7 @@ export class UsersFormComponent {
     });
 
     effect(() => {
-      if (untracked(() => this.isCreateMode())) {
+      if (this.mode() === 'new') {
         return;
       }
       this.userModel.set({
@@ -94,7 +94,7 @@ export class UsersFormComponent {
   protected saveUser(event: Event): void {
     event.preventDefault();
 
-    if (this.isCreateMode()) {
+    if (this.mode() === 'new') {
       submit(this.userForm, async () => {
         await this.#usersService.create(this.userModel()).subscribe({
           next: () => {
