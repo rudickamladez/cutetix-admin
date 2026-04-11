@@ -234,7 +234,6 @@ export class AuthService implements OnDestroy {
 
         const refreshToken = this.getRefreshToken();
         const apiUrl = this.#storageService.get(StorageKeys.API_URL);
-        this.#storageService.clear();
 
         if (!refreshToken || !apiUrl) {
             window.location.reload();
@@ -244,12 +243,23 @@ export class AuthService implements OnDestroy {
         // TODO rework with navigator.sendBeacon
         this.#http.post(
             (new URL("auth/logout", apiUrl)).href,
-            { refresh_token: refreshToken }
+            { }
         ).pipe(
             timeout(1000)
         ).subscribe({
-            next: () => window.location.reload(),
-            error: () => window.location.reload(),
+            next: () => {
+                this.#logging.log("auth", "User logged out successfully.");
+            },
+            error: (err: HttpErrorResponse) => {
+                this.#logging.error("auth", "User logout failed.", err);
+                console.error(err);
+            },
+            complete: () => {
+                this.#storageService
+                    .delete(StorageKeys.ACCESS_TOKEN)
+                    .delete(StorageKeys.REFRESH_TOKEN);
+                this.#canGoToPrivate.set(false);
+            }
         });
     }
 
