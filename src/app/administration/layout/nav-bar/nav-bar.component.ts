@@ -53,7 +53,7 @@ export class NavBarComponent implements OnInit {
     }
 
     toggle(): void {
-        this.#menuOpen.set(!this.#menuOpen());
+        this.#menuOpen.update(m => !m);
     }
 
     hide(): void {
