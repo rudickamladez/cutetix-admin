@@ -8,7 +8,6 @@ import { NavBarSubitemComponent } from './layout/nav-bar-subitem/nav-bar-subitem
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoadingComponent } from './loading/loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -45,7 +44,6 @@ import { DashboardEventOverviewComponent } from './dashboard/event-overview/dash
         RouterModule,
         FontAwesomeModule,
         BrowserAnimationsModule,
-        ToastrModule.forRoot(),
         ReactiveFormsModule,
         SharedModule,
     ]

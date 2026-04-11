@@ -102,6 +102,10 @@ export class AuthService implements OnDestroy {
                 this.#scheduleNextRefresh();
 
                 this.#handleRefreshLock();
+                this.#toastr.success(
+                    "You have been registered.",
+                    "Register",
+                );
                 this.#canGoToPrivate.set(true);
             },
             error: (err: HttpErrorResponse) => {
@@ -159,6 +163,10 @@ export class AuthService implements OnDestroy {
                 this.#scheduleNextRefresh();
 
                 this.#handleRefreshLock();
+                this.#toastr.success(
+                    "You have been logged in.",
+                    "Login",
+                );
                 this.#canGoToPrivate.set(true);
             },
             error: (err: HttpErrorResponse) => {
@@ -249,10 +257,18 @@ export class AuthService implements OnDestroy {
         ).subscribe({
             next: () => {
                 this.#logging.log("auth", "User logged out successfully.");
+                this.#toastr.success(
+                    "You have been logged out.",
+                    "Logout",
+                );
             },
             error: (err: HttpErrorResponse) => {
                 this.#logging.error("auth", "User logout failed.", err);
                 console.error(err);
+                this.#toastr.error(
+                    `Logout request failed. You might still be logged in on the server. Error: ${err.message}`,
+                    "Logout",
+                );
             },
             complete: () => {
                 this.#storageService
