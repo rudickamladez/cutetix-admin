@@ -20,7 +20,7 @@ export class HelloComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    if (this.#auth.isLoggedIn()) {
+    if (this.#auth.canGoToPrivate()) {
       this.#router.navigate(['/dashboard']);
     }
   }
