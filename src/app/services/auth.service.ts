@@ -13,6 +13,7 @@ import { LockNames } from "../tokens/lock.tokens";
 import { VisibilityService } from "./visibility.service";
 import { environment } from "src/environments/environment";
 import { UserRegister } from "../types/auth.types";
+import { Router } from "@angular/router";
 // import { NgxIndexedDBService } from "ngx-indexed-db";
 
 type TokensFromApi = {
@@ -26,6 +27,7 @@ type TokensFromApi = {
 export class AuthService implements OnDestroy {
     readonly #http = inject(HttpClient);
     readonly #toastr = inject(ToastrService);
+    readonly #router = inject(Router);
     // readonly #socket = inject(Socket);
     readonly #logging = inject(LoggingService);
     readonly #storageService = inject(StorageService);
@@ -71,6 +73,12 @@ export class AuthService implements OnDestroy {
                 this.#refreshingTimer = null;
             }
         }, { allowSignalWrites: true });
+
+        effect(() => {
+            if(!this.canGoToPrivate()) {
+                this.#router.navigate(["/login"]);
+            }
+        })
     }
 
     ngOnDestroy(): void {
@@ -102,10 +110,14 @@ export class AuthService implements OnDestroy {
                 this.#scheduleNextRefresh();
 
                 this.#handleRefreshLock();
+                this.#toastr.success(
+                    "You have been registered.",
+                    "Register",
+                );
                 this.#canGoToPrivate.set(true);
             },
             error: (err: HttpErrorResponse) => {
-                this.#logging.log("auth", "User register failed.", err);
+                this.#logging.error("auth", "User register failed.", err);
                 console.error(err);
                 if (err.error.detail) {
                     this.#toastr.error(
@@ -159,10 +171,14 @@ export class AuthService implements OnDestroy {
                 this.#scheduleNextRefresh();
 
                 this.#handleRefreshLock();
+                this.#toastr.success(
+                    "You have been logged in.",
+                    "Login",
+                );
                 this.#canGoToPrivate.set(true);
             },
             error: (err: HttpErrorResponse) => {
-                this.#logging.log("auth", "User login failed.", err);
+                this.#logging.error("auth", "User login failed.", err);
                 console.error(err);
                 if (err.error.detail) {
                     this.#toastr.error(
@@ -172,7 +188,7 @@ export class AuthService implements OnDestroy {
                     return;
                 }
                 this.#toastr.error(
-                    err.statusText,
+                    err.message,
                     "Login"
                 );
             }
@@ -223,7 +239,7 @@ export class AuthService implements OnDestroy {
                 },
             });
         } catch (err) {
-            this.#logging.log("auth", "Error while refreshing token.", err);
+            this.#logging.error("auth", "Error while refreshing token.", err);
             this.#isRefreshingToken = false;
             this.logout();
         }
@@ -234,7 +250,6 @@ export class AuthService implements OnDestroy {
 
         const refreshToken = this.getRefreshToken();
         const apiUrl = this.#storageService.get(StorageKeys.API_URL);
-        this.#storageService.clear();
 
         if (!refreshToken || !apiUrl) {
             window.location.reload();
@@ -244,12 +259,31 @@ export class AuthService implements OnDestroy {
         // TODO rework with navigator.sendBeacon
         this.#http.post(
             (new URL("auth/logout", apiUrl)).href,
-            { refresh_token: refreshToken }
+            { }
         ).pipe(
             timeout(1000)
         ).subscribe({
-            next: () => window.location.reload(),
-            error: () => window.location.reload(),
+            next: () => {
+                this.#logging.log("auth", "User logged out successfully.");
+                this.#toastr.success(
+                    "You have been logged out.",
+                    "Logout",
+                );
+            },
+            error: (err: HttpErrorResponse) => {
+                this.#logging.error("auth", "User logout failed.", err);
+                console.error(err);
+                this.#toastr.error(
+                    `Logout request failed. You might still be logged in on the server. Error: ${err.message}`,
+                    "Logout",
+                );
+            },
+            complete: () => {
+                this.#storageService
+                    .delete(StorageKeys.ACCESS_TOKEN)
+                    .delete(StorageKeys.REFRESH_TOKEN);
+                this.#canGoToPrivate.set(false);
+            }
         });
     }
 

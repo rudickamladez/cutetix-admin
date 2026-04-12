@@ -18,6 +18,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from './shared/shared.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { FormField } from '@angular/forms/signals';
+import { ToastrModule } from 'ngx-toastr';
 
 
 @NgModule({
@@ -46,6 +47,7 @@ import { FormField } from '@angular/forms/signals';
             registrationStrategy: 'registerWhenStable:30000'
         }),
         FormField,
+        ToastrModule.forRoot(),
     ],
     providers: [
         provideHttpClient(
