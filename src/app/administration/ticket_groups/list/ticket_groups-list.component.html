@@ -30,7 +30,7 @@
         <td>{{ ticket_group.capacity }}</td>
         <td>
           @if (ticket_group.event != null) {
-          <a [routerLink]="'/events/detail/' + ticket_group.event.id">
+          <a [routerLink]="['/events', 'detail', ticket_group.event.id]">
             {{ ticket_group.event.name}}
           </a>
           }
@@ -41,7 +41,7 @@
           }
         </td>
         <td class="actions">
-          <button class="edit" [routerLink]="['ticket_groups', 'edit', ticket_group.id]">
+          <button class="edit" [routerLink]="['/ticket_groups', 'edit', ticket_group.id]">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
           <button class="delete" (click)="deleteTicketGroup(ticket_group)">
