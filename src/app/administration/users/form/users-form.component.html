@@ -1,0 +1,67 @@
+@if (mode() !== 'new' && user.isLoading()) {
+<app-loading></app-loading>
+}
+@if (mode() === 'new' || (!user.isLoading() && !user.error())) {
+<form (submit)="saveUser($event)">
+  <h1>{{ mode() === 'new' ? 'New user' : mode() === 'detail' ? 'User detail' : 'User edit' }}</h1>
+
+  <label for="username">Username</label>
+  <input type="text" [formField]="userForm.username">
+  @if (userForm.username().invalid() && userForm.username().touched()) {
+  <p class="hint">
+    @for (error of userForm.username().errors(); track error.kind) {
+    <span>{{ error.message }}</span>
+    }
+  </p>
+  }
+
+  <label for="email">E-mail</label>
+  <input type="email" [formField]="userForm.email">
+  @if (userForm.email().invalid() && userForm.email().touched()) {
+  <p class="hint">
+    @for (error of userForm.email().errors(); track error.kind) {
+    <span>{{ error.message }}</span>
+    }
+  </p>
+  }
+
+  <label for="full_name">Full name</label>
+  <input type="text" [formField]="userForm.full_name">
+  @if (userForm.full_name().invalid() && userForm.full_name().touched()) {
+  <p class="hint">
+    @for (error of userForm.full_name().errors(); track error.kind) {
+    <span>{{ error.message }}</span>
+    }
+  </p>
+  }
+
+  <div class="checkbox">
+    <input id="disabled" type="checkbox" [formField]="userForm.disabled">
+    <label for="disabled">Disabled</label>
+  </div>
+
+  <label for="scopes">Scopes &mdash; not working yet</label>
+  <select multiple [disabled]="true">
+    @for (scope of scopesEntries; track scope[0]) {
+    <option [value]="scope[0]">{{ scope[1] }}</option>
+    }
+  </select>
+
+  @if (mode() === 'new') {
+  <label for="plaintext_password">Password</label>
+  <input type="password" [formField]="userForm.plaintext_password" autocomplete="new-password">
+  @if (userForm.plaintext_password().invalid() && userForm.plaintext_password().touched()) {
+  <p class="hint">
+    @for (error of userForm.plaintext_password().errors(); track error.kind) {
+    <span>{{ error.message }}</span>
+    }
+  </p>
+  }
+  }
+  @if (mode() !== 'detail') {
+  <button class="alt" [disabled]="userForm().invalid()">
+    {{ mode() === 'new' ? 'Create' : 'Save' }}
+  </button>
+  }
+</form>
+}

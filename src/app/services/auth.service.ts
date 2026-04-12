@@ -347,16 +347,30 @@ export class AuthService implements OnDestroy {
     }
 
     getScopes(): string {
+        return this.getScopesList().join(", ") || "undefined";
+    }
+
+    getScopesList(): string[] {
         const scope = Object(this.getDecodedAccessToken())?.scope as string | undefined;
 
-        const ss = (scope ?? "")
+        return (scope ?? "")
             .toString()
-            .split(",")
+            .split(/[,\s]+/)
             .map(s => s.trim())
-            .filter(Boolean)
-            .join(", ") || "undefined";
+            .filter(Boolean);
+    }
 
-        return ss;
+    hasScope(scope: string): boolean {
+        return this.getScopesList().includes(scope);
+    }
+
+    hasAnyScope(...scopes: string[]): boolean {
+        if (scopes.length === 0) {
+            return false;
+        }
+
+        const availableScopes = this.getScopesList();
+        return scopes.some(scope => availableScopes.includes(scope));
     }
 
     getRefreshToken(): string | null {
