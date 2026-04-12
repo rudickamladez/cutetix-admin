@@ -41,7 +41,7 @@ export class EventsListComponent {
     this.#router.navigate(['/events/edit/' + event.id])
   }
 
-  public delete(event: Event) {
+  public deleteEvent(event: Event) {
     if (!event.id) {
       this.#toastr.error(
         `Cannot delete event "${event.name}"! Didn't receive event id.`,
