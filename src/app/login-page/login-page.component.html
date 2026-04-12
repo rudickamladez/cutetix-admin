@@ -1,6 +1,6 @@
 <h1 class="title">CuteTix admin interface</h1>
 
-@if (loginFailed || !canRun()) {
+@if (!canRun()) {
 <div class="error">
   <p>
     {{ errorText }}
@@ -9,31 +9,40 @@
 }
 
 @if (canRun() && !showConfig()) {
+@switch (mode()) {
+@case ('login') {
 <div class="window">
   <h2 class="ignore-mobile">Login</h2>
   <p>You must be logged in to enter the system.</p>
-  <form [formGroup]="loginForm" (submit)="loginWithPassword()">
-    <input type="text" formControlName="username" placeholder="Username">
-    <input type="password" formControlName="password" placeholder="Password"
+  <form (submit)="login($event)">
+    <input type="text" [formField]="loginForm.username" placeholder="Username">
+    <input type="password" [formField]="loginForm.password" placeholder="Password"
       [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}">
-    <button class="alt" [disabled]="(!loginForm.value.username) || (!loginForm.value.password) || loggingIn">
-      @if (!loggingIn) {
-      <fa-icon [icon]="loginIcon"></fa-icon>
-      }
-      @if (!loggingIn) {
+    <button class="alt" [disabled]="loginForm().invalid()">
       <span>Log in</span>
-      }
-      @if (loggingIn) {
-      <fa-icon [icon]="loadingIcon"></fa-icon>
-      }
     </button>
   </form>
 </div>
 }
+@case ('register') {
+<div class="window">
+  <h2 class="ignore-mobile">Register</h2>
+  <p>All fields are required.</p>
 
-<button class="config" (click)="toggleConfigVisibility()">
-  <fa-icon [icon]="settingsIcon"></fa-icon>
-</button>
+  <form (submit)="register($event)">
+    <input type="text" [formField]="registerForm.full_name" placeholder="Full name" />
+    <input type="text" [formField]="registerForm.username" placeholder="Username" />
+    <input type="email" [formField]="registerForm.email" placeholder="E-mail" />
+    <input type="password" [formField]="registerForm.plaintext_password" placeholder="Password"
+      [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}" />
+    <button class="alt" [disabled]="registerForm().invalid()">
+      Register
+    </button>
+  </form>
+</div>
+}
+}
+}
 
 @if (showConfig()) {
 <div class="window">
@@ -43,4 +52,14 @@
   <app-local-storage-field [key]="keys.SUDO_PASSWORD_MODE" label="SUDO_PASSWORD_MODE" type="checkbox" />
 </div>
 }
+
+<div class="buttons">
+  <button (click)="toggleMode()">
+    <fa-icon [icon]="registerIcon"></fa-icon>
+  </button>
+  <button (click)="toggleConfigVisibility()">
+    <fa-icon [icon]="settingsIcon"></fa-icon>
+  </button>
+</div>
+
 <app-copyright></app-copyright>

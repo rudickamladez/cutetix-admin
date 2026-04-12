@@ -86,24 +86,29 @@ h2 {
     }
 }
 
-button.config {
+div.buttons {
     position: fixed;
     right: 0px;
     bottom: 0px;
-    min-width: auto;
-    width: auto;
-    padding: 0px 15px;
-
-    z-index: 1000; // more than window
-    pointer-events: auto;
-
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    
+    z-index: 1000; // more than window
+    
+    button {
+        min-width: auto;
+        width: auto;
+        padding: 0px 15px;
+        margin: 0px;
+        pointer-events: auto;
 
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+    }
 }
 
 .window {

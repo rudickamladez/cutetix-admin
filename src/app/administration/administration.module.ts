@@ -20,6 +20,9 @@ import { TicketsNewComponent } from './tickets/new/tickets-new.component';
 import { EventsFormComponent } from './events/form/events-form.component';
 import { SharedModule } from '../shared/shared.module';
 import { DashboardEventOverviewComponent } from './dashboard/event-overview/dashboard-event-overview.component';
+import { UsersListComponent } from './users/list/users-list.component';
+import { UsersFormComponent } from './users/form/users-form.component';
+import { FormField } from '@angular/forms/signals';
 
 @NgModule({
     declarations: [
@@ -38,6 +41,8 @@ import { DashboardEventOverviewComponent } from './dashboard/event-overview/dash
         EventsFormComponent,
         TicketsListComponent,
         TicketsNewComponent,
+        UsersListComponent,
+        UsersFormComponent,
     ],
     imports: [
         CommonModule,
@@ -46,6 +51,7 @@ import { DashboardEventOverviewComponent } from './dashboard/event-overview/dash
         ToastNoAnimationModule.forRoot(),
         ReactiveFormsModule,
         SharedModule,
+        FormField,
     ]
 })
 export class AdministrationModule { }
