@@ -6,7 +6,7 @@
   <div class="error">
     <p>
       There's problem loading table.<br />
-      {{ loadErrorText() }}
+      {{ ticketGroups.error()?.message }}
     </p>
   </div>
   }
@@ -41,10 +41,10 @@
           }
         </td>
         <td class="actions">
-          <button class="edit" (click)="edit(ticket_group)">
+          <button class="edit" [routerLink]="['ticket_groups', 'edit', ticket_group.id]">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
-          <button class="delete" (click)="delete(ticket_group)">
+          <button class="delete" (click)="deleteTicketGroup(ticket_group)">
             <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
         </td>

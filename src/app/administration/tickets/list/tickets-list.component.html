@@ -6,7 +6,7 @@
   <div class="error">
     <p>
       There's problem loading table.<br />
-      {{ loadErrorText() }}
+      {{ tickets.error()?.message || tickets.error() }}
     </p>
   </div>
   }
@@ -38,27 +38,25 @@
         </td>
         <td class="d-none">{{ ticket.description }}</td>
         <td>
-          @if (ticket.group != null) {
-          <a [routerLink]="'/ticket_groups/detail/' + ticket.group.id">
-            {{ ticket.group.name}}
-          </a>
-          }
           @if (ticket.group == null) {
-          <span>
-            No group
-          </span>
+            <span>
+              No group
+            </span>
+          } @else {
+            <a [routerLink]="['/ticket_groups', 'detail', ticket.group.id]">
+              {{ ticket.group.name}}
+            </a>
           }
         </td>
         <td>
-          @if (ticket.group?.event != null) {
-          <a [routerLink]="'/events/detail/' + ticket.group?.event?.id">
-            {{ ticket.group?.event?.name}}
-          </a>
-          }
           @if (ticket.group?.event == null) {
-          <span>
-            No event for group
-          </span>
+            <span>
+              No event for group
+            </span>
+          } @else {
+            <a [routerLink]="['/events', 'detail', ticket.group?.event?.id]">
+              {{ ticket.group?.event?.name}}
+            </a>
           }
         </td>
         <!-- <td *ngSwitch="ticket.status"> -->
@@ -81,10 +79,10 @@
           <button class="destructive" (click)="cancel(ticket)">
             <fa-icon [icon]="cancelIcon"></fa-icon>
           </button>
-          <button class="edit" (click)="edit(ticket)" disabled>
+          <button class="edit" [routerLink]="['tickets', ticket.id]" disabled>
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
-          <button class="delete" (click)="delete(ticket)">
+          <button class="delete" (click)="deleteTicket(ticket)">
             <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
         </td>

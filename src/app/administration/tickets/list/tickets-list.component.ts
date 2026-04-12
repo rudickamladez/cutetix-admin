@@ -3,7 +3,7 @@ import { TicketService } from '../tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-tickets-list',
@@ -14,17 +14,16 @@ import { Router } from '@angular/router';
 export class TicketsListComponent {
   readonly #ticketsService = inject(TicketService);
   readonly #toastr = inject(ToastrService);
-  readonly #router = inject(Router);
 
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   protected readonly cancelIcon = faBan;
   protected readonly tickets = this.#ticketsService.tickets;
 
-  #notCancelledTicketToastr(ticket: Ticket) {
+  #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
     this.#toastr.error(
-      `${ticket.firstname} ${ticket.lastname}`,
-      'Ticket DIDN\'T cancelled!',
+      typeof error === 'string' ? error : error.message,
+      'Ticket wasn\'t cancelled!',
       {
         progressBar: true,
       }
@@ -35,97 +34,59 @@ export class TicketsListComponent {
     if (!confirm(
       `Are you sure to cancel ticket for "${ticket.firstname} ${ticket.lastname}"?`
     )) {
-      this.#notCancelledTicketToastr(ticket);
+      this.#notCancelledTicketToastr(ticket, 'Cancellation cancelled by user.');
       return;
     }
     this.#ticketsService.cancel(ticket).subscribe({
-      next: (cancelledTicket) => {
-        if (!cancelledTicket) {
-          this.#notCancelledTicketToastr(ticket);
-          return;
-        }
+      next: () => {
         this.#toastr.info(
-          `${cancelledTicket.firstname} ${cancelledTicket.lastname}`,
-          'Ticket cancelled',
+          'Successfully cancelled.',
+          'Ticket',
           {
             progressBar: true
           }
         );
       },
       error: (err) => {
-        const message = err instanceof Error
-          ? err.message
-          : 'An unexpected error occurred while cancelling the ticket.';
-        this.#toastr.error(
-          message,
-          'Ticket DIDN\'T cancelled!',
-          {
-            progressBar: true,
-          }
-        );
+        this.#notCancelledTicketToastr(ticket, err);
       }
     });
   }
 
-  public edit(ticket: Ticket) {
-    this.#router.navigate(['/tickets/edit/' + ticket.id]);
-  }
-
-  #notDeletedTicketToastr(ticket: Ticket) {
+  #notDeletedTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
     this.#toastr.error(
-      `${ticket.firstname} ${ticket.lastname}`,
-      'Ticket DIDN\'T deleted!',
+      typeof error === 'string' ? error : error.message,
+      'Ticket wasn\'t deleted!',
       {
         progressBar: true,
       }
     );
   }
 
-  public delete(ticket: Ticket) {
+  public deleteTicket(ticket: Ticket) {
     if (!ticket.id) {
-      this.#toastr.error(
-        'Can\'t delete! Didn\'t receive ticket id.',
-        'Ticket DIDN\'T deleted!',
-        {
-          progressBar: true,
-        }
-      );
+      this.#notDeletedTicketToastr(ticket, 'Missing ID.');
       return;
     }
     if (!confirm(
       `Are you sure to delete ticket for "${ticket.firstname} ${ticket.lastname}"?`
     )) {
-      this.#notDeletedTicketToastr(ticket);
+      this.#notDeletedTicketToastr(ticket, 'Deletion cancelled by user.');
       return;
     }
     this.#ticketsService.delete(ticket.id).subscribe({
-      next: (deletedTicket) => {
-        if (!deletedTicket) {
-          this.#notDeletedTicketToastr(ticket);
-          return;
-        }
+      next: () => {
         this.#toastr.info(
-          `${deletedTicket.firstname} ${deletedTicket.lastname}`,
+          'Successfully deleted.',
           'Ticket deleted',
           {
             progressBar: true
           }
         );
       },
-      error: () => {
-        this.#notDeletedTicketToastr(ticket);
+      error: (err) => {
+        this.#notDeletedTicketToastr(ticket, err);
       }
     });
-  }
-
-  protected loadErrorText(): string {
-    const err = this.tickets.error();
-    if (!err) {
-      return '';
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return String(err);
   }
 }

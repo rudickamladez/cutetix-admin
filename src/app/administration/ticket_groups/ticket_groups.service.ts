@@ -74,8 +74,8 @@ export class TicketGroupService {
     );
   }
 
-  public delete(id: string): Observable<TicketGroup> {
-    return this.#httpClient.delete<TicketGroup>(
+  public delete(id: string): Observable<void> {
+    return this.#httpClient.delete<void>(
       this.#endpoint(`/${id}/`),
     ).pipe(
       tap(() => {

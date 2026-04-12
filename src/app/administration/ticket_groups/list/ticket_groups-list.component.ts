@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { TicketGroupService } from '../ticket_groups.service';
-import { TicketGroup } from '../ticket_groups.types';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { TicketGroup } from '../ticket_groups.types';
 
 @Component({
   selector: 'app-ticket_groups-list',
@@ -14,71 +14,37 @@ import { Router } from '@angular/router';
 export class TicketGroupsListComponent {
   readonly #ticket_groupService = inject(TicketGroupService);
   readonly #toastr = inject(ToastrService);
-  readonly #router = inject(Router);
 
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   protected readonly ticketGroups = this.#ticket_groupService.ticketGroups;
 
-  public edit(ticket_group: TicketGroup) {
-    this.#router.navigate(['/ticket_groups/edit/' + ticket_group.id]);
-  }
-
-  public delete(ticket_group: TicketGroup) {
+  public deleteTicketGroup(ticket_group: TicketGroup): void {
     if (!ticket_group.id) {
-      this.#toastr.error(
-        `<div><b>Ticket group wasn't deleted!</b><br/>Can't delete! Didn't receive ticket_group id.</div>`,
-        '',
-        {
-          enableHtml: true,
-          progressBar: true,
-        }
-      );
       return;
     }
-    this.#ticket_groupService.delete(ticket_group.id).subscribe({
-      next: (deletedGroup) => {
-        if (!deletedGroup) {
-          this.#toastr.error(
-            `<div><b>Ticket group wasn't deleted!</b></div>`,
-            '',
-            {
-              enableHtml: true,
-              progressBar: true,
-            }
-          );
-          return;
-        }
+    if (!confirm(`Are you sure to delete ticket group "${ticket_group.name}"?`)) {
+      return;
+    }
+    this.#ticket_groupService.delete(ticket_group!.id).subscribe({
+      next: () => {
         this.#toastr.info(
-          `<b>Ticket group "${deletedGroup.name}" deleted</b>`,
-          '',
+          'Successfully deleted.',
+          'Ticket group',
           {
-            enableHtml: true,
             progressBar: true
           }
         );
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.#toastr.error(
-          `<div><b>Ticket group wasn't deleted!</b><br/>An error occurred while deleting the ticket group.</div>`,
-          '',
+          err.message,
+          'Ticket group wasn\'t deleted!',
           {
-            enableHtml: true,
             progressBar: true,
           }
         );
       }
     });
-  }
-
-  protected loadErrorText(): string {
-    const err = this.ticketGroups.error();
-    if (!err) {
-      return '';
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return String(err);
   }
 }

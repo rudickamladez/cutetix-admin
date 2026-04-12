@@ -51,8 +51,8 @@ export class TicketService {
     );
   }
 
-  public delete(id: string): Observable<Ticket> {
-    return this.#httpClient.delete<Ticket>(
+  public delete(id: string): Observable<void> {
+    return this.#httpClient.delete<void>(
       this.#endpoint(`/${id}/`),
     ).pipe(
       tap(() => this.tickets.reload())
