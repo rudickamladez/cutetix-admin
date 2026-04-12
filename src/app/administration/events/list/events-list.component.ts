@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-events-list',
@@ -64,7 +65,7 @@ export class EventsListComponent {
           }
         );
       },
-      error: (err: Error) => {
+      error: (err: HttpErrorResponse) => {
         console.error(err);
         this.#toastr.error(
           `Error: ${err.message}`,

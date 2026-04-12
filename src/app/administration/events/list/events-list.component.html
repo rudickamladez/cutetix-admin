@@ -33,10 +33,10 @@
           <button class="favorite" (click)="favorite(event.id!)">
             <fa-icon [icon]="favoriteIcon(event.id!)"></fa-icon>
           </button>
-          <button class="edit" (click)="edit(event)">
+          <button class="edit" (click)="edit(event)" [disabled]="!authService.hasScope('events:edit')">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
-          <button class="delete" (click)="delete(event)">
+          <button class="delete" (click)="delete(event)" [disabled]="!authService.hasScope('events:edit')">
             <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
         </td>
