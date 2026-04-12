@@ -2,12 +2,13 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'formatScopes',
-  // pure: false, // TODO: Check
 })
 export class FormatScopesPipe implements PipeTransform {
 
   transform(scopes: string | string[] | undefined): string {
-    if (!scopes) return '';
+    if (!scopes) {
+      return '';
+    }
     if (typeof scopes === 'string'){
       if (scopes.includes(',')) {
         scopes = scopes.split(',');
