@@ -1,15 +1,14 @@
+import { HttpClient, httpResource } from "@angular/common/http";
 import { effect, inject, Injectable } from "@angular/core";
-
 import { ToastrService } from "ngx-toastr";
 
+import { StorageKeys } from "../tokens/storage.tokens";
+import type { User } from "../types/auth.types";
 import { equal } from "../utils/deepEqual";
 import { LoggingService } from "./logging.service";
-import type { User } from "../types/auth.types";
-import { StorageKeys } from "../tokens/storage.tokens";
 import { StorageService } from "./storage.service";
-import { HttpClient, httpResource } from "@angular/common/http";
 
-const API_PATH: string = "users";
+const API_PATH = "users";
 
 @Injectable()
 export class UsersService {
@@ -21,7 +20,7 @@ export class UsersService {
   readonly user = httpResource<User>(
     () => new URL(`${API_PATH}/me/`, this.#storageService.get(StorageKeys.API_URL)!).href,
     {
-      equal
+      equal,
     }
   );
 
@@ -31,10 +30,12 @@ export class UsersService {
     });
 
     effect(() => {
-      if (this.user.error()) {
-        this.#logging.error("user", "Failed to fetch user data:", this.user.error());
-        this.#toastr.error("Failed to fetch user data", "Error");
+      const err = this.user.error();
+      if (!err) {
+        return;
       }
+      this.#logging.error("user", "Failed to fetch user data:", err);
+      this.#toastr.error("Failed to fetch user data", "Error");
     });
   }
 
@@ -44,25 +45,23 @@ export class UsersService {
       return false;
     }
 
-    return user.favorite_events.some(e => e.id == eventId);
+    return user.favorite_events.some(event => event.id === eventId);
   }
 
-  toggleEventFavorite(eventId: string) {
+  toggleEventFavorite(eventId: string): void {
     if (this.isEventFavorited(eventId)) {
       this.removeEventFavorite(eventId);
-    } else {
-      this.addEventFavorite(eventId);
+      return;
     }
+
+    this.addEventFavorite(eventId);
   }
 
   addEventFavorite(eventId: string) {
     const baseUrl = this.#storageService.get(StorageKeys.API_URL)!;
     const url = new URL(`${API_PATH}/me/favorite_events/${eventId}/`, baseUrl);
 
-    return this.#httpClient.post(
-      url.href,
-      null
-    ).subscribe({
+    return this.#httpClient.post(url.href, null).subscribe({
       next: () => {
         this.#toastr.success("Event added to favorites", "Success");
       },
@@ -72,7 +71,7 @@ export class UsersService {
       },
       complete: () => {
         this.user.reload();
-      }
+      },
     });
   }
 
@@ -80,9 +79,7 @@ export class UsersService {
     const baseUrl = this.#storageService.get(StorageKeys.API_URL)!;
     const url = new URL(`${API_PATH}/me/favorite_events/${eventId}/`, baseUrl);
 
-    return this.#httpClient.delete(
-      url.href
-    ).subscribe({
+    return this.#httpClient.delete(url.href).subscribe({
       next: () => {
         this.#toastr.success("Event removed from favorites", "Success");
       },
@@ -92,7 +89,7 @@ export class UsersService {
       },
       complete: () => {
         this.user.reload();
-      }
+      },
     });
   }
 }

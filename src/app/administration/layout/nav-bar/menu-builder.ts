@@ -1,4 +1,4 @@
-import { faCalendarDay, faCalendarDays, faClock, faTicket } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDay, faCalendarDays, faClock, faTicket, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem, MenuSubItem } from './menu-items';
 import { IconDefinition } from '@fortawesome/angular-fontawesome';
 import { inject } from '@angular/core';
@@ -17,10 +17,12 @@ export class MenuBuilder {
     ticketsMenuItem: MenuItem = this.#getMenuItem('Tickets', 'tickets', faTicket, () => this.getSubItemsByPath('tickets'));
     ticketGroupsMenuItem: MenuItem = this.#getMenuItem('Ticket groups', 'ticket_groups', faClock, () => this.getSubItemsByPath('ticket_groups'));
     eventsMenuItem: MenuItem = this.#getMenuItem('Events', 'events', faCalendarDays, () => this.getSubItemsByPath('events'));
+    usersMenuItem: MenuItem = this.#getMenuItem('Users', 'users', faUsers, () => this.getSubItemsByPath('users'));
     #adminMenu: MenuItem[] = [
         this.ticketsMenuItem,
         this.ticketGroupsMenuItem,
         this.eventsMenuItem,
+        this.usersMenuItem,
     ];
 
     build(currentUrl: string = ''): MenuItem[] {

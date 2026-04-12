@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { MenuItem } from './menu-items';
 import { MenuBuilder } from './menu-builder';
 import { AuthService } from 'src/app/services/auth.service';
@@ -26,14 +26,16 @@ export class NavBarComponent implements OnInit {
     logoutItem =  new MenuItem('Log out', '', faSignOutAlt, () => this.logout());
     builder = new MenuBuilder()
     availableItems: MenuItem[] = [];
-    menuOpen = false;
+    
+    readonly #menuOpen = signal<boolean>(false);
+    protected readonly menuOpen = this.#menuOpen.asReadonly();
 
     // icons
     protected readonly menuClosedIcon = faBars;
     protected readonly menuOpenIcon = faTimes;
 
     ngOnInit(): void {
-        this.menuOpen = history.state.navBarVisible ?? false;
+        this.#menuOpen.update(m => history.state.navBarVisible ?? m);
         this.#rebuildMenu(this.#router.url);
 
         this.#router.events.pipe(
@@ -51,15 +53,16 @@ export class NavBarComponent implements OnInit {
     }
 
     toggle(): void {
-        this.menuOpen = !this.menuOpen;
+        this.#menuOpen.update(m => !m);
     }
 
     hide(): void {
-        this.menuOpen = false;
+        this.#menuOpen.set(false);
     }
 
     logout(): void {
         this.#authService.logout();
+        this.#router.navigate(['/login']);
     }
 
     #rebuildMenu(currentUrl: string): void {

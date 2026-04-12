@@ -1,7 +1,7 @@
 <div class="info" label="Username">{{ authService.getUsername() }}</div>
 <div class="info" label="Scopes in token">{{ authService.getScopes() }}</div>
 <div class="info" label="Access token expires on">{{ get_access_token_expiration() }} ‒ {{ time_to_access_token_expire }}</div>
-<div class="info" label="Refresh token expires on">{{ refresh_token_expire() }} ‒ {{ time_to_refresh_token_expire }}
+<div class="info" label="Refresh token expires on">{{ refresh_token_expire() }} ‒ {{ time_to_refresh_token_expire }}</div>
 <div class="admin-mode-container">
   <div class="info" label="Admin mode">{{ adminModeService.status() ? "ON" : "OFF" }}</div>
   <button (click)="adminModeService.toggle()">
@@ -20,7 +20,7 @@
 <div class="info" label="UUID">{{ user.uuid }}</div>
 <div class="info" label="Full name">{{ user.full_name }}</div>
 <div class="info" label="E-mail">{{ user.email }}</div>
-<div class="info" label="Scopes in database">{{ user.scopes }}</div>
+<div class="info" label="Scopes in database">{{ user.scopes | formatScopes }}</div>
 @if (show_favorite_events()) {
 
 <div class="info" label="Favorite events">

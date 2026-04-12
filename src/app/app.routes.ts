@@ -12,8 +12,11 @@ import { EventsListComponent } from './administration/events/list/events-list.co
 import { TicketsListComponent } from './administration/tickets/list/tickets-list.component';
 import { TicketsNewComponent } from './administration/tickets/new/tickets-new.component';
 import { EventsFormComponent } from './administration/events/form/events-form.component';
+import { UsersListComponent } from './administration/users/list/users-list.component';
+import { UsersFormComponent } from './administration/users/form/users-form.component';
 import { authGuard } from './guards/auth.guard';
 import { logoutGuard } from './guards/logout.guard';
+import { usersSectionGuard } from './guards/users-section.guard';
 
 let eventsChildren: Routes = [
   {
@@ -127,6 +130,42 @@ export let APP_ROUTES: Routes = [
       {
         path: 'events',
         children: eventsChildren,
+      },
+      {
+        path: 'users',
+        canActivate: [usersSectionGuard],
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'list',
+          },
+          {
+            path: 'list',
+            component: UsersListComponent
+          },
+          {
+            path: 'add',
+            component: UsersFormComponent,
+            data: {
+              mode: 'new',
+            },
+          },
+          {
+            path: 'edit/:id',
+            component: UsersFormComponent,
+            data: {
+              mode: 'edit',
+            },
+          },
+          {
+            path: 'detail/:id',
+            component: UsersFormComponent,
+            data: {
+              mode: 'detail',
+            },
+          },
+        ]
       },
       {
         path: '**',

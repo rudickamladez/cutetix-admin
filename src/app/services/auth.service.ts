@@ -12,6 +12,7 @@ import { LoggingService } from "./logging.service";
 import { LockNames } from "../tokens/lock.tokens";
 import { VisibilityService } from "./visibility.service";
 import { environment } from "src/environments/environment";
+import { UserRegister } from "../types/auth.types";
 // import { NgxIndexedDBService } from "ngx-indexed-db";
 
 type TokensFromApi = {
@@ -41,6 +42,7 @@ export class AuthService implements OnDestroy {
 
     #refreshingTimer: ReturnType<typeof setTimeout> | null = null;
     #loginSub?: Subscription;
+    #registerSub?: Subscription;
 
     constructor() {
         // could not be unsubscribed, because it is provided in root
@@ -73,6 +75,51 @@ export class AuthService implements OnDestroy {
 
     ngOnDestroy(): void {
         this.#loginSub?.unsubscribe();
+    }
+
+    register(
+        user: UserRegister,
+    ): void {
+        // If user is already logged in, do nothing
+        if (this.isLoggedIn()) {
+            return;
+        }
+
+        if (this.#registerSub) {
+            this.#registerSub.unsubscribe();
+        }
+
+        this.#registerSub = this.#http.post<TokensFromApi>(
+            new URL("auth/register", this.#storageService.get(StorageKeys.API_URL)!).href,
+            user,
+        ).subscribe({
+            next: ({ refresh_token, access_token }) => {
+                this.#logging.log("auth", "User registred successfully.");
+                this.#storageService
+                    .set(StorageKeys.ACCESS_TOKEN, access_token)
+                    .set(StorageKeys.REFRESH_TOKEN, refresh_token);
+
+                this.#scheduleNextRefresh();
+
+                this.#handleRefreshLock();
+                this.#canGoToPrivate.set(true);
+            },
+            error: (err: HttpErrorResponse) => {
+                this.#logging.log("auth", "User register failed.", err);
+                console.error(err);
+                if (err.error.detail) {
+                    this.#toastr.error(
+                        err.error.detail,
+                        "Register"
+                    );
+                    return;
+                }
+                this.#toastr.error(
+                    err.error,
+                    "Register"
+                );
+            }
+        });
     }
 
     login(
@@ -300,16 +347,30 @@ export class AuthService implements OnDestroy {
     }
 
     getScopes(): string {
+        return this.getScopesList().join(", ") || "undefined";
+    }
+
+    getScopesList(): string[] {
         const scope = Object(this.getDecodedAccessToken())?.scope as string | undefined;
 
-        const ss = (scope ?? "")
+        return (scope ?? "")
             .toString()
-            .split(",")
+            .split(/[,\s]+/)
             .map(s => s.trim())
-            .filter(Boolean)
-            .join(", ") || "undefined";
+            .filter(Boolean);
+    }
 
-        return ss;
+    hasScope(scope: string): boolean {
+        return this.getScopesList().includes(scope);
+    }
+
+    hasAnyScope(...scopes: string[]): boolean {
+        if (scopes.length === 0) {
+            return false;
+        }
+
+        const availableScopes = this.getScopesList();
+        return scopes.some(scope => availableScopes.includes(scope));
     }
 
     getRefreshToken(): string | null {
