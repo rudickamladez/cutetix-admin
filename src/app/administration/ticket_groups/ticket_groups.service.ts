@@ -11,9 +11,9 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
 })
 export class TicketGroupService {
   readonly #httpClient = inject(HttpClient);
-
   readonly #storageService = inject(StorageService);
-  readonly #API_PATH = 'ticket_groups';
+
+  readonly #apiPath = 'ticket_groups';
 
   readonly ticketGroups = httpResource<TicketGroup[]>(
     () => this.#endpoint('/'),
@@ -26,8 +26,13 @@ export class TicketGroupService {
     () => this.#endpoint('/active/sum/')
   );
 
+  constructor() {
+    this.ticketGroups.reload();
+    this.activeSum.reload();
+  }
+
   #endpoint(path: string): string {
-    return new URL(`${this.#API_PATH}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
+    return new URL(`${this.#apiPath}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
   public ticketGroupByIdResource(

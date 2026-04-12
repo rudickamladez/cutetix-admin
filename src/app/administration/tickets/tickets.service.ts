@@ -11,9 +11,9 @@ import { StorageService } from 'src/app/services/storage.service';
 })
 export class TicketService {
   readonly #httpClient = inject(HttpClient);
-
   readonly #storageService = inject(StorageService);
-  readonly #API_PATH = 'tickets';
+
+  readonly #apiPath = 'tickets';
 
   readonly tickets = httpResource<Ticket[]>(
     () => this.#endpoint('/'),
@@ -22,8 +22,12 @@ export class TicketService {
     }
   );
 
+  constructor() {
+    this.tickets.reload();
+  }
+
   #endpoint(path: string): string {
-    return new URL(`${this.#API_PATH}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
+    return new URL(`${this.#apiPath}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
   public ticketByIdResource(
