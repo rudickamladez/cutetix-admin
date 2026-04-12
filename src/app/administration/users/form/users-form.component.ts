@@ -51,7 +51,6 @@ export class UsersFormComponent {
   );
 
   constructor() {
-
     effect(() => {
       this.id();
       if (this.mode() === 'new') {
