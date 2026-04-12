@@ -24,6 +24,13 @@ export class TicketGroupsListComponent {
       return;
     }
     if (!confirm(`Are you sure to delete ticket group "${ticket_group.name}"?`)) {
+      this.#toastr.error(
+          'Deletion cancelled by user.',
+          'Ticket group',
+          {
+            progressBar: true,
+          }
+        );
       return;
     }
     this.#ticket_groupService.delete(ticket_group!.id).subscribe({
