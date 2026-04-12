@@ -11,9 +11,9 @@ import { StorageService } from 'src/app/services/storage.service';
 })
 export class EventService {
   readonly #httpClient = inject(HttpClient);
-
-  readonly #API_PATH = 'events';
   readonly #storageService = inject(StorageService);
+
+  readonly #apiPath = 'events';
 
   readonly events = httpResource<Event[]>(
     () => this.#endpoint('/'),
@@ -22,8 +22,12 @@ export class EventService {
     }
   );
 
+  constructor() {
+    this.events.reload();
+  }
+
   #endpoint(path: string): string {
-    return new URL(`${this.#API_PATH}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
+    return new URL(`${this.#apiPath}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
   public eventByIdResource(
