@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { HelloComponent } from './hello/hello.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { DashboardComponent } from './administration/dashboard/dashboard.component';
@@ -45,12 +44,8 @@ let eventsChildren: Routes = [
 export let APP_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'login',
     pathMatch: 'full',
-  },
-  {
-    path: 'home',
-    component: HelloComponent,
   },
   {
     path: 'login',
