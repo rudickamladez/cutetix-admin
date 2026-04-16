@@ -1,15 +1,15 @@
 import { Component, Input, OnDestroy, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 
 @Component({
-  selector: 'app-local-storage-field',
-  templateUrl: './local-storage-field.component.html',
-  styleUrls: ['./local-storage-field.component.scss'],
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-local-storage-field',
+    templateUrl: './local-storage-field.component.html',
+    styleUrls: ['./local-storage-field.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [ReactiveFormsModule],
 })
 export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   readonly #storageService = inject(StorageService);

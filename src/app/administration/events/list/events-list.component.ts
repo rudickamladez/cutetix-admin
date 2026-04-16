@@ -5,12 +5,15 @@ import { faPen, faStar, faStarHalfStroke, faTrash } from '@fortawesome/free-soli
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
+import { LoadingComponent } from '../../loading/loading.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-events-list',
-  templateUrl: './events-list.component.html',
-  styleUrls: ['./events-list.component.scss'],
-  standalone: false
+    selector: 'app-events-list',
+    templateUrl: './events-list.component.html',
+    styleUrls: ['./events-list.component.scss'],
+    imports: [LoadingComponent, FaIconComponent, DatePipe]
 })
 export class EventsListComponent {
   readonly #eventsService = inject(EventService);

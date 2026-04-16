@@ -3,12 +3,14 @@ import { faRepeat } from "@fortawesome/free-solid-svg-icons";
 import { AdminModeService } from "src/app/services/adminMode.service";
 import { AuthService } from "src/app/services/auth.service";
 import { UsersService } from "src/app/services/users.service";
+import { FaIconComponent } from "@fortawesome/angular-fontawesome";
+import { FormatScopesPipe } from "../../format-scopes.pipe";
 
 @Component({
-  selector: 'app-user-info',
-  templateUrl: './user-info.component.html',
-  styleUrls: ['./user-info.component.scss'],
-  standalone: false,
+    selector: 'app-user-info',
+    templateUrl: './user-info.component.html',
+    styleUrls: ['./user-info.component.scss'],
+    imports: [FaIconComponent, FormatScopesPipe],
 })
 export class UserInfoComponent implements OnInit, OnDestroy {
   protected readonly authService = inject(AuthService);

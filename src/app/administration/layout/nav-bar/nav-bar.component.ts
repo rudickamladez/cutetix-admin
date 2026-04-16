@@ -8,12 +8,15 @@ import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StorageService } from 'src/app/services/storage.service';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { NavBarItemComponent } from '../nav-bar-item/nav-bar-item.component';
+import { NavBarSubitemComponent } from '../nav-bar-subitem/nav-bar-subitem.component';
 
 @Component({
     selector: 'app-nav-bar',
     templateUrl: './nav-bar.component.html',
     styleUrls: ['./nav-bar.component.scss'],
-    standalone: false
+    imports: [FaIconComponent, NavBarItemComponent, NavBarSubitemComponent]
 })
 export class NavBarComponent implements OnInit {
     readonly #authService = inject(AuthService);

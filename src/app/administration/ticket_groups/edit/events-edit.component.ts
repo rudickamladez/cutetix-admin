@@ -1,5 +1,5 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { TicketGroupService } from '../ticket_groups.service';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,7 +10,7 @@ import { Event } from '../../events/events.types';
     selector: 'app-ticket_groups-edit',
     templateUrl: './events-edit.component.html',
     styleUrls: ['./events-edit.component.scss'],
-    standalone: false
+    imports: [ReactiveFormsModule]
 })
 export class TicketGroupsEditComponent {
   readonly #router = inject(Router);
