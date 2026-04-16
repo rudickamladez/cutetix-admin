@@ -12,7 +12,7 @@
 }
 
 @if (!isEditing || (!event.isLoading() && !event.error())) {
-<form [formGroup]="form" (submit)="formMethod()">
+<form class="admin-form" [formGroup]="form" (submit)="formMethod()">
   <h1>{{ title }}</h1>
 
   <label for="name">Name</label>

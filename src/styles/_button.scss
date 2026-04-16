@@ -156,9 +156,9 @@ button:not(.default-style),
     }
 }
 
-form {
-    button.alt,
-    .button.alt {
+.admin-form {
+    button,
+    .button {
         margin-top: 10px;
 
         fa-icon {

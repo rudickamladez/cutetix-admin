@@ -2,7 +2,7 @@
 <app-loading></app-loading>
 }
 @if (mode() === 'new' || (!user.isLoading() && !user.error())) {
-<form (submit)="saveUser($event)">
+<form class="admin-form" (submit)="saveUser($event)">
   <h1>{{ mode() === 'new' ? 'New user' : mode() === 'detail' ? 'User detail' : 'User edit' }}</h1>
 
   <label for="username">Username</label>
