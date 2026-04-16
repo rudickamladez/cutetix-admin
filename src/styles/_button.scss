@@ -156,6 +156,17 @@ button:not(.default-style),
     }
 }
 
+form {
+    button,
+    .button {
+        margin-top: 10px;
+
+        fa-icon {
+            margin-right: 5px;
+        }
+    }
+}
+
 .button-container {
     display: flex;
     flex-wrap: wrap;
