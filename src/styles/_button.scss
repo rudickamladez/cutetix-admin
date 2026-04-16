@@ -157,8 +157,8 @@ button:not(.default-style),
 }
 
 form {
-    button,
-    .button {
+    button.alt,
+    .button.alt {
         margin-top: 10px;
 
         fa-icon {
