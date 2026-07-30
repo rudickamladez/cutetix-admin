@@ -1,14 +1,15 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { EventService } from '../events.service';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoadingComponent } from '../../loading/loading.component';
 
 @Component({
     selector: 'app-events-form',
     templateUrl: './events-form.component.html',
     styleUrls: ['./events-form.component.scss'],
-    standalone: false
+    imports: [LoadingComponent, ReactiveFormsModule]
 })
 export class EventsFormComponent {
   readonly #router = inject(Router);

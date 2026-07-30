@@ -3,12 +3,14 @@ import { faCoins, faPlus, faTicket, faTicketAlt, faTimes } from '@fortawesome/fr
 import { ToastrService } from "ngx-toastr";
 import { EventService } from "../../events/events.service";
 import { LoggingService } from "src/app/services/logging.service";
+import { RouterLink } from "@angular/router";
+import { FaIconComponent } from "@fortawesome/angular-fontawesome";
 
 @Component({
     selector: 'app-dashboard-event-overview',
     templateUrl: './dashboard-event-overview.component.html',
     styleUrls: ['./dashboard-event-overview.component.scss'],
-    standalone: false,
+    imports: [RouterLink, FaIconComponent],
 })
 export class DashboardEventOverviewComponent {
     readonly #eventService = inject(EventService);

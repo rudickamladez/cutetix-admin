@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { TicketService } from '../tickets.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { TicketStatusEnum } from '../tickets.types';
     selector: 'app-tickets-new',
     templateUrl: './tickets-new.component.html',
     styleUrls: ['./tickets-new.component.scss'],
-    standalone: false
+    imports: [ReactiveFormsModule]
 })
 export class TicketsNewComponent {
   readonly #router = inject(Router);

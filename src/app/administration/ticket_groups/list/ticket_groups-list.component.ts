@@ -4,12 +4,15 @@ import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TicketGroup } from '../ticket_groups.types';
+import { LoadingComponent } from '../../loading/loading.component';
+import { RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'app-ticket_groups-list',
-  templateUrl: './ticket_groups-list.component.html',
-  styleUrls: ['./ticket_groups-list.component.scss'],
-  standalone: false
+    selector: 'app-ticket_groups-list',
+    templateUrl: './ticket_groups-list.component.html',
+    styleUrls: ['./ticket_groups-list.component.scss'],
+    imports: [LoadingComponent, RouterLink, FaIconComponent]
 })
 export class TicketGroupsListComponent {
   readonly #ticket_groupService = inject(TicketGroupService);

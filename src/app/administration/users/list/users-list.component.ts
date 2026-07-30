@@ -5,12 +5,14 @@ import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../users.service';
 import { User } from '../users.types';
 import { AuthService } from 'src/app/services/auth.service';
+import { LoadingComponent } from '../../loading/loading.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'app-users-list',
-  templateUrl: './users-list.component.html',
-  styleUrls: ['./users-list.component.scss'],
-  standalone: false
+    selector: 'app-users-list',
+    templateUrl: './users-list.component.html',
+    styleUrls: ['./users-list.component.scss'],
+    imports: [LoadingComponent, FaIconComponent]
 })
 export class UsersListComponent {
   readonly #usersService = inject(UserService);

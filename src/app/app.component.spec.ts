@@ -1,13 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { UpdateService } from './services/update.service';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
-    }).compileComponents();
+    imports: [AppComponent],
+    providers: [
+      {
+        provide: UpdateService,
+        useValue: {},
+      },
+    ],
+}).compileComponents();
   });
 
   it('should create the app', () => {
@@ -16,16 +21,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'cutetix-admin'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('cutetix-admin');
-  });
-
-  it('should render title', () => {
+  it('should render router outlet', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('cutetix-admin app is running!');
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });
