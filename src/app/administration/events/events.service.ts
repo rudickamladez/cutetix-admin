@@ -74,4 +74,14 @@ export class EventService {
       tap(() => this.events.reload())
     );
   }
+
+  public delete(
+    id: string
+  ): Observable<void> {
+    return this.#httpClient.delete<void>(
+      this.#endpoint(`/${id}/`)
+    ).pipe(
+      tap(() => this.events.reload())
+    );
+  }
 }
