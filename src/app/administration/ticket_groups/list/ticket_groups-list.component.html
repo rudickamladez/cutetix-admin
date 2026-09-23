@@ -15,7 +15,7 @@
     embeds its tickets' personal data, so the API only returns groups from
     events where you hold ticket_groups:read *and* tickets:read.
   -->
-  @if (!ticketGroups.error() && ticketGroups.value().length === 0) {
+  @if (!ticketGroups.error() && !ticketGroups.isLoading() && ticketGroups.value().length === 0) {
   <p class="hint">
     No ticket groups are visible to you. This list needs
     <code>ticket_groups:read</code> and <code>tickets:read</code> on the same

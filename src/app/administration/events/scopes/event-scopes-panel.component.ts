@@ -28,6 +28,12 @@ type SelectedGrantee = {
 };
 
 /**
+ * Own grants without which this panel stops working: `events:edit` for its
+ * writes, `events:read` for its grant list.
+ */
+const PANEL_ESSENTIAL_SCOPES = ['events:edit', 'events:read'] as const;
+
+/**
  * Who holds which permissions on one event, and controls to change it.
  *
  * Grants here apply to this event only. They are a second, independent way to
@@ -93,11 +99,20 @@ export class EventScopesPanelComponent {
     /**
      * Whether this event's grants may be changed from here.
      *
-     * Needs `events:edit`, held globally or granted for this event. A caller
-     * with only `events:read` sees the same list without the controls.
+     * Needs `events:edit`, held globally or granted for this event. When the
+     * grant list itself cannot be read there is no way to tell either way —
+     * event-local grants are not in the access token — so the controls are
+     * shown and the server's answer decides, exactly as the backend's own docs
+     * require ("the frontend must show these buttons unconditionally — it
+     * cannot know whether the user can manage a given event"). Hiding them on
+     * an unreadable list instead would strand a holder of local `events:edit`
+     * with no way to grant themselves the `events:read` the list needs.
      */
     protected readonly canManage = computed(() => {
         if (this.#auth.hasScope('events:edit')) {
+            return true;
+        }
+        if (this.scopes.error()) {
             return true;
         }
         const mine = this.myUuid();
@@ -192,27 +207,41 @@ export class EventScopesPanelComponent {
     }
 
     /**
-     * Revoking this box would leave the caller unable to manage the event.
+     * Revoking this box would leave the caller unable to use this panel.
      *
-     * The backend refuses it with 409 rather than letting a purely local admin
-     * lock themselves out for good — nothing they can still reach can mint the
-     * scope back. Disabling the box says so up front instead of making them
-     * discover the rule by hitting it. A global `events:edit` holder still has
-     * a way back in, so their box stays usable.
+     * Two ways to lose the panel outright, one the backend enforces and one it
+     * does not:
+     *
+     * - `events:edit` is what every write here needs, and the backend refuses
+     *   to remove a local admin's last one (409) — nothing they can still reach
+     *   can mint it back.
+     * - `events:read` is what the grant list needs. The backend does *not*
+     *   guard this one, so unchecking it succeeds, the list starts answering
+     *   403, and putting it back means granting a scope to yourself by UUID
+     *   without being able to see the table.
+     *
+     * Both are disabled up front instead of being discovered by hitting them. A
+     * holder of the equivalent *global* scope always keeps a way back in, so
+     * their box stays usable.
      */
     protected lockoutProtected(userUuid: string, scope: string): boolean {
-        return scope === 'events:edit'
-            && this.isMe(userUuid)
-            && !this.#auth.hasScope('events:edit')
-            && this.held(userUuid, 'events:edit');
+        if (!PANEL_ESSENTIAL_SCOPES.includes(scope as (typeof PANEL_ESSENTIAL_SCOPES)[number])) {
+            return false;
+        }
+        return this.isMe(userUuid)
+            && !this.#auth.hasScope(scope)
+            && this.held(userUuid, scope);
     }
 
     protected lockoutHint(userUuid: string, scope: string): string {
         if (!this.lockoutProtected(userUuid, scope)) {
             return '';
         }
-        return 'This is your last way to manage this event\'s permissions. '
-            + 'Have someone with the global events:edit scope hand the event to someone else first.';
+        const job = scope === 'events:edit'
+            ? 'change this event\'s permissions'
+            : 'see this event\'s permissions';
+        return `This is your last way to ${job}. `
+            + `Have someone with the global ${scope} scope revoke it for you instead.`;
     }
 
     protected toggle(userUuid: string, scope: EventScope, wantGranted: boolean): void {
@@ -260,6 +289,12 @@ export class EventScopesPanelComponent {
         return this.term().trim().length < USER_SEARCH_MIN_LENGTH;
     }
 
+    /**
+     * The search endpoint refused this caller (it needs `events:edit`
+     * somewhere). Only the result list is hidden — this same input is also the
+     * UUID paste field, the escape hatch the denial hint promises, so it must
+     * stay usable.
+     */
     protected get searchDenied(): boolean {
         return isForbidden(this.results.error());
     }
@@ -366,11 +401,4 @@ export class EventScopesPanelComponent {
         return errorText(err);
     }
 
-    protected trackByUser(_: number, grantee: EventScopeGrantee): string {
-        return grantee.user_uuid;
-    }
-
-    protected trackByScope(_: number, column: { scope: EventScope }): string {
-        return column.scope;
-    }
 }

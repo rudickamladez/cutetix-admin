@@ -15,13 +15,15 @@
     } @else if (scopes.error()) {
     <div class="error">
         <p>
-            There's problem loading permissions.<br />
+            There's a problem loading permissions.<br />
             {{ errorText(scopes.error()) }}
         </p>
     </div>
     }
 
-    @if (!scopes.error() && !scopes.isLoading()) {
+    @if (!scopes.isLoading()) {
+
+    @if (!scopes.error()) {
 
     @if (grantees().length === 0) {
     <p class="hint">
@@ -49,6 +51,7 @@
                     <label [title]="lockoutHint(grantee.user_uuid, column.scope)">
                         <input type="checkbox" [checked]="held(grantee.user_uuid, column.scope)"
                             [disabled]="busy() || lockoutProtected(grantee.user_uuid, column.scope)"
+                            [attr.aria-label]="displayName(grantee.user_uuid) + ': ' + column.label"
                             (change)="toggle(grantee.user_uuid, column.scope, $any($event.target).checked)" />
                     </label>
                 </td>
@@ -72,18 +75,31 @@
     </p>
     }
     }
+    }
 
     @if (canManage()) {
+    <!--
+      Deliberately outside the read-error gate: the table above needs
+      `events:read`, every write here needs `events:edit`, and the two are
+      independent grants. Someone handed `events:edit` without `events:read`
+      (or who removed their own read grant through another client — the backend
+      guards only `events:edit` against self-removal) can still write here, and
+      this row is then the only way left to grant themselves the read scope.
+      Hiding it on an unreadable list would strand exactly the person it is for.
+    -->
     <div class="add-grantee">
         <h3>Grant a permission</h3>
 
         <div class="picker">
-            <input type="text" [ngModel]="term()" (ngModelChange)="onTermChange($event)"
+            <label for="scope-grantee-search">Grant to</label>
+            <input id="scope-grantee-search" type="text" [ngModel]="term()" (ngModelChange)="onTermChange($event)"
                 [ngModelOptions]="{ standalone: true }"
-                [placeholder]="'Name or e-mail (min ' + minSearchLength + ' characters), or a user ID'"
-                [disabled]="busy() || searchDenied" autocomplete="off" />
+                [placeholder]="'Username or exact e-mail (min ' + minSearchLength + ' characters), or a user ID'"
+                [disabled]="busy()" autocomplete="off" />
 
             @if (searchDenied) {
+            <!-- The input stays usable: it is also the UUID paste field this
+                 hint points at. Only the result list is hidden. -->
             <p class="hint">
                 User search is unavailable: {{ errorText(results.error()) }}<br />
                 You can still paste a user ID.
@@ -111,7 +127,8 @@
         </div>
 
         <div class="grant-controls">
-            <select [ngModel]="newScope()" (ngModelChange)="newScope.set($event)"
+            <label for="scope-grant-choice">Permission</label>
+            <select id="scope-grant-choice" [ngModel]="newScope()" (ngModelChange)="newScope.set($event)"
                 [ngModelOptions]="{ standalone: true }" [disabled]="busy()">
                 @for (choice of scopeChoices; track choice) {
                 <option [value]="choice">{{ choice }}</option>
@@ -136,7 +153,7 @@
         <p class="hint">{{ addProblem() }}</p>
         }
     </div>
-    } @else {
+    } @else if (!scopes.error()) {
     <p class="hint">
         You can see who works on this event, but changing that needs the
         <code>events:edit</code> permission.
