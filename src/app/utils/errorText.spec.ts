@@ -30,11 +30,15 @@ describe('errorText', () => {
 
     it('keeps an unrecognised response readable', () => {
         expect(errorText(httpError(422, { detail: [] }, 'Unprocessable Content'))).toBe('Unprocessable Content');
-        expect(errorText(httpError(500, 'Internal Server Error'))).toBe('Internal Server Error');
+        // A proxy or plain-text error has no `detail` object; the reason
+        // phrase the server sent is the next best thing.
+        expect(errorText(httpError(500, 'Internal Server Error', 'Internal Server Error'))).toBe('Internal Server Error');
     });
 
-    it('falls back to the status when there is nothing else', () => {
-        expect(errorText(httpError(503, null))).toBe('HTTP error 503');
+    it('falls back to the status text when there is nothing else', () => {
+        // HttpErrorResponse defaults an absent reason phrase to 'Unknown
+        // Error', which is what a real network failure carries.
+        expect(errorText(httpError(0, null))).toBe('Unknown Error');
     });
 
     it('handles a plain Error and a bare string', () => {

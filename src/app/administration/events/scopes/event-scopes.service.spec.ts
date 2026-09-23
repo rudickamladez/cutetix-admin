@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
 import {
     HttpClientTestingModule,
     HttpTestingController,
@@ -20,9 +19,12 @@ describe('EventScopesService', () => {
 
     beforeEach(() => {
         localStorage.setItem(StorageKeys.API_URL, BASE);
+        // HttpClientTestingModule alone wires HttpClient to the testing
+        // controller; adding provideHttpClient() would install the real
+        // backend over it and the requests would leave the test.
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [provideHttpClient(), EventScopesService],
+            providers: [EventScopesService],
         });
         service = TestBed.inject(EventScopesService);
         http = TestBed.inject(HttpTestingController);
