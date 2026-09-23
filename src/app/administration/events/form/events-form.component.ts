@@ -21,6 +21,10 @@ export class EventsFormComponent {
 
   public readonly event = this.#eventResource;
   public readonly isEditing = this.#id() != null;
+
+  /** Event being shown, for children that query it themselves. Null when creating. */
+  protected readonly eventId = this.#id.asReadonly();
+
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
     ticketsSalesStart: new FormControl(new Date().toISOString().substring(0, 16), Validators.required),

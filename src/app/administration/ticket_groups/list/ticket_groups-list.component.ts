@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { TicketGroupService } from '../ticket_groups.service';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
-import { HttpErrorResponse } from '@angular/common/http';
+import { errorText } from 'src/app/utils/errorText';
 import { TicketGroup } from '../ticket_groups.types';
 
 @Component({
@@ -18,6 +18,7 @@ export class TicketGroupsListComponent {
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   protected readonly ticketGroups = this.#ticket_groupService.ticketGroups;
+  protected readonly errorText = errorText;
 
   public deleteTicketGroup(ticket_group: TicketGroup): void {
     if (!ticket_group.id) {
@@ -43,9 +44,9 @@ export class TicketGroupsListComponent {
           }
         );
       },
-      error: (err: HttpErrorResponse) => {
+      error: (err: unknown) => {
         this.#toastr.error(
-          err.message,
+          errorText(err),
           'Ticket group wasn\'t deleted!',
           {
             progressBar: true,

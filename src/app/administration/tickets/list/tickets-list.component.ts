@@ -3,7 +3,7 @@ import { TicketService } from '../tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
-import { HttpErrorResponse } from '@angular/common/http';
+import { errorText } from 'src/app/utils/errorText';
 
 @Component({
   selector: 'app-tickets-list',
@@ -20,9 +20,11 @@ export class TicketsListComponent {
   protected readonly cancelIcon = faBan;
   protected readonly tickets = this.#ticketsService.tickets;
 
-  #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
+  protected readonly errorText = errorText;
+
+  #notCancelledTicketToastr(ticket: Ticket, error: unknown) {
     this.#toastr.error(
-      typeof error === 'string' ? error : error.message,
+      errorText(error),
       'Ticket wasn\'t cancelled!',
       {
         progressBar: true,
@@ -53,9 +55,9 @@ export class TicketsListComponent {
     });
   }
 
-  #notDeletedTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
+  #notDeletedTicketToastr(ticket: Ticket, error: unknown) {
     this.#toastr.error(
-      typeof error === 'string' ? error : error.message,
+      errorText(error),
       'Ticket wasn\'t deleted!',
       {
         progressBar: true,

@@ -1,0 +1,146 @@
+<section class="event-scopes">
+    <h2>Permissions</h2>
+
+    @if (scopes.isLoading()) {
+    <p class="hint">Loading permissions…</p>
+    }
+
+    @if (readDenied()) {
+    <div class="error">
+        <p>
+            You cannot view this event's permissions.<br />
+            {{ errorText(scopes.error()) }}
+        </p>
+    </div>
+    } @else if (scopes.error()) {
+    <div class="error">
+        <p>
+            There's problem loading permissions.<br />
+            {{ errorText(scopes.error()) }}
+        </p>
+    </div>
+    }
+
+    @if (!scopes.error() && !scopes.isLoading()) {
+
+    @if (grantees().length === 0) {
+    <p class="hint">
+        Nobody besides a global administrator can work on this event yet.
+    </p>
+    } @else {
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                @for (column of scopeColumns; track column.scope) {
+                <th>{{ column.label }}</th>
+                }
+                @if (canManage()) {
+                <th class="actions">Actions</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (grantee of grantees(); track grantee.user_uuid) {
+            <tr>
+                <td>{{ displayName(grantee.user_uuid) }}</td>
+                @for (column of scopeColumns; track column.scope) {
+                <td>
+                    <label [title]="lockoutHint(grantee.user_uuid, column.scope)">
+                        <input type="checkbox" [checked]="held(grantee.user_uuid, column.scope)"
+                            [disabled]="busy() || lockoutProtected(grantee.user_uuid, column.scope)"
+                            (change)="toggle(grantee.user_uuid, column.scope, $any($event.target).checked)" />
+                    </label>
+                </td>
+                }
+                @if (canManage()) {
+                <td class="actions">
+                    <button class="delete" [disabled]="busy()" (click)="revokeAll(grantee)"
+                        title="Remove every permission this user has on this event">
+                        Revoke all
+                    </button>
+                </td>
+                }
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (unknownScopes().length > 0) {
+    <p class="hint">
+        This event also has grants this page cannot edit: {{ unknownScopes().join(', ') }}
+    </p>
+    }
+    }
+
+    @if (canManage()) {
+    <div class="add-grantee">
+        <h3>Grant a permission</h3>
+
+        <div class="picker">
+            <input type="text" [ngModel]="term()" (ngModelChange)="onTermChange($event)"
+                [ngModelOptions]="{ standalone: true }"
+                [placeholder]="'Name or e-mail (min ' + minSearchLength + ' characters), or a user ID'"
+                [disabled]="busy() || searchDenied" autocomplete="off" />
+
+            @if (searchDenied) {
+            <p class="hint">
+                User search is unavailable: {{ errorText(results.error()) }}<br />
+                You can still paste a user ID.
+            </p>
+            } @else if (results.error()) {
+            <p class="hint">Search failed: {{ errorText(results.error()) }}</p>
+            } @else if (results.isLoading() && !searchTooShort) {
+            <p class="hint">Searching…</p>
+            } @else if (!searchTooShort && results.value().length === 0 && !typedUuid()) {
+            <p class="hint">Nobody matches “{{ term() }}”.</p>
+            } @else if (!searchTooShort && results.value().length > 0) {
+            <ul class="results">
+                @for (user of results.value(); track user.uuid) {
+                <li>
+                    <button type="button" [disabled]="user.disabled" (click)="pick(user)">
+                        {{ user.full_name ? user.full_name + ' (' + user.username + ')' : user.username }}
+                        @if (user.disabled) {
+                        — disabled
+                        }
+                    </button>
+                </li>
+                }
+            </ul>
+            }
+        </div>
+
+        <div class="grant-controls">
+            <select [ngModel]="newScope()" (ngModelChange)="newScope.set($event)"
+                [ngModelOptions]="{ standalone: true }" [disabled]="busy()">
+                @for (choice of scopeChoices; track choice) {
+                <option [value]="choice">{{ choice }}</option>
+                }
+            </select>
+
+            <button class="alt" type="button" [disabled]="!canAdd()" (click)="addGrantee()">
+                Add
+            </button>
+        </div>
+
+        @let grantee = chosenGrantee();
+        @if (grantee) {
+        <p class="hint">
+            Granting to: {{ grantee.label }}
+            @if (grantee.disabled) {
+            <strong>— this account is disabled</strong>
+            }
+        </p>
+        }
+        @if (addProblem().length > 0) {
+        <p class="hint">{{ addProblem() }}</p>
+        }
+    </div>
+    } @else {
+    <p class="hint">
+        You can see who works on this event, but changing that needs the
+        <code>events:edit</code> permission.
+    </p>
+    }
+    }
+</section>
