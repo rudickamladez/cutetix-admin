@@ -1,3 +1,5 @@
+import { UserSearchResult, userLabel } from '../../users/users.types';
+
 /**
  * A single grant: one user may do one thing on one event.
  *
@@ -18,6 +20,51 @@ export interface EventUserScope {
      * impossible here while it is perfectly possible on the wire.
      */
     scope: string;
+}
+
+/**
+ * A grant as `GET /events/{id}/scopes` answers it: the grant, and who it was
+ * granted to.
+ *
+ * Mirrors `EventUserScopeWithUser`, which adds the grantee precisely because
+ * an event-local admin cannot resolve a UUID by any other route — both
+ * `GET /users/` and `GET /users/{id}` need the global `users:read` scope, and
+ * the search endpoint takes a term, not an id. Without this the panel's table
+ * is a column of UUIDs to the one audience it exists for.
+ *
+ * `user_uuid` stays on the row alongside it: it is the key every write route
+ * takes, so nothing about addressing a grant changes.
+ *
+ * `user` is optional because the app can be pointed at any backend
+ * (`API_URL` is user-set), and one predating PR #68 simply omits the field. The
+ * panel degrades to the UUID in that case rather than showing nothing, so the
+ * type must not make "no grantee sent" look impossible here while it is
+ * perfectly possible on the wire — the same reason `scope` above is a bare
+ * `string`.
+ */
+export interface EventUserScopeWithUser extends EventUserScope {
+    user?: UserSearchResult;
+}
+
+/**
+ * How to write every grantee in a grant list, keyed by uuid.
+ *
+ * One user holds each scope on a separate row, so this collapses the rows a
+ * grantee appears on to a single label. Rows carrying no grantee — an older
+ * backend, see `EventUserScopeWithUser` — are left out entirely so the caller
+ * can fall back to a name it learned elsewhere, or to the UUID.
+ */
+export function labelsByGrantee(
+    scopes: readonly EventUserScopeWithUser[]
+): Map<string, string> {
+    const labels = new Map<string, string>();
+    for (const row of scopes) {
+        if (row.user === undefined || labels.has(row.user_uuid)) {
+            continue;
+        }
+        labels.set(row.user_uuid, userLabel(row.user));
+    }
+    return labels;
 }
 
 /**

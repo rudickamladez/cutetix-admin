@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { StorageService } from 'src/app/services/storage.service';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
-import { EventScope, EventUserScope } from './event-scopes.types';
+import { EventScope, EventUserScope, EventUserScopeWithUser } from './event-scopes.types';
 
 /**
  * Per-event grants, i.e. who may do what on one concrete event.
@@ -26,11 +26,16 @@ export class EventScopesService {
     }
 
     /**
-     * Every grant on the event, one row per user per scope.
+     * Every grant on the event, one row per user per scope, each naming its
+     * grantee.
      *
      * An event with no extra grantees is an empty list, not an error, so the
      * caller only has to branch on `error()`. Reads need `events:read`, global
      * or granted for this event.
+     *
+     * The grantee arrives with the row rather than being looked up afterwards:
+     * resolving a UUID is beyond an event-local admin's scopes, so a caller
+     * that wanted names would otherwise have to guess or fail quietly.
      *
      * The caller keeps the returned resource and calls `reload()` after a
      * successful write — the server validates every write against its own
@@ -38,8 +43,8 @@ export class EventScopesService {
      */
     public scopesByEventResource(
         getEventId: () => string | number | null | undefined
-    ): HttpResourceRef<EventUserScope[]> {
-        return httpResource<EventUserScope[]>(() => {
+    ): HttpResourceRef<EventUserScopeWithUser[]> {
+        return httpResource<EventUserScopeWithUser[]>(() => {
             const id = getEventId();
             if (id === null || id === undefined || id === '') {
                 return undefined;

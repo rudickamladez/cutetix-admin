@@ -115,7 +115,7 @@
                 @for (user of results.value(); track user.uuid) {
                 <li>
                     <button type="button" [disabled]="user.disabled" (click)="pick(user)">
-                        {{ user.full_name ? user.full_name + ' (' + user.username + ')' : user.username }}
+                        {{ labelFor(user) }}
                         @if (user.disabled) {
                         — disabled
                         }

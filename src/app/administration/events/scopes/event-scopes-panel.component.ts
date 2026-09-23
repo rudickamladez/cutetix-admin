@@ -10,7 +10,7 @@ import {
     USER_SEARCH_MIN_LENGTH,
     UserSearchService,
 } from '../../users/user-search.service';
-import { UserSearchResult } from '../../users/users.types';
+import { UserSearchResult, userLabel } from '../../users/users.types';
 import { EventScopesService } from './event-scopes.service';
 import {
     EVENT_GRANTABLE_SCOPES,
@@ -18,6 +18,7 @@ import {
     EventScope,
     EventScopeGrantee,
     isUuid,
+    labelsByGrantee,
 } from './event-scopes.types';
 
 /** What the Add row currently points at. */
@@ -173,32 +174,49 @@ export class EventScopesPanelComponent {
     }
 
     /**
-     * Names learned while using this panel, keyed by uuid.
+     * How to write each grantee the grant list named, keyed by uuid.
      *
-     * Every grantee the table can name was picked out of a search result to be
-     * added, and that result is transient — the picker is cleared after a
-     * grant, and a later search replaces it. Without remembering the name here
-     * the row would fall back to a raw UUID for the person you just added.
+     * `GET /events/{id}/scopes` carries the grantee, so the table names itself
+     * and needs nothing remembered — including people granted by somebody else
+     * before this page was opened, which is the case that used to be unnameable.
      *
-     * There is no uuid→name lookup to fall back on: the search endpoint takes a
-     * term rather than an id, and the full user list needs a scope this panel's
-     * main users do not have. So anybody granted by someone else before this
-     * page was opened can only be shown as their UUID, and that is the honest
-     * answer rather than a gap to paper over.
+     * Derived rather than looked up on demand: `displayName` runs inside a sort
+     * comparator, and an array scan there would make every redraw quadratic.
+     * Rows without a `user` are simply absent and fall through to `#labels`.
+     */
+    readonly #rowLabels = computed(() => labelsByGrantee(this.scopes.value()));
+
+    /**
+     * Names learned from the picker, keyed by uuid — written by `pick()`, and
+     * the fallback for rows the grant list did not name.
+     *
+     * The list names its grantees only since cutetix-backend PR #68, so against
+     * an older deployment this is still the only name a freshly-added row can
+     * get. Search results are transient — the picker clears after a grant, and a
+     * later search replaces them — so the name has to be held here to outlive
+     * the row it was picked for.
      */
     readonly #labels = new Map<string, string>();
 
+    /**
+     * How to write a grantee, preferring what the API said about them.
+     *
+     * The grant list is authoritative — it is what the server believes now, a
+     * renamed account included — so the picker's snapshot is only consulted for
+     * rows it has no opinion on. A UUID stays in the table when neither can name
+     * someone, which is the honest answer rather than a gap to paper over.
+     */
     protected displayName(userUuid: string): string {
         if (this.isMe(userUuid)) {
             return 'you';
         }
-        return this.#labels.get(userUuid) ?? userUuid;
+        return this.#rowLabels().get(userUuid)
+            ?? this.#labels.get(userUuid)
+            ?? userUuid;
     }
 
-    /** How a user found in search results is written, in the list and in the table. */
-    protected labelFor(user: UserSearchResult): string {
-        return user.full_name ? `${user.full_name} (${user.username})` : user.username;
-    }
+    /** How a user is written, in the picker, the table and the toasts. */
+    protected readonly labelFor = userLabel;
 
     // ----------------------------------------------------------- the toggle
 
