@@ -16,8 +16,25 @@
   <p>You must be logged in to enter the system.</p>
   <form (submit)="login($event)">
     <input type="text" [formField]="loginForm.username" placeholder="Username">
+    @let username = loginForm.username();
+    @if (username.invalid() && username.touched()) {
+      <div class="error">
+        @for (error of username.errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
+    }
     <input type="password" [formField]="loginForm.password" placeholder="Password"
-      [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}">
+      [class.sudo-mode]="storageService.getBoolean(keys.SUDO_PASSWORD_MODE)">
+
+    @let password = loginForm.password();  
+    @if (password.invalid() && password.touched()) {
+      <div class="error">
+        @for (error of password.errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
+    }
     <button class="alt" [disabled]="loginForm().invalid()">
       <span>Log in</span>
     </button>
@@ -31,10 +48,42 @@
 
   <form (submit)="register($event)">
     <input type="text" [formField]="registerForm.full_name" placeholder="Full name" />
+    @let full_name = registerForm.full_name();
+    @if (full_name.invalid() && full_name.touched()) {
+      <div class="error">
+        @for (error of full_name.errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
+    }
     <input type="text" [formField]="registerForm.username" placeholder="Username" />
+    @let username = registerForm.username();
+    @if (username.invalid() && username.touched()) {
+      <div class="error">
+        @for (error of username.errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
+    }
     <input type="email" [formField]="registerForm.email" placeholder="E-mail" />
+    @let email = registerForm.email();
+    @if (email.invalid() && email.touched()) {
+      <div class="error">
+        @for (error of email.errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
+    }
     <input type="password" [formField]="registerForm.plaintext_password" placeholder="Password"
-      [ngClass]="{'sudo-mode': storageService.getBoolean(keys.SUDO_PASSWORD_MODE)}" />
+      [class.sudo-mode]="storageService.getBoolean(keys.SUDO_PASSWORD_MODE)" />
+    @let plaintext_password = registerForm.plaintext_password();
+    @if (plaintext_password.invalid() && plaintext_password.touched()) {
+      <div class="error">
+        @for (error of plaintext_password.errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
+    }
     <button class="alt" [disabled]="registerForm().invalid()">
       Register
     </button>
