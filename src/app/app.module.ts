@@ -17,9 +17,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from './shared/shared.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { FormField } from '@angular/forms/signals';
-import { ToastrService } from 'ngx-toastr';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { SnackbarToastrService } from './services/snackbar-toastr.service';
 
 
 @NgModule({
@@ -50,10 +48,6 @@ import { SnackbarToastrService } from './services/snackbar-toastr.service';
         MatSnackBarModule,
     ],
     providers: [
-        {
-            provide: ToastrService,
-            useClass: SnackbarToastrService,
-        },
         provideHttpClient(
             withFetch(),
             withInterceptors([authInterceptor]),

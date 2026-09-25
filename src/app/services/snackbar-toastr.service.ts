@@ -1,15 +1,45 @@
 import { Injectable, inject } from '@angular/core';
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 import { EMPTY, Observable, Subject, mapTo, of } from 'rxjs';
-import { ActiveToast, IndividualConfig } from 'ngx-toastr';
 
-@Injectable()
+export interface SnackbarConfig<ConfigPayload = unknown> {
+    closeButton?: boolean;
+    disableTimeOut?: boolean;
+    progressBar?: boolean;
+    timeOut?: number;
+    payload?: ConfigPayload;
+}
+
+export interface SnackbarToast<C = unknown> {
+    toastId: number;
+    title: string;
+    message: string;
+    portal: C | null;
+    toastRef: {
+        close: () => void;
+        manualClose: () => void;
+        manualClosed: () => Observable<void>;
+        timeoutReset: () => Observable<never>;
+        countDuplicate: () => Observable<never>;
+        afterClosed: () => Observable<void>;
+        isInactive: () => boolean;
+        activate: () => void;
+        afterActivate: () => Observable<void>;
+        onDuplicate: () => void;
+    };
+    onShown: Observable<void>;
+    onHidden: Observable<void>;
+    onTap: Observable<void>;
+    onAction: Observable<void>;
+}
+
+@Injectable({ providedIn: 'root' })
 export class SnackbarToastrService {
     readonly #snackBar = inject(MatSnackBar);
 
     toastrConfig = {} as never;
     currentlyActive = 0;
-    toasts: ActiveToast<unknown>[] = [];
+    toasts: SnackbarToast<unknown>[] = [];
     overlayContainer = undefined;
     previousToastMessage: string | undefined;
     #index = 0;
@@ -17,9 +47,9 @@ export class SnackbarToastrService {
     show<C = unknown, ConfigPayload = unknown>(
         message?: string,
         title?: string,
-        override?: Partial<IndividualConfig<ConfigPayload>>,
+        override?: Partial<SnackbarConfig<ConfigPayload>>,
         type = 'info',
-    ): ActiveToast<C> | null {
+    ): SnackbarToast<C> | null {
         const toastId = ++this.#index;
         const hidden$ = new Subject<void>();
         let inactive = false;
@@ -54,10 +84,10 @@ export class SnackbarToastrService {
             onHidden: hidden$.asObservable(),
             onTap: snackBarRef.onAction().pipe(mapTo(void 0)),
             onAction: snackBarRef.onAction(),
-        } as ActiveToast<C>;
+        } as SnackbarToast<C>;
 
         this.previousToastMessage = message;
-        this.toasts.push(activeToast as ActiveToast<unknown>);
+        this.toasts.push(activeToast as SnackbarToast<unknown>);
         this.currentlyActive = this.toasts.length;
 
         return activeToast;
@@ -66,33 +96,33 @@ export class SnackbarToastrService {
     success<ConfigPayload = unknown>(
         message?: string,
         title?: string,
-        override?: Partial<IndividualConfig<ConfigPayload>>,
-    ): ActiveToast<unknown> {
-        return this.show(message, title, override, 'success') as ActiveToast<unknown>;
+        override?: Partial<SnackbarConfig<ConfigPayload>>,
+    ): SnackbarToast<unknown> {
+        return this.show(message, title, override, 'success') as SnackbarToast<unknown>;
     }
 
     error<ConfigPayload = unknown>(
         message?: string,
         title?: string,
-        override?: Partial<IndividualConfig<ConfigPayload>>,
-    ): ActiveToast<unknown> {
-        return this.show(message, title, override, 'error') as ActiveToast<unknown>;
+        override?: Partial<SnackbarConfig<ConfigPayload>>,
+    ): SnackbarToast<unknown> {
+        return this.show(message, title, override, 'error') as SnackbarToast<unknown>;
     }
 
     info<ConfigPayload = unknown>(
         message?: string,
         title?: string,
-        override?: Partial<IndividualConfig<ConfigPayload>>,
-    ): ActiveToast<unknown> {
-        return this.show(message, title, override, 'info') as ActiveToast<unknown>;
+        override?: Partial<SnackbarConfig<ConfigPayload>>,
+    ): SnackbarToast<unknown> {
+        return this.show(message, title, override, 'info') as SnackbarToast<unknown>;
     }
 
     warning<ConfigPayload = unknown>(
         message?: string,
         title?: string,
-        override?: Partial<IndividualConfig<ConfigPayload>>,
-    ): ActiveToast<unknown> {
-        return this.show(message, title, override, 'warning') as ActiveToast<unknown>;
+        override?: Partial<SnackbarConfig<ConfigPayload>>,
+    ): SnackbarToast<unknown> {
+        return this.show(message, title, override, 'warning') as SnackbarToast<unknown>;
     }
 
     clear(toastId?: number): void {
@@ -114,8 +144,8 @@ export class SnackbarToastrService {
         return true;
     }
 
-    findDuplicate(title: string, message: string): ActiveToast<unknown> {
-        return this.toasts.find(item => item.title === title && item.message === message) as ActiveToast<unknown>;
+    findDuplicate(title: string, message: string): SnackbarToast<unknown> {
+        return this.toasts.find(item => item.title === title && item.message === message) as SnackbarToast<unknown>;
     }
 
     #buildMessage(message?: string, title?: string): string {
@@ -126,7 +156,7 @@ export class SnackbarToastrService {
         return title || message || '';
     }
 
-    #resolveDuration<ConfigPayload = unknown>(override?: Partial<IndividualConfig<ConfigPayload>>): number | undefined {
+    #resolveDuration<ConfigPayload = unknown>(override?: Partial<SnackbarConfig<ConfigPayload>>): number | undefined {
         if (override?.disableTimeOut === true || override?.timeOut === 0) {
             return undefined;
         }

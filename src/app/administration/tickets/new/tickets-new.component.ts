@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketService } from '../tickets.service';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { Router } from '@angular/router';
 import { TicketGroupService } from '../../ticket_groups/ticket_groups.service';
 import { TicketGroup } from '../../ticket_groups/ticket_groups.types';
@@ -17,7 +17,7 @@ export class TicketsNewComponent {
   readonly #router = inject(Router);
   readonly #ticketService = inject(TicketService);
   readonly #ticketgroupService = inject(TicketGroupService);
-  readonly #toastr = inject(ToastrService);
+  readonly #toastr = inject(SnackbarToastrService);
 
   public form = new FormGroup({
     firstname: new FormControl('', Validators.required),
