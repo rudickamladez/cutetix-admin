@@ -75,7 +75,7 @@ export class AuthService implements OnDestroy {
         }, { allowSignalWrites: true });
 
         effect(() => {
-            if(!this.canGoToPrivate()) {
+            if (!this.canGoToPrivate()) {
                 this.#router.navigate(["/login"]);
             }
         })
@@ -246,6 +246,13 @@ export class AuthService implements OnDestroy {
     }
 
     logout(): void {
+        const logoutLogic = () => {
+            this.#storageService
+                .delete(StorageKeys.ACCESS_TOKEN)
+                .delete(StorageKeys.REFRESH_TOKEN);
+            this.#canGoToPrivate.set(false);
+        };
+
         if (!this.isLoggedIn()) return;
 
         const refreshToken = this.getRefreshToken();
@@ -259,7 +266,7 @@ export class AuthService implements OnDestroy {
         // TODO rework with navigator.sendBeacon
         this.#http.post(
             (new URL("auth/logout", apiUrl)).href,
-            { }
+            {}
         ).pipe(
             timeout(1000)
         ).subscribe({
@@ -269,6 +276,7 @@ export class AuthService implements OnDestroy {
                     "You have been logged out.",
                     "Logout",
                 );
+                logoutLogic();
             },
             error: (err: HttpErrorResponse) => {
                 this.#logging.error("auth", "User logout failed.", err);
@@ -277,13 +285,8 @@ export class AuthService implements OnDestroy {
                     `Logout request failed. You might still be logged in on the server. Error: ${err.message}`,
                     "Logout",
                 );
+                logoutLogic();
             },
-            complete: () => {
-                this.#storageService
-                    .delete(StorageKeys.ACCESS_TOKEN)
-                    .delete(StorageKeys.REFRESH_TOKEN);
-                this.#canGoToPrivate.set(false);
-            }
         });
     }
 
