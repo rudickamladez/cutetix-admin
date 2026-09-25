@@ -93,7 +93,7 @@ body.alt-font {
     &.snackbar-info,
     &.snackbar-warning,
     &.snackbar-error {
-        --mdc-snackbar-container-color: #111111;
+        --mdc-snackbar-container-color: #0f1b14;
         --mdc-snackbar-supporting-text-color: #00ff7f;
         --mat-snack-bar-button-color: #00ff7f;
         border: 1px solid #00ff7f;
@@ -102,6 +102,7 @@ body.alt-font {
     }
 
     &.snackbar-info {
+        --mdc-snackbar-container-color: #0d1820;
         --mdc-snackbar-supporting-text-color: #6ce8ff;
         --mat-snack-bar-button-color: #6ce8ff;
         border-color: #6ce8ff;
@@ -109,6 +110,7 @@ body.alt-font {
     }
 
     &.snackbar-warning {
+        --mdc-snackbar-container-color: #211a0d;
         --mdc-snackbar-supporting-text-color: #ffcc66;
         --mat-snack-bar-button-color: #ffcc66;
         border-color: #ffcc66;
@@ -116,6 +118,7 @@ body.alt-font {
     }
 
     &.snackbar-error {
+        --mdc-snackbar-container-color: #210f0f;
         --mdc-snackbar-supporting-text-color: #ff6b6b;
         --mat-snack-bar-button-color: #ff6b6b;
         border-color: #ff6b6b;
