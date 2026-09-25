@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 import { Event, EventCapacitySummary, EventCreate } from './events.types';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { StorageService } from 'src/app/services/storage.service';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../services/snackbar-toastr.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class EventService {
   readonly #httpClient = inject(HttpClient);
 
   readonly #storageService = inject(StorageService);
-  readonly #toastr = inject(ToastrService);
+  readonly #toastr = inject(SnackbarToastrService);
 
   readonly #apiPath = 'events';
 

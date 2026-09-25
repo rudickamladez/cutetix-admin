@@ -8,7 +8,6 @@ import { NavBarSubitemComponent } from './layout/nav-bar-subitem/nav-bar-subitem
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ToastNoAnimationModule } from 'ngx-toastr';
 import { LoadingComponent } from './loading/loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TicketGroupsListComponent } from './ticket_groups/list/ticket_groups-list.component';
@@ -48,7 +47,6 @@ import { FormField } from '@angular/forms/signals';
         CommonModule,
         RouterModule,
         FontAwesomeModule,
-        ToastNoAnimationModule.forRoot(),
         ReactiveFormsModule,
         SharedModule,
         FormField,

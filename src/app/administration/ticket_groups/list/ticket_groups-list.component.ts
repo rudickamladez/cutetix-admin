@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { TicketGroupService } from '../ticket_groups.service';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TicketGroup } from '../ticket_groups.types';
 
@@ -13,7 +13,7 @@ import { TicketGroup } from '../ticket_groups.types';
 })
 export class TicketGroupsListComponent {
   readonly #ticket_groupService = inject(TicketGroupService);
-  readonly #toastr = inject(ToastrService);
+  readonly #toastr = inject(SnackbarToastrService);
 
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;

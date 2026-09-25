@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { TicketService } from '../tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -13,7 +13,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class TicketsListComponent {
   readonly #ticketsService = inject(TicketService);
-  readonly #toastr = inject(ToastrService);
+  readonly #toastr = inject(SnackbarToastrService);
 
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;

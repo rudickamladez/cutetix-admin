@@ -4,7 +4,7 @@ import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
 import { jwtDecode } from "jwt-decode";
 import { timeout, type Subscription } from "rxjs";
 // import { Socket } from "ngx-socket-io";
-import { ToastrService } from "ngx-toastr";
+import { SnackbarToastrService } from './snackbar-toastr.service';
 
 import { StorageService } from "./storage.service";
 import { StorageKeys } from "../tokens/storage.tokens";
@@ -26,7 +26,7 @@ type TokensFromApi = {
 })
 export class AuthService implements OnDestroy {
     readonly #http = inject(HttpClient);
-    readonly #toastr = inject(ToastrService);
+    readonly #toastr = inject(SnackbarToastrService);
     readonly #router = inject(Router);
     // readonly #socket = inject(Socket);
     readonly #logging = inject(LoggingService);

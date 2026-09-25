@@ -1,5 +1,3 @@
-@use "ngx-toastr/toastr";
-
 /**
  * Global styles
  */
@@ -87,5 +85,48 @@ body.alt-font {
 @media screen and (max-width: 1399.98px) {
     .d-xxl-none {
         display: none !important;
+    }
+}
+
+.mat-mdc-snack-bar-container {
+    &.snackbar-success,
+    &.snackbar-info,
+    &.snackbar-warning,
+    &.snackbar-error {
+        --snackbar-background-color: #0f1b14;
+        --mat-snack-bar-container-color: var(--snackbar-background-color);
+        --mdc-snackbar-supporting-text-color: #00ff7f;
+        --mat-snack-bar-button-color: #00ff7f;
+        border: 1px solid #00ff7f;
+        border-radius: 0;
+        box-shadow: 0 0 0 1px #111111, 0 0 14px rgba(0, 255, 127, 0.35);
+
+        .mat-mdc-snackbar-surface {
+            background-color: var(--snackbar-background-color);
+        }
+    }
+
+    &.snackbar-info {
+        --snackbar-background-color: #0d1820;
+        --mdc-snackbar-supporting-text-color: #6ce8ff;
+        --mat-snack-bar-button-color: #6ce8ff;
+        border-color: #6ce8ff;
+        box-shadow: 0 0 0 1px #111111, 0 0 14px rgba(108, 232, 255, 0.35);
+    }
+
+    &.snackbar-warning {
+        --snackbar-background-color: #211a0d;
+        --mdc-snackbar-supporting-text-color: #ffcc66;
+        --mat-snack-bar-button-color: #ffcc66;
+        border-color: #ffcc66;
+        box-shadow: 0 0 0 1px #111111, 0 0 14px rgba(255, 204, 102, 0.35);
+    }
+
+    &.snackbar-error {
+        --snackbar-background-color: #210f0f;
+        --mdc-snackbar-supporting-text-color: #ff6b6b;
+        --mat-snack-bar-button-color: #ff6b6b;
+        border-color: #ff6b6b;
+        box-shadow: 0 0 0 1px #111111, 0 0 14px rgba(255, 107, 107, 0.35);
     }
 }
