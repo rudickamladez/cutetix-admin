@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { TicketGroupService } from '../ticket_groups.service';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
@@ -9,6 +9,7 @@ import { TicketGroup } from '../ticket_groups.types';
   selector: 'app-ticket_groups-list',
   templateUrl: './ticket_groups-list.component.html',
   styleUrls: ['./ticket_groups-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class TicketGroupsListComponent {

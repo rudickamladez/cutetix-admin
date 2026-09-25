@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MenuItem } from './menu-items';
 import { MenuBuilder } from './menu-builder';
 import { AuthService } from 'src/app/services/auth.service';
@@ -13,6 +13,7 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
     selector: 'app-nav-bar',
     templateUrl: './nav-bar.component.html',
     styleUrls: ['./nav-bar.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class NavBarComponent implements OnInit {
