@@ -16,18 +16,21 @@
   <p>You must be logged in to enter the system.</p>
   <form (submit)="login($event)">
     <input type="text" [formField]="loginForm.username" placeholder="Username">
-    @if (loginForm.username().invalid() && loginForm.username().touched()) {
+    @let username = loginForm.username();
+    @if (username.invalid() && username.touched()) {
       <div class="error">
-        @for (error of loginForm.username().errors(); track error.kind) {
+        @for (error of username.errors(); track error.kind) {
           <span>{{ error.message }}</span>
         }
       </div>
     }
     <input type="password" [formField]="loginForm.password" placeholder="Password"
       [class.sudo-mode]="storageService.getBoolean(keys.SUDO_PASSWORD_MODE)">
-    @if (loginForm.password().invalid() && loginForm.password().touched()) {
+
+    @let password = loginForm.password();  
+    @if (password.invalid() && password.touched()) {
       <div class="error">
-        @for (error of loginForm.password().errors(); track error.kind) {
+        @for (error of password.errors(); track error.kind) {
           <span>{{ error.message }}</span>
         }
       </div>
@@ -45,34 +48,38 @@
 
   <form (submit)="register($event)">
     <input type="text" [formField]="registerForm.full_name" placeholder="Full name" />
-    @if (registerForm.full_name().invalid() && registerForm.full_name().touched()) {
+    @let full_name = registerForm.full_name();
+    @if (full_name.invalid() && full_name.touched()) {
       <div class="error">
-        @for (error of registerForm.full_name().errors(); track error.kind) {
+        @for (error of full_name.errors(); track error.kind) {
           <span>{{ error.message }}</span>
         }
       </div>
     }
     <input type="text" [formField]="registerForm.username" placeholder="Username" />
-    @if (registerForm.username().invalid() && registerForm.username().touched()) {
+    @let username = registerForm.username();
+    @if (username.invalid() && username.touched()) {
       <div class="error">
-        @for (error of registerForm.username().errors(); track error.kind) {
+        @for (error of username.errors(); track error.kind) {
           <span>{{ error.message }}</span>
         }
       </div>
     }
     <input type="email" [formField]="registerForm.email" placeholder="E-mail" />
-    @if (registerForm.email().invalid() && registerForm.email().touched()) {
+    @let email = registerForm.email();
+    @if (email.invalid() && email.touched()) {
       <div class="error">
-        @for (error of registerForm.email().errors(); track error.kind) {
+        @for (error of email.errors(); track error.kind) {
           <span>{{ error.message }}</span>
         }
       </div>
     }
     <input type="password" [formField]="registerForm.plaintext_password" placeholder="Password"
       [class.sudo-mode]="storageService.getBoolean(keys.SUDO_PASSWORD_MODE)" />
-    @if (registerForm.plaintext_password().invalid() && registerForm.plaintext_password().touched()) {
+    @let plaintext_password = registerForm.plaintext_password();
+    @if (plaintext_password.invalid() && plaintext_password.touched()) {
       <div class="error">
-        @for (error of registerForm.plaintext_password().errors(); track error.kind) {
+        @for (error of plaintext_password.errors(); track error.kind) {
           <span>{{ error.message }}</span>
         }
       </div>
