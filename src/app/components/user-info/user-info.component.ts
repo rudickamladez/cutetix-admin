@@ -1,4 +1,4 @@
-import { Component, computed, booleanAttribute, inject, input, OnDestroy, OnInit } from "@angular/core";
+import { Component, computed, booleanAttribute, inject, input, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { faRepeat } from "@fortawesome/free-solid-svg-icons";
 import { AdminModeService } from "src/app/services/adminMode.service";
 import { AuthService } from "src/app/services/auth.service";
@@ -8,6 +8,7 @@ import { UsersService } from "src/app/services/users.service";
   selector: 'app-user-info',
   templateUrl: './user-info.component.html',
   styleUrls: ['./user-info.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class UserInfoComponent implements OnInit, OnDestroy {

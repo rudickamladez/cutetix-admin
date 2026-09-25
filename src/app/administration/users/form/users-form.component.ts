@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { form, required, email, submit, disabled } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
@@ -11,6 +11,7 @@ import { SCOPES_ENTRIES } from '../../../types/auth.types';
   selector: 'app-users-form',
   templateUrl: './users-form.component.html',
   styleUrls: ['./users-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class UsersFormComponent {

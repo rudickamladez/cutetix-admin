@@ -1,4 +1,4 @@
-import { Component, inject, DOCUMENT } from '@angular/core';
+import { Component, inject, DOCUMENT, ChangeDetectionStrategy } from '@angular/core';
 import { faRepeat, faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
@@ -7,6 +7,7 @@ import { UsersService } from 'src/app/services/users.service';
   selector: 'app-logged-user',
   templateUrl: './logged-user.component.html',
   styleUrls: ['./logged-user.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class LoggedUserComponent {
