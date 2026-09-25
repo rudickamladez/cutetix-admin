@@ -18,9 +18,15 @@
   </select>
 
   <label for="groupId">Group</label>
+  @if (groupsResource.isLoading()) {
+    <p>Loading ticket groups...</p>
+  }
+  @if (groupsResource.error()) {
+    <p>{{ loadErrorText() }}</p>
+  }
   <select name="groupId" formControlName="groupId">
-    @for (group of groups; track group) {
-      <option [ngValue]="group.id">{{ group.name }}</option>
+    @for (group of groups(); track group) {
+      <option [ngValue]="group.id">{{ group.event!.name }} - {{ group.name }}</option>
     }
   </select>
 

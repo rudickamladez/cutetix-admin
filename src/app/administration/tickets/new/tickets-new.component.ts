@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketService } from '../tickets.service';
 import { ToastrService } from 'ngx-toastr';
@@ -13,7 +13,7 @@ import { TicketStatusEnum } from '../tickets.types';
     styleUrls: ['./tickets-new.component.scss'],
     standalone: false
 })
-export class TicketsNewComponent implements OnInit {
+export class TicketsNewComponent {
   readonly #router = inject(Router);
   readonly #ticketService = inject(TicketService);
   readonly #ticketgroupService = inject(TicketGroupService);
@@ -27,15 +27,7 @@ export class TicketsNewComponent implements OnInit {
     status: new FormControl(TicketStatusEnum.new, Validators.required),
     groupId: new FormControl(0, Validators.required)
   });
-  public groups: Array<TicketGroup> = [];
-
-  ngOnInit(): void {
-    this.#ticketgroupService.get().subscribe({
-      next: (ticket_groups) => {
-        this.groups = ticket_groups;
-      }
-    })
-  }
+  protected readonly groupsResource = this.#ticketgroupService.ticketGroups;
 
   public newTicketGroup() {
     this.#ticketService.create({
@@ -65,5 +57,20 @@ export class TicketsNewComponent implements OnInit {
         )
       }
     })
+  }
+
+  protected groups(): Array<TicketGroup> {
+    return this.groupsResource.value();
+  }
+
+  protected loadErrorText(): string {
+    const err = this.groupsResource.error();
+    if (!err) {
+      return '';
+    }
+    if (err instanceof Error) {
+      return err.message;
+    }
+    return String(err);
   }
 }

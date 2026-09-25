@@ -2,7 +2,6 @@ import { isDevMode, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { HelloComponent } from './hello/hello.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -23,7 +22,6 @@ import { FormField } from '@angular/forms/signals';
 @NgModule({
     declarations: [
         AppComponent,
-        HelloComponent,
         NotFoundComponent,
         LoginPageComponent,
         UserProfileComponent,

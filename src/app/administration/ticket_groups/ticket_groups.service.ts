@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResourceRef, httpResource } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { TicketGroup, TicketGroupSum, TicketGroupUpdate } from './ticket_groups.types';
 import { StorageService } from 'src/app/services/storage.service';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
@@ -11,106 +11,77 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
 })
 export class TicketGroupService {
   readonly #httpClient = inject(HttpClient);
-
   readonly #storageService = inject(StorageService);
-  #API_PATH: string = 'ticket_groups';
 
-  #ticket_groupSource = new Subject<TicketGroup>();
+  readonly #apiPath = 'ticket_groups';
 
-  public asObservable() {
-    return this.#ticket_groupSource.asObservable();
+  readonly ticketGroups = httpResource<TicketGroup[]>(
+    () => this.#endpoint('/'),
+    {
+      defaultValue: [],
+    }
+  );
+
+  readonly activeSum = httpResource<TicketGroupSum>(
+    () => this.#endpoint('/active/sum/')
+  );
+
+  constructor() {
+    this.ticketGroups.reload();
+    this.activeSum.reload();
   }
 
-  public register(ticket_group: TicketGroup) {
-    this.#ticket_groupSource.next(ticket_group);
+  #endpoint(path: string): string {
+    return new URL(`${this.#apiPath}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
-  #deleteSource = new Subject<TicketGroup>();
-
-  public deleteAsObservable() {
-    return this.#deleteSource.asObservable();
-  }
-
-  public ticketDelete(ticket_group: TicketGroup) {
-    this.#deleteSource.next(ticket_group);
-  }
-
-  public get(): Observable<TicketGroup[]> {
-    return this.#httpClient.get(
-      new URL(`${this.#API_PATH}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
-    ).pipe(
-      map(
-        (res: any) => {
-          return res.map(
-            (result: any) => <TicketGroup[]>result
-          );
-        }
-      )
-    );
-  }
-
-  public getById(
-    id: string
-  ): Observable<TicketGroup> {
-    return this.#httpClient.get(
-      new URL(`${this.#API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
-    ).pipe(
-      map(
-        (res: any) => {
-          return <TicketGroup>res;
-        }
-      )
-    )
+  public ticketGroupByIdResource(
+    getId: () => string | null | undefined
+  ): HttpResourceRef<TicketGroup | undefined> {
+    return httpResource<TicketGroup>(() => {
+      const id = getId();
+      if (!id) {
+        return undefined;
+      }
+      return this.#endpoint(`/${id}/`);
+    });
   }
 
   public create(ticket_group: TicketGroup): Observable<TicketGroup> {
-    return this.#httpClient.post(
-      new URL(`${this.#API_PATH}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+    return this.#httpClient.post<TicketGroup>(
+      this.#endpoint('/'),
       ticket_group
     ).pipe(
-      map(
-        (res: any) => {
-          return <TicketGroup>res;
-        }
-      )
-    )
+      tap(() => {
+        this.ticketGroups.reload();
+        this.activeSum.reload();
+      })
+    );
   }
 
   public update(
     id: string,
     body: TicketGroupUpdate
   ): Observable<TicketGroup> {
-    return this.#httpClient.put(
-      new URL(`${this.#API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+    return this.#httpClient.put<TicketGroup>(
+      this.#endpoint(`/${id}/`),
       body
     ).pipe(
-      map(
-        (res: any) => {
-          return <TicketGroup>res;
-        }
-      )
-    )
+      tap(() => {
+        this.ticketGroups.reload();
+        this.activeSum.reload();
+      })
+    );
   }
 
-  public delete(id: string): Observable<TicketGroup> {
-    return this.#httpClient.delete(
-      new URL(`${this.#API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+  public delete(id: string): Observable<void> {
+    return this.#httpClient.delete<void>(
+      this.#endpoint(`/${id}/`),
     ).pipe(
-      map(
-        (res: any) => {
-          return <TicketGroup>res;
-        }
-      )
-    )
-  }
-
-  public getActiveSum(): Observable<TicketGroupSum> {
-    return this.#httpClient.get(
-      new URL(`${this.#API_PATH}/active/sum/`, this.#storageService.get(StorageKeys.API_URL)!).href,
-    ).pipe(
-      map(
-        (ticket_groupSum: any) => <TicketGroupSum>ticket_groupSum
-      )
+      tap(() => {
+        this.ticketGroups.reload();
+        this.activeSum.reload();
+      })
     );
   }
 }

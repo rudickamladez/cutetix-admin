@@ -18,6 +18,8 @@ export class EventService {
   readonly #storageService = inject(StorageService);
   readonly #toastr = inject(ToastrService);
 
+  readonly #apiPath = 'events';
+
   readonly events = httpResource<Event[]>(
     () => this.#endpoint('/'),
     {
@@ -25,8 +27,12 @@ export class EventService {
     }
   );
 
+  constructor() {
+    this.events.reload();
+  }
+
   #endpoint(path: string): string {
-    return new URL(`${this.#API_PATH}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
+    return new URL(`${this.#apiPath}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
   public eventByIdResource(

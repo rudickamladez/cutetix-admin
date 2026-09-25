@@ -1,9 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TicketService } from '../tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-tickets-list',
@@ -11,59 +11,19 @@ import { Router } from '@angular/router';
   styleUrls: ['./tickets-list.component.scss'],
   standalone: false
 })
-export class TicketsListComponent implements OnInit {
+export class TicketsListComponent {
   readonly #ticketsService = inject(TicketService);
   readonly #toastr = inject(ToastrService);
-  readonly #router = inject(Router);
 
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   protected readonly cancelIcon = faBan;
-  public tickets: Ticket[] = [];
-  public loadingState = 1;
-  public errorLoading = {
-    enabled: false,
-    text: '',
-  };
-  #startup = true;
+  protected readonly tickets = this.#ticketsService.tickets;
 
-  #updateTickets() {
-    this.loadingState = 1;
-    this.errorLoading = {
-      enabled: false,
-      text: '',
-    }
-    this.#ticketsService.get().subscribe({
-      next: (tickets) => {
-        this.tickets = tickets;
-        if (this.#startup) {
-          this.#startup = false;
-        }
-        this.loadingState--;
-      },
-      error: (err) => {
-        console.error(err);
-        this.errorLoading.enabled = true;
-        this.errorLoading.text = err.message;
-        this.loadingState--;
-      },
-    });
-  }
-
-  ngOnInit(): void {
-    this.#updateTickets();
-
-    this.#ticketsService.deleteAsObservable().subscribe(
-      (ticket) => {
-        this.tickets.splice(this.tickets.indexOf(ticket), 1);
-      }
-    );
-  }
-
-  #notCancelledTicketToastr(ticket: Ticket) {
+  #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
     this.#toastr.error(
-      `${ticket.firstname} ${ticket.lastname}`,
-      'Ticket DIDN\'T cancelled!',
+      typeof error === 'string' ? error : error.message,
+      'Ticket wasn\'t cancelled!',
       {
         progressBar: true,
       }
@@ -74,73 +34,59 @@ export class TicketsListComponent implements OnInit {
     if (!confirm(
       `Are you sure to cancel ticket for "${ticket.firstname} ${ticket.lastname}"?`
     )) {
-      this.#notCancelledTicketToastr(ticket)
-      return
+      this.#notCancelledTicketToastr(ticket, 'Cancellation cancelled by user.');
+      return;
     }
-    this.#ticketsService.cancel(ticket).subscribe(
-      (ticket) => {
-        if (!ticket) {
-          this.#notCancelledTicketToastr(ticket)
-          return
-        }
-        this.#updateTickets();
+    this.#ticketsService.cancel(ticket).subscribe({
+      next: () => {
         this.#toastr.info(
-          `${ticket.firstname} ${ticket.lastname}`,
-          'Ticket cancelled',
+          'Successfully cancelled.',
+          'Ticket',
           {
             progressBar: true
           }
         );
+      },
+      error: (err) => {
+        this.#notCancelledTicketToastr(ticket, err);
       }
-    )
+    });
   }
 
-  public edit(ticket: Ticket) {
-    this.#router.navigate(['/tickets/edit/' + ticket.id])
-  }
-
-  #notDeletedTicketToastr(ticket: Ticket) {
+  #notDeletedTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
     this.#toastr.error(
-      `${ticket.firstname} ${ticket.lastname}`,
-      'Ticket DIDN\'T deleted!',
+      typeof error === 'string' ? error : error.message,
+      'Ticket wasn\'t deleted!',
       {
         progressBar: true,
       }
     );
   }
 
-  public delete(ticket: Ticket) {
+  public deleteTicket(ticket: Ticket) {
     if (!ticket.id) {
-      this.#toastr.error(
-        'Can\'t delete! Didn\'t receive ticket id.',
-        'Ticket DIDN\'T deleted!',
-        {
-          progressBar: true,
-        }
-      );
+      this.#notDeletedTicketToastr(ticket, 'Missing ID.');
       return;
     }
     if (!confirm(
       `Are you sure to delete ticket for "${ticket.firstname} ${ticket.lastname}"?`
     )) {
-      this.#notDeletedTicketToastr(ticket);
+      this.#notDeletedTicketToastr(ticket, 'Deletion cancelled by user.');
       return;
     }
-    this.#ticketsService.delete(ticket.id).subscribe(
-      (t) => {
-        if (!t) {
-          this.#notDeletedTicketToastr(ticket);
-          return
-        }
-        this.#updateTickets();
+    this.#ticketsService.delete(ticket.id).subscribe({
+      next: () => {
         this.#toastr.info(
-          `${t.firstname} ${t.lastname}`,
+          'Successfully deleted.',
           'Ticket deleted',
           {
             progressBar: true
           }
         );
+      },
+      error: (err) => {
+        this.#notDeletedTicketToastr(ticket, err);
       }
-    )
+    });
   }
 }

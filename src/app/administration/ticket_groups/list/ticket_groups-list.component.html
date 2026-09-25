@@ -1,16 +1,16 @@
-@if (this.loadingState > 0) {
+@if (ticketGroups.isLoading()) {
 <app-loading></app-loading>
 }
 <div>
-  @if (this.errorLoading.enabled) {
+  @if (ticketGroups.error()) {
   <div class="error">
     <p>
       There's problem loading table.<br />
-      {{ this.errorLoading.text }}
+      {{ ticketGroups.error()?.message }}
     </p>
   </div>
   }
-  @if (!this.errorLoading.enabled) {
+  @if (!ticketGroups.error()) {
   <table>
     <thead>
       <tr>
@@ -22,7 +22,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (ticket_group of ticket_groups; track ticket_group) {
+      @for (ticket_group of ticketGroups.value(); track ticket_group) {
       <tr>
         <td>{{ ticket_group.name }}</td>
         <!-- so hidden column with IDs is second -->
@@ -30,7 +30,7 @@
         <td>{{ ticket_group.capacity }}</td>
         <td>
           @if (ticket_group.event != null) {
-          <a [routerLink]="'/events/detail/' + ticket_group.event.id">
+          <a [routerLink]="['/events', 'detail', ticket_group.event.id]">
             {{ ticket_group.event.name}}
           </a>
           }
@@ -41,10 +41,10 @@
           }
         </td>
         <td class="actions">
-          <button class="edit" (click)="edit(ticket_group)">
+          <button class="edit" [routerLink]="['/ticket_groups', 'edit', ticket_group.id]">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
-          <button class="delete" (click)="delete(ticket_group)">
+          <button class="delete" (click)="deleteTicketGroup(ticket_group)">
             <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
         </td>
