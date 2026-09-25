@@ -6,9 +6,21 @@
   <div class="error">
     <p>
       There's problem loading table.<br />
-      {{ tickets.error()?.message || tickets.error() }}
+      {{ errorText(tickets.error()) }}
     </p>
   </div>
+  }
+  <!--
+    An empty list is no longer the same as "no tickets exist": the API only
+    returns tickets from events you hold `tickets:read` on, globally or granted
+    per event. Without this, an organiser's first impression is a broken app.
+  -->
+  @if (!tickets.error() && !tickets.isLoading() && tickets.value().length === 0) {
+  <p class="hint">
+    No tickets are visible to you. Access is granted per event — open an event
+    you organise and add yourself under <em>Permissions</em>, or ask whoever
+    created it.
+  </p>
   }
   @if (!tickets.error()) {
   <table>

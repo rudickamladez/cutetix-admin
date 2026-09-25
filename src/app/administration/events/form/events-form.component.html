@@ -46,3 +46,7 @@
   }
 </form>
 }
+
+@if (eventId()) {
+<app-event-scopes-panel [event_id]="eventId()!"></app-event-scopes-panel>
+}
