@@ -17,7 +17,9 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from './shared/shared.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { FormField } from '@angular/forms/signals';
-import { ToastrModule } from 'ngx-toastr';
+import { ToastrService } from 'ngx-toastr';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { SnackbarToastrService } from './services/snackbar-toastr.service';
 
 
 @NgModule({
@@ -45,9 +47,13 @@ import { ToastrModule } from 'ngx-toastr';
             registrationStrategy: 'registerWhenStable:30000'
         }),
         FormField,
-        ToastrModule.forRoot(),
+        MatSnackBarModule,
     ],
     providers: [
+        {
+            provide: ToastrService,
+            useClass: SnackbarToastrService,
+        },
         provideHttpClient(
             withFetch(),
             withInterceptors([authInterceptor]),
