@@ -1,7 +1,7 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
@@ -56,7 +56,7 @@ export class EventScopesPanelComponent {
     readonly #auth = inject(AuthService);
     readonly #currentUser = inject(UsersService);
     readonly #userSearch = inject(UserSearchService);
-    readonly #toastr = inject(ToastrService);
+    readonly #toastr = inject(SnackbarToastrService);
 
     protected readonly scopeColumns = EVENT_SCOPE_LABELS;
     protected readonly scopeChoices = EVENT_GRANTABLE_SCOPES;

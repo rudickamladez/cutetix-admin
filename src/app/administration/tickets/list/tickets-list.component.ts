@@ -3,7 +3,7 @@ import { TicketService } from '../tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { errorText } from '../../../utils/errorText';
 
 @Component({
   selector: 'app-tickets-list',

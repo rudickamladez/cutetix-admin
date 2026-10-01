@@ -17,7 +17,10 @@ export class EventsFormComponent {
   readonly #route = inject(ActivatedRoute);
   readonly #eventService = inject(EventService);
   readonly #toastr = inject(SnackbarToastrService);
-  readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
+  readonly #id = toSignal(
+    this.#route.paramMap.pipe(map((params) => params.get('id'))),
+    { initialValue: this.#route.snapshot.paramMap.get('id') }
+  );
   readonly #eventResource = this.#eventService.eventByIdResource(() => this.#id());
   #loadErrorShown = false;
 

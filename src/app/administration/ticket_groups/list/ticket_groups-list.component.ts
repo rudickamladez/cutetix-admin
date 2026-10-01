@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { TicketGroupService } from '../ticket_groups.service';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { errorText } from '../../../utils/errorText';
 import { TicketGroup } from '../ticket_groups.types';
 
 @Component({
