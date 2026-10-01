@@ -14,6 +14,10 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   protected readonly authService = inject(AuthService);
   protected readonly usersService = inject(UsersService);
   protected readonly adminModeService = inject(AdminModeService);
+  protected readonly tokenExpirationDateFormatter = new Intl.DateTimeFormat(
+    navigator.languages[0] ?? navigator.language,
+    { dateStyle: 'short', timeStyle: 'short' },
+  );
 
   protected readonly toggleIcon = faRepeat;
 
