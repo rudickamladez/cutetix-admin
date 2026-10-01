@@ -1,6 +1,6 @@
 import { HttpClient, httpResource } from "@angular/common/http";
 import { effect, inject, Injectable } from "@angular/core";
-import { ToastrService } from "ngx-toastr";
+import { SnackbarToastrService } from './snackbar-toastr.service';
 
 import { StorageKeys } from "../tokens/storage.tokens";
 import type { User } from "../types/auth.types";
@@ -12,7 +12,7 @@ const API_PATH = "users";
 
 @Injectable()
 export class UsersService {
-  readonly #toastr = inject(ToastrService);
+  readonly #toastr = inject(SnackbarToastrService);
   readonly #logging = inject(LoggingService);
   readonly #storageService = inject(StorageService);
   readonly #httpClient = inject(HttpClient);

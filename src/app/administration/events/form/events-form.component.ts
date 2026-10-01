@@ -2,7 +2,7 @@ import { Component, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../events.service';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 
@@ -16,11 +16,8 @@ export class EventsFormComponent {
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
   readonly #eventService = inject(EventService);
-  readonly #toastr = inject(ToastrService);
-  readonly #id = toSignal(
-    this.#route.paramMap.pipe(map((params) => params.get('id'))),
-    { initialValue: this.#route.snapshot.paramMap.get('id') }
-  );
+  readonly #toastr = inject(SnackbarToastrService);
+  readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
   readonly #eventResource = this.#eventService.eventByIdResource(() => this.#id());
   #loadErrorShown = false;
 

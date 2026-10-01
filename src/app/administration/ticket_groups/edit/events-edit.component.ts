@@ -1,7 +1,7 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketGroupService } from '../ticket_groups.service';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../events/events.service';
 import { Event } from '../../events/events.types';
@@ -17,7 +17,7 @@ export class TicketGroupsEditComponent {
   readonly #route = inject(ActivatedRoute);
   readonly #ticket_groupService = inject(TicketGroupService);
   readonly #eventService = inject(EventService);
-  readonly #toastr = inject(ToastrService);
+  readonly #toastr = inject(SnackbarToastrService);
   readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
   readonly #ticketGroupResource = this.#ticket_groupService.ticketGroupByIdResource(() => this.#id());
   #loadErrorShown = false;

@@ -1,7 +1,7 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { form, required, email, submit, disabled } from '@angular/forms/signals';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { UserService } from '../users.service';
 import { User, UserUpdate } from '../users.types';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -16,7 +16,7 @@ import { SCOPES_ENTRIES } from '../../../types/auth.types';
 export class UsersFormComponent {
   readonly #router = inject(Router);
   readonly #usersService = inject(UserService);
-  readonly #toastr = inject(ToastrService);
+  readonly #toastr = inject(SnackbarToastrService);
   protected readonly scopesEntries = SCOPES_ENTRIES;
 
   readonly id = input<string | null>(null);

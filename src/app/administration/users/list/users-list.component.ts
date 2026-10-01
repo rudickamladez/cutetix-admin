@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { UserService } from '../users.service';
 import { User } from '../users.types';
 import { AuthService } from 'src/app/services/auth.service';
@@ -14,7 +14,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class UsersListComponent {
   readonly #usersService = inject(UserService);
-  readonly #toastr = inject(ToastrService);
+  readonly #toastr = inject(SnackbarToastrService);
   protected readonly router = inject(Router);
   protected readonly authService = inject(AuthService);
   protected readonly editIcon = faPen;

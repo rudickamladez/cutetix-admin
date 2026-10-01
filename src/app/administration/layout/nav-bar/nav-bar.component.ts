@@ -23,7 +23,7 @@ export class NavBarComponent implements OnInit {
 
     dashboardItem = new MenuItem('Dashboard', 'dashboard', faChartLine);
     userProfileItem = new MenuItem('My profile', 'profile', faUser);
-    logoutItem =  new MenuItem('Log out', '', faSignOutAlt, () => this.logout());
+    logoutItem =  new MenuItem('Log out', '', faSignOutAlt, () => this.#authService.logout());
     builder = new MenuBuilder()
     availableItems: MenuItem[] = [];
     
@@ -58,11 +58,6 @@ export class NavBarComponent implements OnInit {
 
     hide(): void {
         this.#menuOpen.set(false);
-    }
-
-    logout(): void {
-        this.#authService.logout();
-        this.#router.navigate(['/login']);
     }
 
     #rebuildMenu(currentUrl: string): void {
