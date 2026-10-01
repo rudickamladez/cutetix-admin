@@ -1,6 +1,6 @@
 import { Component, effect, inject, input } from "@angular/core";
 import { faCoins, faPlus, faTicket, faTicketAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { ToastrService } from "ngx-toastr";
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { EventService } from "../../events/events.service";
 import { LoggingService } from "src/app/services/logging.service";
 
@@ -12,7 +12,7 @@ import { LoggingService } from "src/app/services/logging.service";
 })
 export class DashboardEventOverviewComponent {
     readonly #eventService = inject(EventService);
-    readonly #toastr = inject(ToastrService);
+    readonly #toastr = inject(SnackbarToastrService);
     readonly #logging = inject(LoggingService)
 
     readonly event_id = input.required<string>();

@@ -1,0 +1,23 @@
+@use '../../common/styles';
+
+.checkbox {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+
+  input {
+    margin: 0;
+    width: auto;
+  }
+
+  label {
+    margin: 0;
+  }
+}
+
+.hint {
+  font-size: 0.85rem;
+  margin: 0;
+  opacity: 0.8;
+}

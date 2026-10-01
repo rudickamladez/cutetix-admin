@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketGroupService } from '../ticket_groups.service';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { Router } from '@angular/router';
 import { EventService } from '../../events/events.service';
 import { Event } from '../../events/events.types';
@@ -12,11 +12,11 @@ import { Event } from '../../events/events.types';
     styleUrls: ['./ticket_groups-new.component.scss'],
     standalone: false
 })
-export class TicketGroupsNewComponent implements OnInit{
+export class TicketGroupsNewComponent {
   readonly #router = inject(Router);
   readonly #ticket_groupService = inject(TicketGroupService);
   readonly #eventService = inject(EventService);
-  readonly #toastr = inject(ToastrService);
+  readonly #toastr = inject(SnackbarToastrService);
 
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -24,10 +24,6 @@ export class TicketGroupsNewComponent implements OnInit{
     eventId: new FormControl(1, Validators.required)
   });
   protected readonly eventsResource = this.#eventService.events;
-
-  ngOnInit(): void {
-    this.eventsResource.reload();
-  }
 
   public newTicketGroup() {
     this.#ticket_groupService.create({

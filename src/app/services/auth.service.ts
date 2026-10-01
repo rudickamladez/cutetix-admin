@@ -4,7 +4,7 @@ import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
 import { jwtDecode } from "jwt-decode";
 import { timeout, type Subscription } from "rxjs";
 // import { Socket } from "ngx-socket-io";
-import { ToastrService } from "ngx-toastr";
+import { SnackbarToastrService } from './snackbar-toastr.service';
 
 import { StorageService } from "./storage.service";
 import { StorageKeys } from "../tokens/storage.tokens";
@@ -12,6 +12,8 @@ import { LoggingService } from "./logging.service";
 import { LockNames } from "../tokens/lock.tokens";
 import { VisibilityService } from "./visibility.service";
 import { environment } from "src/environments/environment";
+import { UserRegister } from "../types/auth.types";
+import { Router } from "@angular/router";
 // import { NgxIndexedDBService } from "ngx-indexed-db";
 
 type TokensFromApi = {
@@ -24,7 +26,8 @@ type TokensFromApi = {
 })
 export class AuthService implements OnDestroy {
     readonly #http = inject(HttpClient);
-    readonly #toastr = inject(ToastrService);
+    readonly #toastr = inject(SnackbarToastrService);
+    readonly #router = inject(Router);
     // readonly #socket = inject(Socket);
     readonly #logging = inject(LoggingService);
     readonly #storageService = inject(StorageService);
@@ -41,6 +44,7 @@ export class AuthService implements OnDestroy {
 
     #refreshingTimer: ReturnType<typeof setTimeout> | null = null;
     #loginSub?: Subscription;
+    #registerSub?: Subscription;
 
     constructor() {
         // could not be unsubscribed, because it is provided in root
@@ -69,10 +73,65 @@ export class AuthService implements OnDestroy {
                 this.#refreshingTimer = null;
             }
         }, { allowSignalWrites: true });
+
+        effect(() => {
+            if (!this.canGoToPrivate()) {
+                this.#router.navigate(["/login"]);
+            }
+        })
     }
 
     ngOnDestroy(): void {
         this.#loginSub?.unsubscribe();
+    }
+
+    register(
+        user: UserRegister,
+    ): void {
+        // If user is already logged in, do nothing
+        if (this.isLoggedIn()) {
+            return;
+        }
+
+        if (this.#registerSub) {
+            this.#registerSub.unsubscribe();
+        }
+
+        this.#registerSub = this.#http.post<TokensFromApi>(
+            new URL("auth/register", this.#storageService.get(StorageKeys.API_URL)!).href,
+            user,
+        ).subscribe({
+            next: ({ refresh_token, access_token }) => {
+                this.#logging.log("auth", "User registred successfully.");
+                this.#storageService
+                    .set(StorageKeys.ACCESS_TOKEN, access_token)
+                    .set(StorageKeys.REFRESH_TOKEN, refresh_token);
+
+                this.#scheduleNextRefresh();
+
+                this.#handleRefreshLock();
+                this.#toastr.success(
+                    "You have been registered.",
+                    "Register",
+                );
+                this.#canGoToPrivate.set(true);
+            },
+            error: (err: HttpErrorResponse) => {
+                this.#logging.error("auth", "User register failed.", err);
+                console.error(err);
+                if (err.error.detail) {
+                    this.#toastr.error(
+                        err.error.detail,
+                        "Register"
+                    );
+                    return;
+                }
+                this.#toastr.error(
+                    err.error,
+                    "Register"
+                );
+            }
+        });
     }
 
     login(
@@ -112,10 +171,14 @@ export class AuthService implements OnDestroy {
                 this.#scheduleNextRefresh();
 
                 this.#handleRefreshLock();
+                this.#toastr.success(
+                    "You have been logged in.",
+                    "Login",
+                );
                 this.#canGoToPrivate.set(true);
             },
             error: (err: HttpErrorResponse) => {
-                this.#logging.log("auth", "User login failed.", err);
+                this.#logging.error("auth", "User login failed.", err);
                 console.error(err);
                 if (err.error.detail) {
                     this.#toastr.error(
@@ -125,7 +188,7 @@ export class AuthService implements OnDestroy {
                     return;
                 }
                 this.#toastr.error(
-                    err.statusText,
+                    err.message,
                     "Login"
                 );
             }
@@ -176,18 +239,24 @@ export class AuthService implements OnDestroy {
                 },
             });
         } catch (err) {
-            this.#logging.log("auth", "Error while refreshing token.", err);
+            this.#logging.error("auth", "Error while refreshing token.", err);
             this.#isRefreshingToken = false;
             this.logout();
         }
     }
 
     logout(): void {
+        const logoutLogic = () => {
+            this.#storageService
+                .delete(StorageKeys.ACCESS_TOKEN)
+                .delete(StorageKeys.REFRESH_TOKEN);
+            this.#canGoToPrivate.set(false);
+        };
+
         if (!this.isLoggedIn()) return;
 
         const refreshToken = this.getRefreshToken();
         const apiUrl = this.#storageService.get(StorageKeys.API_URL);
-        this.#storageService.clear();
 
         if (!refreshToken || !apiUrl) {
             window.location.reload();
@@ -197,12 +266,27 @@ export class AuthService implements OnDestroy {
         // TODO rework with navigator.sendBeacon
         this.#http.post(
             (new URL("auth/logout", apiUrl)).href,
-            { refresh_token: refreshToken }
+            {}
         ).pipe(
             timeout(1000)
         ).subscribe({
-            next: () => window.location.reload(),
-            error: () => window.location.reload(),
+            next: () => {
+                this.#logging.log("auth", "User logged out successfully.");
+                this.#toastr.success(
+                    "You have been logged out.",
+                    "Logout",
+                );
+                logoutLogic();
+            },
+            error: (err: HttpErrorResponse) => {
+                this.#logging.error("auth", "User logout failed.", err);
+                console.error(err);
+                this.#toastr.error(
+                    `Logout request failed. You might still be logged in on the server. Error: ${err.message}`,
+                    "Logout",
+                );
+                logoutLogic();
+            },
         });
     }
 
@@ -300,16 +384,30 @@ export class AuthService implements OnDestroy {
     }
 
     getScopes(): string {
+        return this.getScopesList().join(", ") || "undefined";
+    }
+
+    getScopesList(): string[] {
         const scope = Object(this.getDecodedAccessToken())?.scope as string | undefined;
 
-        const ss = (scope ?? "")
+        return (scope ?? "")
             .toString()
-            .split(",")
+            .split(/[,\s]+/)
             .map(s => s.trim())
-            .filter(Boolean)
-            .join(", ") || "undefined";
+            .filter(Boolean);
+    }
 
-        return ss;
+    hasScope(scope: string): boolean {
+        return this.getScopesList().includes(scope);
+    }
+
+    hasAnyScope(...scopes: string[]): boolean {
+        if (scopes.length === 0) {
+            return false;
+        }
+
+        const availableScopes = this.getScopesList();
+        return scopes.some(scope => availableScopes.includes(scope));
     }
 
     getRefreshToken(): string | null {

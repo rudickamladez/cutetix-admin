@@ -1,0 +1,54 @@
+@use '../../common/styles';
+
+.toolbar {
+  margin-bottom: 0.75rem;
+}
+
+.filters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  > div::before {
+    content: attr(label);
+    display: block;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  input[type='search'] {
+    min-width: 22rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .include-disabled {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+
+    input[type='checkbox'] {
+      width: auto;
+      margin: 0;
+    }
+  }
+
+  button {
+    align-self: flex-end;
+    margin: 0;
+    min-width: 0;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .count {
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+    opacity: 0.85;
+  }
+}
+
+table td.actions {
+  white-space: nowrap;
+}

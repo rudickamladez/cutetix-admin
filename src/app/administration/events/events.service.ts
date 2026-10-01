@@ -1,19 +1,24 @@
-import { HttpClient, HttpResourceRef, httpResource } from '@angular/common/http';
+import { HttpClient, HttpResourceRef, httpResource, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Event, EventCapacitySummary, EventCreate } from './events.types';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { StorageService } from 'src/app/services/storage.service';
+import { SnackbarToastrService } from '../../services/snackbar-toastr.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
+  readonly #API_PATH = 'events';
+  
   readonly #httpClient = inject(HttpClient);
 
-  readonly #API_PATH = 'events';
   readonly #storageService = inject(StorageService);
+  readonly #toastr = inject(SnackbarToastrService);
+
+  readonly #apiPath = 'events';
 
   readonly events = httpResource<Event[]>(
     () => this.#endpoint('/'),
@@ -22,8 +27,12 @@ export class EventService {
     }
   );
 
+  constructor() {
+    this.events.reload();
+  }
+
   #endpoint(path: string): string {
-    return new URL(`${this.#API_PATH}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
+    return new URL(`${this.#apiPath}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
   public eventByIdResource(
@@ -69,5 +78,39 @@ export class EventService {
     ).pipe(
       tap(() => this.events.reload())
     );
+  }
+
+  public delete(
+    event: Event,
+    shouldConfirm = true,
+  ): void {
+    if (shouldConfirm && !confirm(`Are you sure to delete event "${event.name}"?`)) {
+      return;
+    }
+    this.#httpClient.delete<void>(
+      this.#endpoint(`/${event.id}/`)
+    ).pipe(
+      tap(() => this.events.reload())
+    ).subscribe({
+      next: () => {
+        this.#toastr.info(
+          event.name,
+          'Event deleted',
+          {
+            progressBar: true
+          }
+        );
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error(err);
+        this.#toastr.error(
+          `Error: ${err.message}`,
+          'Event wasn\'t deleted!',
+          {
+            progressBar: true,
+          }
+        );
+      }
+    });
   }
 }

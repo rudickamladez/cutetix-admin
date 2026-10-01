@@ -1,4 +1,6 @@
 import { Component, computed, booleanAttribute, inject, input, OnDestroy, OnInit } from "@angular/core";
+import { faRepeat } from "@fortawesome/free-solid-svg-icons";
+import { AdminModeService } from "src/app/services/adminMode.service";
 import { AuthService } from "src/app/services/auth.service";
 import { UsersService } from "src/app/services/users.service";
 
@@ -11,6 +13,9 @@ import { UsersService } from "src/app/services/users.service";
 export class UserInfoComponent implements OnInit, OnDestroy {
   protected readonly authService = inject(AuthService);
   protected readonly usersService = inject(UsersService);
+  protected readonly adminModeService = inject(AdminModeService);
+
+  protected readonly toggleIcon = faRepeat;
 
   readonly show_favorite_events = input(true, {
     transform: booleanAttribute,

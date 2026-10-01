@@ -8,8 +8,6 @@ import { NavBarSubitemComponent } from './layout/nav-bar-subitem/nav-bar-subitem
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ToastrModule } from 'ngx-toastr';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoadingComponent } from './loading/loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TicketGroupsListComponent } from './ticket_groups/list/ticket_groups-list.component';
@@ -21,6 +19,9 @@ import { TicketsNewComponent } from './tickets/new/tickets-new.component';
 import { EventsFormComponent } from './events/form/events-form.component';
 import { SharedModule } from '../shared/shared.module';
 import { DashboardEventOverviewComponent } from './dashboard/event-overview/dashboard-event-overview.component';
+import { UsersListComponent } from './users/list/users-list.component';
+import { UsersFormComponent } from './users/form/users-form.component';
+import { FormField } from '@angular/forms/signals';
 
 @NgModule({
     declarations: [
@@ -39,15 +40,16 @@ import { DashboardEventOverviewComponent } from './dashboard/event-overview/dash
         EventsFormComponent,
         TicketsListComponent,
         TicketsNewComponent,
+        UsersListComponent,
+        UsersFormComponent,
     ],
     imports: [
         CommonModule,
         RouterModule,
         FontAwesomeModule,
-        BrowserAnimationsModule,
-        ToastrModule.forRoot(),
         ReactiveFormsModule,
         SharedModule,
+        FormField,
     ]
 })
 export class AdministrationModule { }

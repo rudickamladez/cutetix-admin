@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 
 import { fromEvent, filter, map, type Observable, merge, Subject } from "rxjs";
 import { StorageKeys } from "../tokens/storage.tokens";
+import { mapBoolean } from "../utils/booleanMapper";
 
 type CustomStorageEvent = {
   readonly currentValue: string | null;
@@ -48,13 +49,10 @@ export class StorageService {
   }
 
   getBoolean(key: StorageKeys, fallback = false): boolean {
-    const v = this.get<any>(key);
-    if (typeof v === 'boolean') return v;
-    if (typeof v === 'number') return v !== 0;
+    const v = this.get(key);
     if (typeof v === 'string') {
       const s = v.trim().toLowerCase();
-      if (['true', '1', 'yes', 'y', 'on'].includes(s)) return true;
-      if (['false', '0', 'no', 'n', 'off', ''].includes(s)) return false;
+      return mapBoolean(v) || fallback;
     }
     return fallback;
   }
@@ -72,9 +70,12 @@ export class StorageService {
     return this;
   }
 
-  setIfNull<T extends string = string>(key: StorageKeys, value: T): this {
+  setIfNull<T extends string = string>(key: StorageKeys, value: T, cb?: () => void): this {
     if (this.get(key) === null) {
       this.set(key, value);
+      if (cb) {
+        cb();
+      }
     }
     return this;
   }

@@ -7,6 +7,7 @@ export const StorageKeys = {
   THEME: "theme",
   BROWSER_CORE_CHECK: "browser_core_check",
   SUDO_PASSWORD_MODE: "sudo_password_mode",
+  ADMIN_MODE: "admin_mode",
 } as const;
 
 // TODO

@@ -33,14 +33,34 @@ table {
 
             &.favorite {
                 background-color: #1E90ED;
+
+                &:hover {
+                    background-color: rgba($color: #1e90ed, $alpha: .5);
+                }
             }
 
             &.edit {
                 background-color: #BF40BF;
+
+                &:hover {
+                    background-color: rgba($color: #bf40bf, $alpha: .5);
+                }
+            }
+
+            &.detail {
+                background-color: #1e90ed;
+
+                &:hover {
+                    background-color: rgba($color: #1e90ed, $alpha: .5);
+                }
             }
 
             &.delete {
                 background-color: tomato;
+
+                &:hover {
+                    background-color: rgba($color: tomato, $alpha: .5);
+                }
             }
         }
 

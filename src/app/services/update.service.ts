@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { SwUpdate } from "@angular/service-worker";
-import { ActiveToast, ToastrService } from "ngx-toastr";
+import { SnackbarToast, SnackbarToastrService } from './snackbar-toastr.service';
 import { filter, interval } from "rxjs";
 import { LoggingService } from "./logging.service";
 
@@ -8,11 +8,11 @@ import { LoggingService } from "./logging.service";
     providedIn: "root"
 })
 export class UpdateService {
-    readonly #toastr = inject(ToastrService);
+    readonly #toastr = inject(SnackbarToastrService);
     readonly #updates = inject(SwUpdate);
     readonly #logging = inject(LoggingService);
 
-    #toastRef: ActiveToast<any> | null = null;
+    #toastRef: SnackbarToast<any> | null = null;
 
     constructor() {
         this.#updates.versionUpdates

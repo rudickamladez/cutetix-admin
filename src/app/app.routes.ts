@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { HelloComponent } from './hello/hello.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { DashboardComponent } from './administration/dashboard/dashboard.component';
@@ -12,18 +11,41 @@ import { EventsListComponent } from './administration/events/list/events-list.co
 import { TicketsListComponent } from './administration/tickets/list/tickets-list.component';
 import { TicketsNewComponent } from './administration/tickets/new/tickets-new.component';
 import { EventsFormComponent } from './administration/events/form/events-form.component';
+import { UsersListComponent } from './administration/users/list/users-list.component';
+import { UsersFormComponent } from './administration/users/form/users-form.component';
 import { authGuard } from './guards/auth.guard';
 import { logoutGuard } from './guards/logout.guard';
+import { usersSectionGuard } from './guards/users-section.guard';
+
+let eventsChildren: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'list',
+  },
+  {
+    path: 'list',
+    component: EventsListComponent
+  },
+  {
+    path: 'add',
+    component: EventsFormComponent
+  },
+  {
+    path: 'edit/:id',
+    component: EventsFormComponent
+  },
+  {
+    path: 'detail/:id',
+    component: EventsFormComponent
+  },
+];
 
 export let APP_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'login',
     pathMatch: 'full',
-  },
-  {
-    path: 'home',
-    component: HelloComponent,
   },
   {
     path: 'login',
@@ -97,7 +119,16 @@ export let APP_ROUTES: Routes = [
         ]
       },
       {
+        path: 'my-events',
+        children: eventsChildren,
+      },
+      {
         path: 'events',
+        children: eventsChildren,
+      },
+      {
+        path: 'users',
+        canActivate: [usersSectionGuard],
         children: [
           {
             path: '',
@@ -106,19 +137,28 @@ export let APP_ROUTES: Routes = [
           },
           {
             path: 'list',
-            component: EventsListComponent
+            component: UsersListComponent
           },
           {
             path: 'add',
-            component: EventsFormComponent
+            component: UsersFormComponent,
+            data: {
+              mode: 'new',
+            },
           },
           {
             path: 'edit/:id',
-            component: EventsFormComponent
+            component: UsersFormComponent,
+            data: {
+              mode: 'edit',
+            },
           },
           {
             path: 'detail/:id',
-            component: EventsFormComponent
+            component: UsersFormComponent,
+            data: {
+              mode: 'detail',
+            },
           },
         ]
       },

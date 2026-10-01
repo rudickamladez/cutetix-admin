@@ -1,7 +1,7 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../events.service';
-import { ToastrService } from 'ngx-toastr';
+import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -14,7 +14,7 @@ export class EventsFormComponent {
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
   readonly #eventService = inject(EventService);
-  readonly #toastr = inject(ToastrService);
+  readonly #toastr = inject(SnackbarToastrService);
   readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
   readonly #eventResource = this.#eventService.eventByIdResource(() => this.#id());
   #loadErrorShown = false;

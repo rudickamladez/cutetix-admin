@@ -1,0 +1,84 @@
+@if (users.isLoading()) {
+<app-loading></app-loading>
+}
+<div>
+  @if (users.error()) {
+  <div class="error">
+    <p>
+      There's a problem loading table.<br />
+      {{ loadErrorText() }}
+    </p>
+  </div>
+  }
+  @if (!users.error()) {
+  <div class="toolbar">
+    <div class="filters">
+      <div label="Search">
+        <input
+          type="search"
+          [value]="search()"
+          (input)="search.set($event.target.value)"
+          placeholder="Username, full name, e-mail, scope"
+        >
+      </div>
+      <label class="include-disabled">
+        <input
+          type="checkbox"
+          [checked]="includeDisabled()"
+          (change)="includeDisabled.set($event.target.checked)"
+        >
+        Include disabled users
+      </label>
+      <button type="button" (click)="clearFilters()">
+        Reset
+      </button>
+      <span class="count">{{ filteredUsers().length }} / {{ users.value().length }}</span>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Full name</th>
+        <th>E-mail</th>
+        <th>Disabled</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (filteredUsers().length === 0) {
+      <tr>
+        <td colspan="5">No users found.</td>
+      </tr>
+      }
+      @for (user of filteredUsers(); track user.username) {
+      <tr>
+        <td>{{ user.username }}</td>
+        <td>{{ user.full_name }}</td>
+        <td>
+          <a href="mailto:{{ user.email }}">
+            {{ user.email }}
+          </a>
+        </td>
+        <td>{{ user.disabled ? 'Yes' : 'No' }}</td>
+        <td class="actions">
+          @if (authService.hasScope('users:read')) {
+          <button class="detail" (click)="router.navigate(['users', 'detail', user.uuid]);">
+            <fa-icon [icon]="detailIcon"></fa-icon>
+          </button>
+          }
+          @if (authService.hasScope('users:edit')) {
+          <button class="edit" (click)="router.navigate(['users', 'edit', user.uuid]);">
+            <fa-icon [icon]="editIcon"></fa-icon>
+          </button>
+          <button class="delete" (click)="delete(user)">
+            <fa-icon [icon]="deleteIcon"></fa-icon>
+          </button>
+          }
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  }
+</div>
