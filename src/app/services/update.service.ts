@@ -1,4 +1,5 @@
 import { Injectable, inject } from "@angular/core";
+import { DOCUMENT } from "@angular/common";
 import { SwUpdate } from "@angular/service-worker";
 import { SnackbarToast, SnackbarToastrService } from './snackbar-toastr.service';
 import { filter, interval } from "rxjs";
@@ -11,6 +12,7 @@ export class UpdateService {
     readonly #toastr = inject(SnackbarToastrService);
     readonly #updates = inject(SwUpdate);
     readonly #logging = inject(LoggingService);
+    readonly #document = inject(DOCUMENT);
 
     #toastRef: SnackbarToast<any> | null = null;
 
@@ -30,20 +32,9 @@ export class UpdateService {
         this.#updates.versionUpdates
             .pipe(
                 filter(e => e.type === "VERSION_READY"))
-            .subscribe(async () => {
-                try {
-                    if (await this.#updates.activateUpdate()) {
-                        this.#logging.log("swUpdate", "New version was activated. Refreshing.");
-                        window.location.reload();
-                        return;
-                    }
-                    // should not be reachable
-                    this.#logging.error("swUpdate", "New version was not activated, because no new version was found.");
-                } catch (e) {
-                    this.#logging.error("swUpdate", "Application can not be activated.", e);
-                    this.#toastr.error("The application failed to update. The application will be reloaded.", "Updates");
-                    window.location.reload();
-                }
+            .subscribe(() => {
+                this.#logging.log("swUpdate", "New version is ready. Reloading.");
+                this.#document.defaultView?.location.reload();
             });
 
         if (this.#updates.isEnabled) {
