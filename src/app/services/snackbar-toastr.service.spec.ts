@@ -6,11 +6,16 @@ import { SnackbarToastrService } from './snackbar-toastr.service';
 
 describe('SnackbarToastrService', () => {
     let service: SnackbarToastrService;
-    let snackBar: jasmine.SpyObj<MatSnackBar>;
+    let snackBar: {
+        openFromComponent: ReturnType<typeof vi.fn>;
+        dismiss: ReturnType<typeof vi.fn>;
+    };
 
     beforeEach(() => {
-        snackBar = jasmine.createSpyObj<MatSnackBar>('MatSnackBar', ['openFromComponent', 'dismiss']);
-        snackBar.openFromComponent.and.callFake(() => createSnackBarRef() as never);
+        snackBar = {
+            openFromComponent: vi.fn().mockImplementation(() => createSnackBarRef()),
+            dismiss: vi.fn(),
+        };
 
         TestBed.configureTestingModule({
             providers: [
@@ -27,7 +32,7 @@ describe('SnackbarToastrService', () => {
 
         expect(snackBar.openFromComponent).toHaveBeenCalledWith(
             SnackbarToastComponent,
-            jasmine.objectContaining({
+            expect.objectContaining({
                 data: 'Events: Saved',
                 duration: 5000,
                 panelClass: ['snackbar-success'],
@@ -40,22 +45,22 @@ describe('SnackbarToastrService', () => {
 
         expect(snackBar.openFromComponent).toHaveBeenCalledWith(
             SnackbarToastComponent,
-            jasmine.objectContaining({ action: 'Close' }),
+            expect.objectContaining({ action: 'Close' }),
         );
     });
 
     it('keeps toast active until it is dismissed', () => {
         const toast = service.show('Updates are being applied.', 'Updates', { timeOut: 0 });
 
-        expect(toast?.toastRef.isInactive()).toBeFalse();
+        expect(toast?.toastRef.isInactive()).toBe(false);
         toast?.toastRef.close();
-        expect(toast?.toastRef.isInactive()).toBeTrue();
+        expect(toast?.toastRef.isInactive()).toBe(true);
     });
 });
 
 describe('SnackbarToastComponent', () => {
     it('dismisses the snackbar when clicked', () => {
-        const snackBarRef = jasmine.createSpyObj<MatSnackBarRef<SnackbarToastComponent>>('MatSnackBarRef', ['dismiss']);
+        const snackBarRef = { dismiss: vi.fn() };
 
         TestBed.configureTestingModule({
             imports: [SnackbarToastComponent],
