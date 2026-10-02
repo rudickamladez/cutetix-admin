@@ -12,14 +12,14 @@
 
   <div class="actions">
     @if (!autosave) {
-    <button type="button" (click)="saveNow()" [disabled]="!dirty">Save</button>
+    <button type="button" (click)="saveNow()" [disabled]="!dirty()">Save</button>
     }
     @if (!autosave) {
     <button type="button" (click)="resetToStored()">Reset</button>
     }
   </div>
 
-  @if (status) {
-  <span class="status">{{ status }}</span>
+  @if (status()) {
+  <span class="status">{{ status() }}</span>
   }
 </div>
