@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
@@ -24,8 +24,8 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   @Input() autosave = false;
 
   ctrl = new FormControl<string | boolean>('', { nonNullable: true });
-  dirty = false;
-  status = '';
+  readonly dirty = signal(false);
+  readonly status = signal('');
   cid = ''; // ID for label
 
   get isCheckbox() { return this.type === 'checkbox'; }
@@ -43,7 +43,7 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
     this.ctrl.valueChanges
       .pipe(debounceTime(delay), distinctUntilChanged(), takeUntil(this.#destroy$))
       .subscribe(val => {
-        this.dirty = true;
+        this.dirty.set(true);
         if (!this.autosave) return;
         this.#write(val);
       });
@@ -54,7 +54,7 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
         const incoming = this.isCheckbox ? this.#toBool(e.currentValue) : (e.currentValue ?? '');
         if (this.ctrl.value !== incoming) {
           this.ctrl.setValue(incoming as any, { emitEvent: false });
-          this.dirty = false;
+          this.dirty.set(false);
           this.#flashStatus(e.action === 'delete' ? 'Deleted from storage' : 'Updated from storage');
         }
       });
@@ -66,7 +66,7 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
     const current = this.#storageService.get(this.key);
     const val = this.isCheckbox ? this.#toBool(current) : (current ?? '');
     this.ctrl.setValue(val as any, { emitEvent: false });
-    this.dirty = false;
+    this.dirty.set(false);
     this.#flashStatus('Reverted to stored value');
   }
 
@@ -85,13 +85,13 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
     } else {
       this.#storageService.set(this.key, (val ?? '').toString());
     }
-    this.dirty = false;
+    this.dirty.set(false);
     this.#flashStatus('Saved');
   }
 
   #flashStatus(text: string) {
-    this.status = text;
-    setTimeout(() => (this.status = ''), 1200);
+    this.status.set(text);
+    setTimeout(() => this.status.set(''), 1200);
   }
 
   #toBool(v: unknown): boolean {

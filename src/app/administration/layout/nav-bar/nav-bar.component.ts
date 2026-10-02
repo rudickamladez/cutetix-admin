@@ -26,7 +26,7 @@ export class NavBarComponent implements OnInit {
     userProfileItem = new MenuItem('My profile', 'profile', faUser);
     logoutItem =  new MenuItem('Log out', '', faSignOutAlt, () => this.#authService.logout());
     builder = new MenuBuilder()
-    availableItems: MenuItem[] = [];
+    readonly availableItems = signal<MenuItem[]>([]);
     
     readonly #menuOpen = signal<boolean>(false);
     protected readonly menuOpen = this.#menuOpen.asReadonly();
@@ -62,11 +62,12 @@ export class NavBarComponent implements OnInit {
     }
 
     #rebuildMenu(currentUrl: string): void {
-        this.availableItems = this.builder.build(currentUrl);
-        this.availableItems.unshift(this.dashboardItem);
-        this.availableItems.push(
+        const availableItems = this.builder.build(currentUrl);
+        availableItems.unshift(this.dashboardItem);
+        availableItems.push(
             this.userProfileItem,
             this.logoutItem
         );
+        this.availableItems.set(availableItems);
     }
 }
