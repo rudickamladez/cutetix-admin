@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from "@angular/core";
+import { Component, effect, inject, input, ChangeDetectionStrategy } from "@angular/core";
 import { faCoins, faPlus, faTicket, faTicketAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { EventService } from "../../events/events.service";
@@ -8,6 +8,7 @@ import { LoggingService } from "src/app/services/logging.service";
     selector: 'app-dashboard-event-overview',
     templateUrl: './dashboard-event-overview.component.html',
     styleUrls: ['./dashboard-event-overview.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false,
 })
 export class DashboardEventOverviewComponent {

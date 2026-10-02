@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-snackbar-toast',
     template: '{{ message }}',
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '(click)': 'dismiss()',
         '(keydown.enter)': 'dismiss()',

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketService } from '../tickets.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
@@ -11,6 +11,7 @@ import { TicketStatusEnum } from '../tickets.types';
     selector: 'app-tickets-new',
     templateUrl: './tickets-new.component.html',
     styleUrls: ['./tickets-new.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TicketsNewComponent {
