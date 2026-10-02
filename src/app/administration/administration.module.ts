@@ -22,6 +22,7 @@ import { DashboardEventOverviewComponent } from './dashboard/event-overview/dash
 import { UsersListComponent } from './users/list/users-list.component';
 import { UsersFormComponent } from './users/form/users-form.component';
 import { FormField } from '@angular/forms/signals';
+import { EventScopesPanelComponent } from './events/scopes/event-scopes-panel.component';
 
 @NgModule({
     declarations: [
@@ -50,6 +51,8 @@ import { FormField } from '@angular/forms/signals';
         ReactiveFormsModule,
         SharedModule,
         FormField,
+        // Standalone, so imported rather than declared.
+        EventScopesPanelComponent,
     ]
 })
 export class AdministrationModule { }

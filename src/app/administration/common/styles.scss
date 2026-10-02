@@ -92,6 +92,21 @@ table {
     padding: 1.5rem;
 }
 
+/*
+ * Explanatory text that is not an error — why a list is empty, what a control
+ * needs before it can be used. Access is now granted per event, so several
+ * screens legitimately show less than they used to and need to say so.
+ */
+.hint {
+    color: $foreColorMedium;
+    font-size: .9rem;
+    margin: .5rem 0;
+
+    code {
+        font-size: .85rem;
+    }
+}
+
 form {
     display: flex;
     flex-direction: column;
