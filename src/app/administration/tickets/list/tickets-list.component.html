@@ -54,7 +54,7 @@
               No event for group
             </span>
           } @else {
-            <a [routerLink]="['/events', 'detail', ticket.group?.event?.id]">
+            <a [routerLink]="['/events', 'detail', $safeNavigationMigration(ticket.group?.event?.id)]">
               {{ ticket.group?.event?.name}}
             </a>
           }

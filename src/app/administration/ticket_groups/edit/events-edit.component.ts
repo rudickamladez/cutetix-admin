@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TicketGroupService } from '../ticket_groups.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
@@ -10,6 +10,7 @@ import { Event } from '../../events/events.types';
     selector: 'app-ticket_groups-edit',
     templateUrl: './events-edit.component.html',
     styleUrls: ['./events-edit.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TicketGroupsEditComponent {

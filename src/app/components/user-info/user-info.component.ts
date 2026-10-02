@@ -1,4 +1,4 @@
-import { Component, computed, booleanAttribute, inject, input, OnDestroy, OnInit } from "@angular/core";
+import { Component, computed, booleanAttribute, inject, input, OnDestroy, OnInit, ChangeDetectionStrategy, signal } from "@angular/core";
 import { faRepeat } from "@fortawesome/free-solid-svg-icons";
 import { AdminModeService } from "src/app/services/adminMode.service";
 import { AuthService } from "src/app/services/auth.service";
@@ -8,6 +8,7 @@ import { UsersService } from "src/app/services/users.service";
   selector: 'app-user-info',
   templateUrl: './user-info.component.html',
   styleUrls: ['./user-info.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class UserInfoComponent implements OnInit, OnDestroy {
@@ -25,8 +26,8 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     transform: booleanAttribute,
   });
 
-  protected time_to_access_token_expire = "";
-  protected time_to_refresh_token_expire = "";
+  protected readonly time_to_access_token_expire = signal("");
+  protected readonly time_to_refresh_token_expire = signal("");
   #refreshingInterval?: number;
 
 
@@ -45,11 +46,11 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     const at_exp = this.authService.getDecodedAccessToken()?.exp as number | undefined;
     const rt_exp = this.authService.getDecodedRefreshToken()?.exp as number | undefined;
     if (!at_exp) {
-      this.time_to_access_token_expire = 'exp is not defined';
+      this.time_to_access_token_expire.set('exp is not defined');
       return;
     }
     if (!rt_exp) {
-      this.time_to_refresh_token_expire = 'exp is not defined';
+      this.time_to_refresh_token_expire.set('exp is not defined');
       return;
     }
 
@@ -58,17 +59,17 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     const rt_diff = rt_exp - now;
 
     if (at_diff <= 0) {
-      this.time_to_access_token_expire = 'EXPIRED';
+      this.time_to_access_token_expire.set('EXPIRED');
       return;
     }
 
     if (rt_diff <= 0) {
-      this.time_to_refresh_token_expire = 'EXPIRED';
+      this.time_to_refresh_token_expire.set('EXPIRED');
       return;
     }
 
-    this.time_to_access_token_expire = this.#formatCountdown(at_diff);
-    this.time_to_refresh_token_expire = this.#formatCountdown(rt_diff);
+    this.time_to_access_token_expire.set(this.#formatCountdown(at_diff));
+    this.time_to_refresh_token_expire.set(this.#formatCountdown(rt_diff));
   }
 
   #formatCountdown(totalSeconds: number): string {

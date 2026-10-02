@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MenuItem } from './menu-items';
 import { MenuBuilder } from './menu-builder';
 import { AuthService } from 'src/app/services/auth.service';
@@ -13,6 +13,7 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
     selector: 'app-nav-bar',
     templateUrl: './nav-bar.component.html',
     styleUrls: ['./nav-bar.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class NavBarComponent implements OnInit {
@@ -25,7 +26,7 @@ export class NavBarComponent implements OnInit {
     userProfileItem = new MenuItem('My profile', 'profile', faUser);
     logoutItem =  new MenuItem('Log out', '', faSignOutAlt, () => this.#authService.logout());
     builder = new MenuBuilder()
-    availableItems: MenuItem[] = [];
+    readonly availableItems = signal<MenuItem[]>([]);
     
     readonly #menuOpen = signal<boolean>(false);
     protected readonly menuOpen = this.#menuOpen.asReadonly();
@@ -61,11 +62,12 @@ export class NavBarComponent implements OnInit {
     }
 
     #rebuildMenu(currentUrl: string): void {
-        this.availableItems = this.builder.build(currentUrl);
-        this.availableItems.unshift(this.dashboardItem);
-        this.availableItems.push(
+        const availableItems = this.builder.build(currentUrl);
+        availableItems.unshift(this.dashboardItem);
+        availableItems.push(
             this.userProfileItem,
             this.logoutItem
         );
+        this.availableItems.set(availableItems);
     }
 }

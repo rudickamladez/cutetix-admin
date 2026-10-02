@@ -1,15 +1,21 @@
 import { TestBed } from '@angular/core/testing';
-import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
+import { MAT_SNACK_BAR_DATA, MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
+import { SnackbarToastComponent } from './snackbar-toast.component';
 import { SnackbarToastrService } from './snackbar-toastr.service';
 
 describe('SnackbarToastrService', () => {
     let service: SnackbarToastrService;
-    let snackBar: jasmine.SpyObj<MatSnackBar>;
+    let snackBar: {
+        openFromComponent: ReturnType<typeof vi.fn>;
+        dismiss: ReturnType<typeof vi.fn>;
+    };
 
     beforeEach(() => {
-        snackBar = jasmine.createSpyObj<MatSnackBar>('MatSnackBar', ['open', 'dismiss']);
-        snackBar.open.and.callFake(() => createSnackBarRef());
+        snackBar = {
+            openFromComponent: vi.fn().mockImplementation(() => createSnackBarRef()),
+            dismiss: vi.fn(),
+        };
 
         TestBed.configureTestingModule({
             providers: [
@@ -24,26 +30,54 @@ describe('SnackbarToastrService', () => {
     it('shows success toast with snackbar success class', () => {
         service.success('Saved', 'Events');
 
-        expect(snackBar.open).toHaveBeenCalledWith(
-            'Events: Saved',
-            undefined,
-            jasmine.objectContaining({
+        expect(snackBar.openFromComponent).toHaveBeenCalledWith(
+            SnackbarToastComponent,
+            expect.objectContaining({
+                data: 'Events: Saved',
                 duration: 5000,
                 panelClass: ['snackbar-success'],
             }),
         );
     });
 
+    it('includes a close action when requested', () => {
+        service.success('Saved', 'Events', { closeButton: true });
+
+        expect(snackBar.openFromComponent).toHaveBeenCalledWith(
+            SnackbarToastComponent,
+            expect.objectContaining({ action: 'Close' }),
+        );
+    });
+
     it('keeps toast active until it is dismissed', () => {
         const toast = service.show('Updates are being applied.', 'Updates', { timeOut: 0 });
 
-        expect(toast?.toastRef.isInactive()).toBeFalse();
+        expect(toast?.toastRef.isInactive()).toBe(false);
         toast?.toastRef.close();
-        expect(toast?.toastRef.isInactive()).toBeTrue();
+        expect(toast?.toastRef.isInactive()).toBe(true);
     });
 });
 
-function createSnackBarRef(): MatSnackBarRef<TextOnlySnackBar> {
+describe('SnackbarToastComponent', () => {
+    it('dismisses the snackbar when clicked', () => {
+        const snackBarRef = { dismiss: vi.fn() };
+
+        TestBed.configureTestingModule({
+            imports: [SnackbarToastComponent],
+            providers: [
+                { provide: MAT_SNACK_BAR_DATA, useValue: 'Saved' },
+                { provide: MatSnackBarRef, useValue: snackBarRef },
+            ],
+        });
+
+        const fixture = TestBed.createComponent(SnackbarToastComponent);
+        fixture.nativeElement.click();
+
+        expect(snackBarRef.dismiss).toHaveBeenCalled();
+    });
+});
+
+function createSnackBarRef(): MatSnackBarRef<SnackbarToastComponent> {
     const dismissed$ = new Subject<void>();
     const action$ = new Subject<void>();
 
@@ -51,5 +85,5 @@ function createSnackBarRef(): MatSnackBarRef<TextOnlySnackBar> {
         dismiss: () => dismissed$.next(),
         afterDismissed: () => dismissed$.asObservable(),
         onAction: () => action$.asObservable(),
-    } as unknown as MatSnackBarRef<TextOnlySnackBar>;
+    } as unknown as MatSnackBarRef<SnackbarToastComponent>;
 }

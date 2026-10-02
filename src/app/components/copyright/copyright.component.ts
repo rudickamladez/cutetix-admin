@@ -1,10 +1,11 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
     selector: 'app-copyright',
     templateUrl: './copyright.component.html',
     styleUrls: ['./copyright.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false,
 })
 export class CopyrightComponent {

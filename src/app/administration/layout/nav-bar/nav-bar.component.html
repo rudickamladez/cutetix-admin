@@ -13,7 +13,7 @@
     <div>Admin</div>
   </h1>
   <nav>
-    @for (item of availableItems; track item) {
+    @for (item of availableItems(); track item) {
       <app-nav-bar-item [item]="item">
         @for (subItem of item.subItems; track subItem) {
           <app-nav-bar-subitem [name]="subItem.name" [link]="subItem.link" (click)="hide()">

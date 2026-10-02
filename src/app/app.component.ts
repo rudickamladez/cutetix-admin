@@ -1,4 +1,4 @@
-import { Component, inject, isDevMode, OnInit } from '@angular/core';
+import { Component, inject, isDevMode, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { UpdateService } from './services/update.service';
 import { StorageService } from './services/storage.service';
@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AppComponent implements OnInit {

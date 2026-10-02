@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { EMPTY, Observable, Subject, mapTo, of } from 'rxjs';
+import { SnackbarToastComponent } from './snackbar-toast.component';
 
 export interface SnackbarConfig<ConfigPayload = unknown> {
     closeButton?: boolean;
@@ -54,16 +55,16 @@ export class SnackbarToastrService {
         const hidden$ = new Subject<void>();
         let inactive = false;
 
-        const snackBarRef = this.#snackBar.open(
-            this.#buildMessage(message, title),
-            override?.closeButton ? 'Close' : undefined,
-            {
-                duration: this.#resolveDuration(override),
-                horizontalPosition: 'end',
-                verticalPosition: 'top',
-                panelClass: [`snackbar-${type}`],
-            },
-        );
+        const toastMessage = this.#buildMessage(message, title);
+        const snackBarRef = this.#snackBar.openFromComponent(SnackbarToastComponent, {
+            data: toastMessage,
+            duration: this.#resolveDuration(override),
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: [`snackbar-${type}`],
+            announcementMessage: toastMessage,
+            ...(override?.closeButton ? { action: 'Close' } : {}),
+        });
 
         snackBarRef.afterDismissed().subscribe(() => {
             inactive = true;
@@ -165,7 +166,7 @@ export class SnackbarToastrService {
     }
 
     #createToastRef(
-        snackBarRef: MatSnackBarRef<TextOnlySnackBar>,
+        snackBarRef: MatSnackBarRef<SnackbarToastComponent>,
         hidden$: Observable<void>,
         isInactive: () => boolean,
     ) {
