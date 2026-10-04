@@ -4,6 +4,8 @@ import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TicketGroup } from '../ticket_groups.types';
+import { EventPermissionsService } from 'src/app/services/event-permissions.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-ticket_groups-list',
@@ -15,10 +17,23 @@ import { TicketGroup } from '../ticket_groups.types';
 export class TicketGroupsListComponent {
   readonly #ticket_groupService = inject(TicketGroupService);
   readonly #toastr = inject(SnackbarToastrService);
+  readonly #eventPermissions = inject(EventPermissionsService);
+  readonly #editPermissions = new Map<number, Observable<boolean>>();
 
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   protected readonly ticketGroups = this.#ticket_groupService.ticketGroups;
+
+  protected canEdit(eventId: number): Observable<boolean> {
+    const cachedPermission = this.#editPermissions.get(eventId);
+    if (cachedPermission) {
+      return cachedPermission;
+    }
+
+    const permission = this.#eventPermissions.canForEvent(eventId, 'ticket_groups:edit');
+    this.#editPermissions.set(eventId, permission);
+    return permission;
+  }
 
   public deleteTicketGroup(ticket_group: TicketGroup): void {
     if (!ticket_group.id) {
@@ -46,7 +61,7 @@ export class TicketGroupsListComponent {
       },
       error: (err: HttpErrorResponse) => {
         this.#toastr.error(
-          err.message,
+          err.error?.detail ?? err.message,
           'Ticket group wasn\'t deleted!',
           {
             progressBar: true,

@@ -45,4 +45,8 @@
     </button>
   }
 </form>
+
+@if (isEditing && (canManagePermissions | async) === true) {
+  <app-event-permissions [eventId]="eventId"></app-event-permissions>
+}
 }

@@ -34,7 +34,7 @@ export class AuthService implements OnDestroy {
     readonly #visibilityService = inject(VisibilityService);
     // readonly #idbService = inject(NgxIndexedDBService, { optional: true });
 
-    readonly #canGoToPrivate = signal(false);
+    readonly #canGoToPrivate = signal(this.isLoggedIn());
     readonly canGoToPrivate = this.#canGoToPrivate.asReadonly();
 
     #canRefreshToken = false;
@@ -74,11 +74,14 @@ export class AuthService implements OnDestroy {
             }
         }, { allowSignalWrites: true });
 
+        let wasAuthenticated = this.canGoToPrivate();
         effect(() => {
-            if (!this.canGoToPrivate()) {
+            const isAuthenticated = this.canGoToPrivate();
+            if (!isAuthenticated && wasAuthenticated) {
                 this.#router.navigate(["/login"]);
             }
-        })
+            wasAuthenticated = isAuthenticated;
+        });
     }
 
     ngOnDestroy(): void {

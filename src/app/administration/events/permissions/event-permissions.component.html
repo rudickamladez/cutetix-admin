@@ -1,0 +1,92 @@
+<section class="event-permissions">
+  <h2>Event permissions</h2>
+
+  @if (loading()) {
+  <p>Loading permissions...</p>
+  } @else if (loadError()) {
+  <p class="error">{{ loadError() }}</p>
+  } @else {
+  <div class="box add-user">
+    <h3>Add user to this event</h3>
+    <div class="autocomplete">
+      <input id="event-permissions-user" class="input" type="search" [formControl]="searchControl" autocomplete="off"
+        placeholder="Search username, name or email">
+      @if (searching()) {
+      <p class="search-status">Searching...</p>
+      }
+      @if (suggestions().length > 0) {
+      <div class="suggestions" role="listbox" aria-label="Matching users">
+        @for (user of suggestions(); track user.uuid) {
+        <button type="button" class="default-style suggestion" role="option" (click)="selectUser(user)">
+          <strong>{{ user.full_name || user.username }}</strong>
+          <span>&#64;{{ user.username }} · {{ user.email }}</span>
+        </button>
+        }
+      </div>
+      }
+    </div>
+    <button type="button" class="action-button" [disabled]="!selectedUser()" (click)="addUser()">
+      <fa-icon [icon]="addIcon"></fa-icon>
+    </button>
+  </div>
+  @if (searchError()) {
+  <p class="error">{{ searchError() }}</p>
+  }
+
+  @if (users().length === 0) {
+  <p>No users have local permissions for this event.</p>
+  } @else {
+  <div class="users-grid">
+    @for (user of users(); track user.userId) {
+    <article class="box user-card">
+      <header>
+        <h3>{{ displayName(user) }}</h3>
+        <p class="user-meta">&#64;{{ user.identity.username }} · {{ user.identity.email }}</p>
+      </header>
+
+      <div class="permission-groups">
+        @for (group of permissionGroups; track group.name) {
+        <section class="permission-group">
+          <h4>
+            <fa-icon [icon]="group.icon"></fa-icon>
+            {{ group.name }}
+          </h4>
+          <label>
+            <input type="checkbox" [checked]="hasScope(user, group.read)" [disabled]="user.saving"
+              (change)="updateScope(user.userId, group.read, $any($event.target).checked)">
+            <fa-icon [icon]="readIcon"></fa-icon>
+            Read
+          </label>
+          <label>
+            <input type="checkbox" [checked]="hasScope(user, group.edit)" [disabled]="user.saving"
+              (change)="updateScope(user.userId, group.edit, $any($event.target).checked)">
+            <fa-icon [icon]="editIcon"></fa-icon>
+            Edit
+          </label>
+        </section>
+        }
+      </div>
+
+      @if (user.error) {
+      <p class="error">{{ user.error }}</p>
+      }
+
+      <div>
+        <button type="button" class="action-button" [disabled]="user.saving || user.scopes.length === 0"
+          (click)="save(user)">
+          @if(user.saving) {
+          <fa-icon [icon]="loadingIcon" class="loading"></fa-icon>
+          } @else {
+          <fa-icon [icon]="saveIcon"></fa-icon>
+          }
+        </button>
+        <button type="button" class="action-button delete" (click)="deleteUser(user)" [disabled]="user.saving">
+          <fa-icon [icon]="deleteIcon"></fa-icon>
+        </button>
+      </div>
+    </article>
+    }
+  </div>
+  }
+  }
+</section>

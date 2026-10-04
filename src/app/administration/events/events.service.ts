@@ -27,6 +27,13 @@ export class EventService {
     }
   );
 
+  readonly myEvents = httpResource<Event[]>(
+    () => this.#endpoint('/me'),
+    {
+      defaultValue: [],
+    }
+  );
+
   constructor() {
     this.events.reload();
   }
@@ -64,7 +71,10 @@ export class EventService {
       this.#endpoint('/'),
       event
     ).pipe(
-      tap(() => this.events.reload())
+      tap(() => {
+        this.events.reload();
+        this.myEvents.reload();
+      })
     );
   }
 
@@ -76,7 +86,10 @@ export class EventService {
       this.#endpoint(`/${id}/`),
       body
     ).pipe(
-      tap(() => this.events.reload())
+      tap(() => {
+        this.events.reload();
+        this.myEvents.reload();
+      })
     );
   }
 
@@ -90,7 +103,10 @@ export class EventService {
     this.#httpClient.delete<void>(
       this.#endpoint(`/${event.id}/`)
     ).pipe(
-      tap(() => this.events.reload())
+      tap(() => {
+        this.events.reload();
+        this.myEvents.reload();
+      })
     ).subscribe({
       next: () => {
         this.#toastr.info(
@@ -104,7 +120,7 @@ export class EventService {
       error: (err: HttpErrorResponse) => {
         console.error(err);
         this.#toastr.error(
-          `Error: ${err.message}`,
+          `Error: ${err.error?.detail ?? err.message}`,
           'Event wasn\'t deleted!',
           {
             progressBar: true,

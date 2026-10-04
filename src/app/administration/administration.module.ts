@@ -11,17 +11,19 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { LoadingComponent } from './loading/loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TicketGroupsListComponent } from './ticket_groups/list/ticket_groups-list.component';
-import { TicketGroupsEditComponent } from './ticket_groups/edit/events-edit.component';
+import { TicketGroupsEditComponent } from './ticket_groups/edit/ticket_groups-edit.component';
 import { TicketGroupsNewComponent } from './ticket_groups/new/ticket_groups-new.component';
 import { EventsListComponent } from './events/list/events-list.component';
 import { TicketsListComponent } from './tickets/list/tickets-list.component';
 import { TicketsNewComponent } from './tickets/new/tickets-new.component';
+import { TicketsEditComponent } from './tickets/edit/tickets-edit.component';
 import { EventsFormComponent } from './events/form/events-form.component';
 import { SharedModule } from '../shared/shared.module';
 import { DashboardEventOverviewComponent } from './dashboard/event-overview/dashboard-event-overview.component';
 import { UsersListComponent } from './users/list/users-list.component';
 import { UsersFormComponent } from './users/form/users-form.component';
 import { FormField } from '@angular/forms/signals';
+import { EventPermissionsComponent } from './events/permissions/event-permissions.component';
 
 @NgModule({
     declarations: [
@@ -40,6 +42,7 @@ import { FormField } from '@angular/forms/signals';
         EventsFormComponent,
         TicketsListComponent,
         TicketsNewComponent,
+        TicketsEditComponent,
         UsersListComponent,
         UsersFormComponent,
     ],
@@ -50,6 +53,7 @@ import { FormField } from '@angular/forms/signals';
         ReactiveFormsModule,
         SharedModule,
         FormField,
+        EventPermissionsComponent,
     ]
 })
 export class AdministrationModule { }

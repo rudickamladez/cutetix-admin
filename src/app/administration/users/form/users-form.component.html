@@ -40,12 +40,21 @@
     <label for="disabled">Disabled</label>
   </div>
 
-  <label for="scopes">Scopes &mdash; not working yet</label>
-  <select multiple [disabled]="true">
-    @for (scope of scopesEntries; track scope[0]) {
-    <option [value]="scope[0]">{{ scope[1] }}</option>
-    }
-  </select>
+  <fieldset class="global-scopes">
+    <legend>Global scopes</legend>
+    <div class="scopes-grid">
+      @for (scope of scopesEntries; track scope[0]) {
+      <label class="checkbox">
+        <input
+          type="checkbox"
+          [checked]="hasScope(scope[0])"
+          [disabled]="mode() === 'detail'"
+          (change)="updateScope(scope[0], $any($event.target).checked)">
+        {{ scope[1] }}
+      </label>
+      }
+    </div>
+  </fieldset>
 
   @if (mode() === 'new') {
   <label for="plaintext_password">Password</label>

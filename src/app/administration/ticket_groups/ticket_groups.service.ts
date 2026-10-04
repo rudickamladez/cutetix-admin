@@ -47,6 +47,10 @@ export class TicketGroupService {
     });
   }
 
+  public getById(id: string): Observable<TicketGroup> {
+    return this.#httpClient.get<TicketGroup>(this.#endpoint(`/${id}/`));
+  }
+
   public create(ticket_group: TicketGroup): Observable<TicketGroup> {
     return this.#httpClient.post<TicketGroup>(
       this.#endpoint('/'),

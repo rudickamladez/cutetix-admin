@@ -5,11 +5,13 @@ import { SnackbarToastrService } from '../../../services/snackbar-toastr.service
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../events/events.service';
 import { Event } from '../../events/events.types';
+import { EventPermissionsService } from 'src/app/services/event-permissions.service';
+import { Observable, of, take } from 'rxjs';
 
 @Component({
     selector: 'app-ticket_groups-edit',
-    templateUrl: './events-edit.component.html',
-    styleUrls: ['./events-edit.component.scss'],
+    templateUrl: './ticket_groups-edit.component.html',
+    styleUrls: ['./ticket_groups-edit.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
@@ -19,8 +21,11 @@ export class TicketGroupsEditComponent {
   readonly #ticket_groupService = inject(TicketGroupService);
   readonly #eventService = inject(EventService);
   readonly #toastr = inject(SnackbarToastrService);
+  readonly #eventPermissions = inject(EventPermissionsService);
   readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
   readonly #ticketGroupResource = this.#ticket_groupService.ticketGroupByIdResource(() => this.#id());
+  readonly #editPermissions = new Map<string, Observable<boolean>>();
+  readonly #denied = of(false);
   #loadErrorShown = false;
   #loadSuccessShown = false;
 
@@ -40,7 +45,7 @@ export class TicketGroupsEditComponent {
       this.showDetail = true;
       this.form.get('name')?.disable();
       this.form.get('capacity')?.disable();
-      // this.form.get('sumbit')?.disable();
+      this.form.get('eventId')?.disable();
     }
 
     if (this.id == null) {
@@ -102,15 +107,32 @@ export class TicketGroupsEditComponent {
 
   public editTicketGroup() {
     const id = this.#id();
-    if (!id) {
+    const eventId = Number(this.form.controls.eventId.value);
+    if (!id || !eventId) {
       return;
     }
+
+    this.#eventPermissions.canForEvent(eventId, 'ticket_groups:edit').pipe(
+      take(1)
+    ).subscribe(canEdit => {
+      if (!canEdit) {
+        this.#toastr.error(
+          'You cannot move this ticket group to the selected event.',
+          'TicketGroup'
+        );
+        return;
+      }
+      this.#updateTicketGroup(id, eventId);
+    });
+  }
+
+  #updateTicketGroup(id: string, eventId: number): void {
     this.#ticket_groupService.update(
       id,
       {
         name: this.form.value.name || '',
         capacity: this.form.value.capacity || 0,
-        event_id: this.form.value.eventId || 0
+        event_id: eventId
       }
     ).subscribe({
       next: (ticket_group) => {
@@ -125,7 +147,7 @@ export class TicketGroupsEditComponent {
       },
       error: (err) => {
         this.#toastr.error(
-          `NOT EDITED! Error: ${err.message}`,
+          `NOT EDITED! Error: ${err.error?.detail ?? err.message}`,
           'TicketGroup',
           {
             progressBar: true
@@ -133,6 +155,21 @@ export class TicketGroupsEditComponent {
         )
       }
     })
+  }
+
+  protected canEditEvent(eventId: string | number | null | undefined): Observable<boolean> {
+    if (eventId === null || eventId === undefined) {
+      return this.#denied;
+    }
+    const cacheKey = eventId.toString();
+    const cachedPermission = this.#editPermissions.get(cacheKey);
+    if (cachedPermission) {
+      return cachedPermission;
+    }
+
+    const permission = this.#eventPermissions.canForEvent(eventId, 'ticket_groups:edit');
+    this.#editPermissions.set(cacheKey, permission);
+    return permission;
   }
 
   protected events(): Array<Event> {
