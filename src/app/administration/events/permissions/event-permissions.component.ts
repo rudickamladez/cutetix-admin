@@ -4,7 +4,7 @@ import { Component, OnInit, computed, inject, input, signal } from '@angular/cor
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
-import { faCalendar, faClock, faEye, faPen, faTicket, faTrash, faFloppyDisk, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faClock, faEye, faPen, faTicket, faTrash, faFloppyDisk, faCircleNotch, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { SnackbarToastrService } from 'src/app/services/snackbar-toastr.service';
@@ -71,14 +71,17 @@ export class EventPermissionsComponent implements OnInit {
   protected readonly loading = this.#loading.asReadonly();
   protected readonly loadError = this.#loadError.asReadonly();
   protected readonly permissionGroups = PERMISSION_GROUPS;
-  protected readonly readIcon = faEye;
-  protected readonly editIcon = faPen;
   protected readonly searchControl = new FormControl('', { nonNullable: true });
   protected readonly suggestions = computed(() => {
     const assignedUsers = new Set(this.#users().map(user => user.userId));
     return this.#searchResults().filter(user => !assignedUsers.has(user.uuid));
   });
+
+  // Icons for various actions
+  protected readonly readIcon = faEye;
+  protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
+  protected readonly addIcon = faPlus;
   protected readonly saveIcon = faFloppyDisk;
   protected readonly loadingIcon = faCircleNotch;
 

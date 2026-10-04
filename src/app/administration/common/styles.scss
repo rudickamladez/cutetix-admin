@@ -8,17 +8,21 @@ button.action-button {
 
     &.favorite {
         background-color: #1E90ED;
+        box-shadow: inset 0 -2px 0 darkblue;
 
         &:hover {
             background-color: rgba($color: #1e90ed, $alpha: .5);
+            box-shadow: inset 0 -2px 0 #1e90ed;
         }
     }
 
     &.edit {
         background-color: #BF40BF;
+        box-shadow: inset 0 -2px 0 darkmagenta;
 
         &:hover {
             background-color: rgba($color: #bf40bf, $alpha: .5);
+            box-shadow: inset 0 -2px 0 #bf40bf;
         }
     }
 
@@ -28,9 +32,11 @@ button.action-button {
 
     &.delete {
         background-color: tomato;
+        box-shadow: inset 0 -2px 0 darkred;
 
         &:hover {
             background-color: rgba($color: tomato, $alpha: .5);
+            box-shadow: inset 0 -2px 0 tomato;
         }
     }
 }
@@ -60,7 +66,7 @@ table {
 
         button {
             @extend .action-button;
-            box-shadow: none;
+            box-shadow: none !important;
         }
 
         span {
