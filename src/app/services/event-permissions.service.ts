@@ -8,6 +8,12 @@ import { StorageService } from './storage.service';
 
 type EventId = number | string;
 
+const LOCAL_READ_SCOPE_EDITS: Readonly<Partial<Record<EventScope, EventScope>>> = {
+  'events:read': 'events:edit',
+  'ticket_groups:read': 'ticket_groups:edit',
+  'tickets:read': 'tickets:edit',
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -103,7 +109,9 @@ export class EventPermissionsService {
 
   hasEventScope(eventId: EventId, scope: EventScope): Observable<boolean> {
     return this.getMyScopes(eventId).pipe(
-      map(scopes => scopes.some(eventScope => eventScope.scope === scope))
+      map(scopes => scopes.some(eventScope =>
+        eventScope.scope === scope || eventScope.scope === LOCAL_READ_SCOPE_EDITS[scope]
+      ))
     );
   }
 
