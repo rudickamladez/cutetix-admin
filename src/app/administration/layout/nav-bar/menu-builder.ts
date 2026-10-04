@@ -55,7 +55,10 @@ export class MenuBuilder {
         const result: MenuSubItem[] = [];
         result.push(new MenuSubItem('List', `/${path}/list`));
 
-        if (this.#adminMode.status() || this.#auth.getScopes().includes(`${path}:edit`)) {
+        const canCreate = path === 'ticket_groups' || path === 'tickets'
+            || this.#adminMode.status()
+            || this.#auth.hasScope(`${path}:edit`);
+        if (canCreate) {
             result.push(new MenuSubItem('New', `/${path}/add`));
         }
         return result;
