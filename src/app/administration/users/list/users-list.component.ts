@@ -5,6 +5,7 @@ import { SnackbarToastrService } from '../../../services/snackbar-toastr.service
 import { UserService } from '../users.service';
 import { User } from '../users.types';
 import { AuthService } from 'src/app/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-users-list',
@@ -59,10 +60,10 @@ export class UsersListComponent {
           }
         );
       },
-      error: (err: Error) => {
+      error: (err: HttpErrorResponse) => {
         console.error(err);
         this.#toastr.error(
-          `Error: ${err.message}`,
+          `Error: ${err.error?.detail ?? err.message}`,
           'User wasn\'t deleted!',
           {
             progressBar: true,
@@ -96,6 +97,9 @@ export class UsersListComponent {
     const err = this.users.error();
     if (!err) {
       return '';
+    }
+    if (err instanceof HttpErrorResponse) {
+      return err.error?.detail ?? err.message;
     }
     if (err instanceof Error) {
       return err.message;

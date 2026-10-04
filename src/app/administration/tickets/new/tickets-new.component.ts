@@ -75,7 +75,7 @@ export class TicketsNewComponent {
       },
       error: (err) => {
         this.#toastr.error(
-          `NOT CREATED! Error: ${err.message}`,
+          `NOT CREATED! Error: ${err.error?.detail ?? err.message}`,
           'Ticket',
           {
             progressBar: true

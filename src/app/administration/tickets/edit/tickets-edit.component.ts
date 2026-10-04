@@ -88,7 +88,7 @@ export class TicketsEditComponent {
     };
     this.#ticketService.update(ticketId, ticket).subscribe({
       next: () => this.#router.navigate(['/tickets/list']),
-      error: err => this.#toastr.error(`NOT EDITED! Error: ${err.message}`, 'Ticket'),
+      error: err => this.#toastr.error(`NOT EDITED! Error: ${err.error?.detail ?? err.message}`, 'Ticket'),
     });
   }
 

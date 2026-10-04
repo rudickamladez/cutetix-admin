@@ -44,7 +44,7 @@ export class TicketsListComponent {
 
   #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
     this.#toastr.error(
-      typeof error === 'string' ? error : error.message,
+      this.#errorMessage(error),
       'Ticket wasn\'t cancelled!',
       {
         progressBar: true,
@@ -77,7 +77,7 @@ export class TicketsListComponent {
 
   #notDeletedTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
     this.#toastr.error(
-      typeof error === 'string' ? error : error.message,
+      this.#errorMessage(error),
       'Ticket wasn\'t deleted!',
       {
         progressBar: true,
@@ -110,5 +110,15 @@ export class TicketsListComponent {
         this.#notDeletedTicketToastr(ticket, err);
       }
     });
+  }
+
+  #errorMessage(error: HttpErrorResponse | Error | string): string {
+    if (typeof error === 'string') {
+      return error;
+    }
+    if (error instanceof HttpErrorResponse) {
+      return error.error?.detail ?? error.message;
+    }
+    return error.message;
   }
 }

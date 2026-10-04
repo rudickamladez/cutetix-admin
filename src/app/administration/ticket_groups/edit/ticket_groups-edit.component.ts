@@ -147,7 +147,7 @@ export class TicketGroupsEditComponent {
       },
       error: (err) => {
         this.#toastr.error(
-          `NOT EDITED! Error: ${err.message}`,
+          `NOT EDITED! Error: ${err.error?.detail ?? err.message}`,
           'TicketGroup',
           {
             progressBar: true

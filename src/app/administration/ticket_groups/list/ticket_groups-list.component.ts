@@ -61,7 +61,7 @@ export class TicketGroupsListComponent {
       },
       error: (err: HttpErrorResponse) => {
         this.#toastr.error(
-          err.message,
+          err.error?.detail ?? err.message,
           'Ticket group wasn\'t deleted!',
           {
             progressBar: true,

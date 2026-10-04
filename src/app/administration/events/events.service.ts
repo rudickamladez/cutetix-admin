@@ -120,7 +120,7 @@ export class EventService {
       error: (err: HttpErrorResponse) => {
         console.error(err);
         this.#toastr.error(
-          `Error: ${err.message}`,
+          `Error: ${err.error?.detail ?? err.message}`,
           'Event wasn\'t deleted!',
           {
             progressBar: true,

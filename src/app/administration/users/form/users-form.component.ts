@@ -66,7 +66,7 @@ export class UsersFormComponent {
         return;
       }
       this.#toastr.error(
-        err.message,
+        err instanceof HttpErrorResponse ? err.error?.detail ?? err.message : err.message,
         'Cannot load user',
         {
           progressBar: true,
