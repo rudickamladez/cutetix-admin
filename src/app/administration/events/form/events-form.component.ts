@@ -3,6 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../events.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { EventPermissionsService } from 'src/app/services/event-permissions.service';
+import { Observable, of } from 'rxjs';
 
 @Component({
     selector: 'app-events-form',
@@ -16,12 +18,17 @@ export class EventsFormComponent {
   readonly #route = inject(ActivatedRoute);
   readonly #eventService = inject(EventService);
   readonly #toastr = inject(SnackbarToastrService);
+  readonly #eventPermissions = inject(EventPermissionsService);
   readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
   readonly #eventResource = this.#eventService.eventByIdResource(() => this.#id());
   #loadErrorShown = false;
 
   public readonly event = this.#eventResource;
   public readonly isEditing = this.#id() != null;
+  public readonly eventId = this.#id() ?? '';
+  protected readonly canManagePermissions: Observable<boolean> = this.#id()
+    ? this.#eventPermissions.canForEvent(this.#id()!, 'events:edit')
+    : of(false);
   public form = new FormGroup({
     name: new FormControl('', Validators.required),
     ticketsSalesStart: new FormControl(new Date().toISOString().substring(0, 16), Validators.required),

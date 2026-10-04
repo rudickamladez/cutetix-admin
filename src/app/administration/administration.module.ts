@@ -23,6 +23,7 @@ import { DashboardEventOverviewComponent } from './dashboard/event-overview/dash
 import { UsersListComponent } from './users/list/users-list.component';
 import { UsersFormComponent } from './users/form/users-form.component';
 import { FormField } from '@angular/forms/signals';
+import { EventPermissionsComponent } from './events/permissions/event-permissions.component';
 
 @NgModule({
     declarations: [
@@ -52,6 +53,7 @@ import { FormField } from '@angular/forms/signals';
         ReactiveFormsModule,
         SharedModule,
         FormField,
+        EventPermissionsComponent,
     ]
 })
 export class AdministrationModule { }

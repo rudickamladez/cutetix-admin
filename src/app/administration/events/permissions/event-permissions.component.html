@@ -1,0 +1,75 @@
+<section class="event-permissions">
+  <h2>Event permissions</h2>
+
+  @if (loading()) {
+    <p>Loading permissions...</p>
+  } @else if (loadError()) {
+    <p class="error">{{ loadError() }}</p>
+  } @else {
+    <form class="box add-user">
+      <h3>Grant access</h3>
+      <label for="event-permissions-user">User</label>
+      <input
+        id="event-permissions-user"
+        type="text"
+        [value]="newUserId()"
+        (input)="setNewUserId($any($event.target).value)"
+        placeholder="Enter username, name, email"
+      >
+      <button type="button" class="alt" (click)="addUser()">Add user</button>
+    </form>
+    @if (addUserError()) {
+      <p class="error">{{ addUserError() }}</p>
+    }
+
+    @if (users().length === 0) {
+      <p>No users have local permissions for this event.</p>
+    } @else {
+      <div class="grid">
+        @for (user of users(); track user.userId) {
+        <article class="box user-card">
+          <header>
+            <h3>{{ user.userId }}</h3>
+          </header>
+
+          <div class="permission-groups">
+            @for (group of permissionGroups; track group.name) {
+              <section class="permission-group">
+                <h4>
+                  <fa-icon [icon]="group.icon"></fa-icon>
+                  {{ group.name }}
+                </h4>
+                <label>
+                  <input
+                    type="checkbox"
+                    [checked]="hasScope(user, group.read)"
+                    [disabled]="user.saving"
+                    (change)="updateScope(user.userId, group.read, $any($event.target).checked)">
+                  <fa-icon [icon]="readIcon"></fa-icon>
+                  Read
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    [checked]="hasScope(user, group.edit)"
+                    [disabled]="user.saving"
+                    (change)="updateScope(user.userId, group.edit, $any($event.target).checked)">
+                  <fa-icon [icon]="editIcon"></fa-icon>
+                  Edit
+                </label>
+              </section>
+            }
+          </div>
+
+          @if (user.error) {
+            <p class="error">{{ user.error }}</p>
+          }
+          <button type="button" class="alt" [disabled]="user.saving || user.scopes.length === 0" (click)="save(user)">
+            {{ user.saving ? 'Saving...' : 'Save' }}
+          </button>
+        </article>
+        }
+      </div>
+    }
+  }
+</section>
