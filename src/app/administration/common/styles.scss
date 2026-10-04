@@ -1,5 +1,39 @@
 @use '../../../styles/colors' as *;
 
+button.action-button {
+    min-width: 0px;
+    max-width: 100px;
+    padding: 10px;
+    margin: 2.5px;
+
+    &.favorite {
+        background-color: #1E90ED;
+
+        &:hover {
+            background-color: rgba($color: #1e90ed, $alpha: .5);
+        }
+    }
+
+    &.edit {
+        background-color: #BF40BF;
+
+        &:hover {
+            background-color: rgba($color: #bf40bf, $alpha: .5);
+        }
+    }
+
+    &.detail {
+        @extend .favorite;
+    }
+
+    &.delete {
+        background-color: tomato;
+
+        &:hover {
+            background-color: rgba($color: tomato, $alpha: .5);
+        }
+    }
+}
 
 table {
     margin: 0px;
@@ -25,43 +59,8 @@ table {
         }
 
         button {
-            min-width: 0px;
-            max-width: 100px;
+            @extend .action-button;
             box-shadow: none;
-            padding: 10px;
-            margin: 2.5px;
-
-            &.favorite {
-                background-color: #1E90ED;
-
-                &:hover {
-                    background-color: rgba($color: #1e90ed, $alpha: .5);
-                }
-            }
-
-            &.edit {
-                background-color: #BF40BF;
-
-                &:hover {
-                    background-color: rgba($color: #bf40bf, $alpha: .5);
-                }
-            }
-
-            &.detail {
-                background-color: #1e90ed;
-
-                &:hover {
-                    background-color: rgba($color: #1e90ed, $alpha: .5);
-                }
-            }
-
-            &.delete {
-                background-color: tomato;
-
-                &:hover {
-                    background-color: rgba($color: tomato, $alpha: .5);
-                }
-            }
         }
 
         span {

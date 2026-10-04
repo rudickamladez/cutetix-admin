@@ -84,9 +84,19 @@
           @if (user.error) {
             <p class="error">{{ user.error }}</p>
           }
-          <button type="button" class="alt" [disabled]="user.saving || user.scopes.length === 0" (click)="save(user)">
-            {{ user.saving ? 'Saving...' : 'Save' }}
-          </button>
+          
+          <div>
+            <button type="button" class="action-button" [disabled]="user.saving || user.scopes.length === 0" (click)="save(user)">
+              @if(user.saving) {
+                <fa-icon [icon]="loadingIcon" class="loading"></fa-icon>
+              } @else {
+                <fa-icon [icon]="saveIcon"></fa-icon>
+              }
+            </button>
+            <button class="action-button delete" (click)="deleteUser(user)" [disabled]="user.saving">
+              <fa-icon [icon]="deleteIcon"></fa-icon>
+            </button>
+          </div>
         </article>
         }
       </div>

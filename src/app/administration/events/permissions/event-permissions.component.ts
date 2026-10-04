@@ -4,7 +4,7 @@ import { Component, OnInit, computed, inject, input, signal } from '@angular/cor
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
-import { faCalendar, faClock, faEye, faPen, faTicket } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faClock, faEye, faPen, faTicket, faTrash, faFloppyDisk, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { SnackbarToastrService } from 'src/app/services/snackbar-toastr.service';
@@ -26,10 +26,10 @@ const PERMISSION_GROUPS: ReadonlyArray<{
   read: EventScope;
   edit: EventScope;
 }> = [
-  { icon: faCalendar, name: 'Events', read: 'events:read', edit: 'events:edit' },
-  { icon: faClock, name: 'Ticket Groups', read: 'ticket_groups:read', edit: 'ticket_groups:edit' },
-  { icon: faTicket, name: 'Tickets', read: 'tickets:read', edit: 'tickets:edit' },
-];
+    { icon: faCalendar, name: 'Events', read: 'events:read', edit: 'events:edit' },
+    { icon: faClock, name: 'Ticket Groups', read: 'ticket_groups:read', edit: 'ticket_groups:edit' },
+    { icon: faTicket, name: 'Tickets', read: 'tickets:read', edit: 'tickets:edit' },
+  ];
 
 const EDIT_SCOPE_FOR_READ: Readonly<Partial<Record<EventScope, EventScope>>> = {
   'events:read': 'events:edit',
@@ -78,6 +78,9 @@ export class EventPermissionsComponent implements OnInit {
     const assignedUsers = new Set(this.#users().map(user => user.userId));
     return this.#searchResults().filter(user => !assignedUsers.has(user.uuid));
   });
+  protected readonly deleteIcon = faTrash;
+  protected readonly saveIcon = faFloppyDisk;
+  protected readonly loadingIcon = faCircleNotch;
 
   constructor() {
     this.searchControl.valueChanges.pipe(
@@ -244,5 +247,29 @@ export class EventPermissionsComponent implements OnInit {
       return error.error?.detail ?? error.message;
     }
     return error instanceof Error ? error.message : String(error);
+  }
+
+  deleteUser(user: PermissionUser): void {
+    const userName = user.identity.full_name || user.identity.username;
+    this.#setUserState(user.userId, { saving: true, error: null });
+    this.#eventPermissions.replaceUserScopes(
+      this.eventId(),
+      user.userId,
+      []
+    ).subscribe({
+      next: () => {
+        this.#toastr.success(
+          `Permissions for ${userName} were deleted.`,
+          'Event permissions'
+        );
+        this.#eventPermissions.invalidateMyScopes(this.eventId());
+        this.#load();
+      },
+      error: error => {
+        const message = this.#errorMessage(error);
+        this.#setUserState(user.userId, { saving: false, error: message });
+        this.#toastr.error(message, 'Event permissions');
+      },
+    });
   }
 }
