@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { TicketGroupService } from '../../ticket_groups/ticket_groups.service';
 import { TicketGroup } from '../../ticket_groups/ticket_groups.types';
 import { TicketStatusEnum } from '../tickets.types';
+import { EventPermissionsService } from 'src/app/services/event-permissions.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-tickets-new',
@@ -19,6 +21,8 @@ export class TicketsNewComponent {
   readonly #ticketService = inject(TicketService);
   readonly #ticketgroupService = inject(TicketGroupService);
   readonly #toastr = inject(SnackbarToastrService);
+  readonly #eventPermissions = inject(EventPermissionsService);
+  readonly #createPermissions = new Map<number, Observable<boolean>>();
 
   public form = new FormGroup({
     firstname: new FormControl('', Validators.required),
@@ -62,6 +66,17 @@ export class TicketsNewComponent {
 
   protected groups(): Array<TicketGroup> {
     return this.groupsResource.value();
+  }
+
+  protected canCreateTicket(eventId: number): Observable<boolean> {
+    const cachedPermission = this.#createPermissions.get(eventId);
+    if (cachedPermission) {
+      return cachedPermission;
+    }
+
+    const permission = this.#eventPermissions.canForEvent(eventId, 'tickets:edit');
+    this.#createPermissions.set(eventId, permission);
+    return permission;
   }
 
   protected loadErrorText(): string {

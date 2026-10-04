@@ -26,7 +26,9 @@
   }
   <select name="groupId" formControlName="groupId">
     @for (group of groups(); track group) {
-      <option [ngValue]="group.id">{{ group.event!.name }} - {{ group.name }}</option>
+      @if ((canCreateTicket(group.event_id) | async) === true) {
+        <option [ngValue]="group.id">{{ group.event!.name }} - {{ group.name }}</option>
+      }
     }
   </select>
 
