@@ -1,14 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, input, signal } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faEye, faPen, faCalendar, faTicket, IconDefinition, faClock } from '@fortawesome/free-solid-svg-icons';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
+import { faCalendar, faClock, faEye, faPen, faTicket } from '@fortawesome/free-solid-svg-icons';
+import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { SnackbarToastrService } from 'src/app/services/snackbar-toastr.service';
+import { UserSearchService } from 'src/app/services/user-search.service';
 import { EVENT_SCOPES, EventScope, EventUserScope } from 'src/app/types/event-permissions.types';
+import { UserSearchResult } from 'src/app/types/user-search.types';
 
 type PermissionUser = {
   userId: string;
+  identity: UserSearchResult;
   scopes: EventScope[];
   saving: boolean;
   error: string | null;
@@ -42,30 +48,90 @@ const READ_SCOPE_FOR_EDIT: Readonly<Partial<Record<EventScope, EventScope>>> = {
   templateUrl: './event-permissions.component.html',
   styleUrls: ['./event-permissions.component.scss'],
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule],
 })
 export class EventPermissionsComponent implements OnInit {
   readonly eventId = input.required<string>();
 
   readonly #eventPermissions = inject(EventPermissionsService);
+  readonly #userSearch = inject(UserSearchService);
   readonly #toastr = inject(SnackbarToastrService);
   readonly #users = signal<PermissionUser[]>([]);
-  readonly #newUserId = signal('');
-  readonly #addUserError = signal<string | null>(null);
+  readonly #searchResults = signal<UserSearchResult[]>([]);
+  readonly #selectedUser = signal<UserSearchResult | null>(null);
+  readonly #searching = signal(false);
+  readonly #searchError = signal<string | null>(null);
   readonly #loading = signal(true);
   readonly #loadError = signal<string | null>(null);
 
   protected readonly users = this.#users.asReadonly();
-  protected readonly newUserId = this.#newUserId.asReadonly();
-  protected readonly addUserError = this.#addUserError.asReadonly();
+  protected readonly selectedUser = this.#selectedUser.asReadonly();
+  protected readonly searching = this.#searching.asReadonly();
+  protected readonly searchError = this.#searchError.asReadonly();
   protected readonly loading = this.#loading.asReadonly();
   protected readonly loadError = this.#loadError.asReadonly();
   protected readonly permissionGroups = PERMISSION_GROUPS;
   protected readonly readIcon = faEye;
   protected readonly editIcon = faPen;
+  protected readonly searchControl = new FormControl('', { nonNullable: true });
+  protected readonly suggestions = computed(() => {
+    const assignedUsers = new Set(this.#users().map(user => user.userId));
+    return this.#searchResults().filter(user => !assignedUsers.has(user.uuid));
+  });
+
+  constructor() {
+    this.searchControl.valueChanges.pipe(
+      tap(() => this.#selectedUser.set(null)),
+      map(query => query.trim()),
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        this.#searchError.set(null);
+        if (!query) {
+          this.#searching.set(false);
+          return of<UserSearchResult[]>([]);
+        }
+        this.#searching.set(true);
+        return this.#userSearch.search(query).pipe(
+          catchError(error => {
+            this.#searchError.set(this.#errorMessage(error));
+            return of<UserSearchResult[]>([]);
+          })
+        );
+      }),
+      takeUntilDestroyed()
+    ).subscribe(users => {
+      this.#searching.set(false);
+      this.#searchResults.set(users);
+    });
+  }
 
   ngOnInit(): void {
     this.#load();
+  }
+
+  protected selectUser(user: UserSearchResult): void {
+    this.#selectedUser.set(user);
+    this.#searchResults.set([]);
+    this.#searchError.set(null);
+    this.searchControl.setValue(user.full_name, { emitEvent: false });
+  }
+
+  protected addUser(): void {
+    const user = this.#selectedUser();
+    if (!user || this.#users().some(current => current.userId === user.uuid)) {
+      return;
+    }
+    this.#users.update(users => [...users, {
+      userId: user.uuid,
+      identity: user,
+      scopes: [],
+      saving: false,
+      error: null,
+    }]);
+    this.#selectedUser.set(null);
+    this.#searchResults.set([]);
+    this.searchControl.setValue('', { emitEvent: false });
   }
 
   protected hasScope(user: PermissionUser, scope: EventScope): boolean {
@@ -94,55 +160,28 @@ export class EventPermissionsComponent implements OnInit {
           scopes.delete(editScope);
         }
       }
-
       return { ...user, scopes: this.#orderedScopes(scopes), error: null };
     }));
   }
 
-  protected setNewUserId(userId: string): void {
-    this.#newUserId.set(userId);
-    this.#addUserError.set(null);
-  }
-
-  protected addUser(): void {
-    const userId = this.#newUserId().trim();
-    if (!userId) {
-      this.#addUserError.set('Enter a user UUID.');
-      return;
-    }
-    if (this.#users().some(user => user.userId === userId)) {
-      this.#addUserError.set('This user already has local permissions for this event.');
-      return;
-    }
-
-    this.#users.update(users => [...users, {
-      userId,
-      scopes: [],
-      saving: false,
-      error: null,
-    }]);
-    this.#newUserId.set('');
-    this.#addUserError.set(null);
-  }
-
   protected save(user: PermissionUser): void {
+    if (user.scopes.length === 0) {
+      return;
+    }
+    const userName = user.identity.full_name || user.identity.username;
     this.#setUserState(user.userId, { saving: true, error: null });
     this.#eventPermissions.replaceUserScopes(
       this.eventId(),
       user.userId,
       user.scopes
     ).subscribe({
-      next: scopes => {
-        const savedScopes = scopes.map(scope => scope.scope);
-        if (savedScopes.length === 0) {
-          this.#users.update(users => users.filter(current => current.userId !== user.userId));
-          return;
-        }
-        this.#setUserState(user.userId, {
-          scopes: this.#orderedScopes(new Set(savedScopes)),
-          saving: false,
-          error: null,
-        });
+      next: () => {
+        this.#toastr.success(
+          `Permissions for ${userName} were updated.`,
+          'Event permissions'
+        );
+        this.#eventPermissions.invalidateMyScopes(this.eventId());
+        this.#load();
       },
       error: error => {
         const message = this.#errorMessage(error);
@@ -150,6 +189,10 @@ export class EventPermissionsComponent implements OnInit {
         this.#toastr.error(message, 'Event permissions');
       },
     });
+  }
+
+  protected displayName(user: PermissionUser): string {
+    return user.identity.full_name || user.identity.username;
   }
 
   #load(): void {
@@ -168,15 +211,19 @@ export class EventPermissionsComponent implements OnInit {
   }
 
   #groupByUser(scopes: EventUserScope[]): PermissionUser[] {
-    const users = new Map<string, Set<EventScope>>();
+    const users = new Map<string, { scopes: Set<EventScope>; identity: UserSearchResult }>();
     for (const scope of scopes) {
-      const userScopes = users.get(scope.user_uuid) ?? new Set<EventScope>();
-      userScopes.add(scope.scope);
-      users.set(scope.user_uuid, userScopes);
+      const user = users.get(scope.user_uuid) ?? {
+        scopes: new Set<EventScope>(),
+        identity: scope.user,
+      };
+      user.scopes.add(scope.scope);
+      users.set(scope.user_uuid, user);
     }
-    return [...users.entries()].map(([userId, userScopes]) => ({
+    return [...users.entries()].map(([userId, user]) => ({
       userId,
-      scopes: this.#orderedScopes(userScopes),
+      identity: user.identity,
+      scopes: this.#orderedScopes(user.scopes),
       saving: false,
       error: null,
     }));

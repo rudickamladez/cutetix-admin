@@ -92,6 +92,38 @@ table {
     padding: 1.5rem;
 }
 
+.input {
+    border: 2px solid black;
+    font-size: 1.25rem;
+    line-height: 1rem;
+    padding: .5rem .75rem;
+    width: 100%;
+    margin: .25rem 0px;
+    outline: none;
+
+    &.sudo-mode {
+        color: transparent;
+
+        &:focus-within {
+            color: transparent;
+
+            &::selection {
+                color: transparent;
+            }
+        }
+    }
+
+    &:focus-within {
+        border: 2px solid rgba($color: black, $alpha: .75);
+        background-color: rgba($color: black, $alpha: .25);
+        color: $foreColor;
+
+        &::placeholder {
+            color: $foreColor;
+        }
+    }
+}
+
 form {
     display: flex;
     flex-direction: column;
@@ -106,35 +138,7 @@ form {
     input,
     select,
     textarea {
-        border: 2px solid black;
-        font-size: 1.25rem;
-        line-height: 1rem;
-        padding: .5rem .75rem;
-        width: 100%;
-        margin: .25rem 0px;
-        outline: none;
-
-        &.sudo-mode {
-            color: transparent;
-
-            &:focus-within {
-                color: transparent;
-
-                &::selection {
-                    color: transparent;
-                }
-            }
-        }
-
-        &:focus-within {
-            border: 2px solid rgba($color: black, $alpha: .75);
-            background-color: rgba($color: black, $alpha: .25);
-            color: $foreColor;
-
-            &::placeholder {
-                color: $foreColor;
-            }
-        }
+        @extend .input;
     }
 
     button {
