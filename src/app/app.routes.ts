@@ -16,6 +16,7 @@ import { UsersFormComponent } from './administration/users/form/users-form.compo
 import { authGuard } from './guards/auth.guard';
 import { logoutGuard } from './guards/logout.guard';
 import { usersSectionGuard } from './guards/users-section.guard';
+import { eventCreateGuard, eventEditGuard } from './guards/event-permissions.guard';
 
 let eventsChildren: Routes = [
   {
@@ -29,11 +30,13 @@ let eventsChildren: Routes = [
   },
   {
     path: 'add',
-    component: EventsFormComponent
+    component: EventsFormComponent,
+    canActivate: [eventCreateGuard]
   },
   {
     path: 'edit/:id',
-    component: EventsFormComponent
+    component: EventsFormComponent,
+    canActivate: [eventEditGuard]
   },
   {
     path: 'detail/:id',
