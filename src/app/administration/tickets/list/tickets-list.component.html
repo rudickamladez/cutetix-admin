@@ -27,6 +27,7 @@
     </thead>
     <tbody>
       @for (ticket of tickets.value(); track ticket) {
+      @let canEditTicket = canEdit(ticket) | async;
       <tr>
         <td>{{ ticket.lastname }}</td>
         <td>{{ ticket.firstname }}</td>
@@ -76,13 +77,13 @@
           }
         </td>
         <td class="actions">
-          <button class="destructive" (click)="cancel(ticket)">
+          <button class="destructive" (click)="cancel(ticket)" [disabled]="canEditTicket !== true">
             <fa-icon [icon]="cancelIcon"></fa-icon>
           </button>
-          <button class="edit" [routerLink]="['tickets', ticket.id]" disabled>
+          <button class="edit" [routerLink]="['/tickets', 'edit', ticket.id]" [disabled]="canEditTicket !== true">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
-          <button class="delete" (click)="deleteTicket(ticket)">
+          <button class="delete" (click)="deleteTicket(ticket)" [disabled]="canEditTicket !== true">
             <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
         </td>

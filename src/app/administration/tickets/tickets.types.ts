@@ -11,6 +11,15 @@ export interface Ticket {
     group?: TicketGroup;
 }
 
+export interface TicketUpdate {
+    firstname: string;
+    lastname: string;
+    email: string;
+    status: TicketStatusEnum;
+    description: string;
+    group_id: number;
+}
+
 export enum TicketStatusEnum {
     new = 0,
     confirmed = 1,

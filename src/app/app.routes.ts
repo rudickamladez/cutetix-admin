@@ -10,6 +10,7 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { EventsListComponent } from './administration/events/list/events-list.component';
 import { TicketsListComponent } from './administration/tickets/list/tickets-list.component';
 import { TicketsNewComponent } from './administration/tickets/new/tickets-new.component';
+import { TicketsEditComponent } from './administration/tickets/edit/tickets-edit.component';
 import { EventsFormComponent } from './administration/events/form/events-form.component';
 import { UsersListComponent } from './administration/users/list/users-list.component';
 import { UsersFormComponent } from './administration/users/form/users-form.component';
@@ -18,6 +19,7 @@ import { logoutGuard } from './guards/logout.guard';
 import { usersSectionGuard } from './guards/users-section.guard';
 import { eventCreateGuard, eventEditGuard } from './guards/event-permissions.guard';
 import { ticketGroupEditGuard } from './guards/ticket-group-permissions.guard';
+import { ticketEditGuard } from './guards/ticket-permissions.guard';
 
 let eventsChildren: Routes = [
   {
@@ -93,6 +95,11 @@ export let APP_ROUTES: Routes = [
           {
             path: 'add',
             component: TicketsNewComponent
+          },
+          {
+            path: 'edit/:id',
+            component: TicketsEditComponent,
+            canActivate: [ticketEditGuard]
           }
         ]
       },

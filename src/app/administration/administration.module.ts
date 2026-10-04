@@ -16,6 +16,7 @@ import { TicketGroupsNewComponent } from './ticket_groups/new/ticket_groups-new.
 import { EventsListComponent } from './events/list/events-list.component';
 import { TicketsListComponent } from './tickets/list/tickets-list.component';
 import { TicketsNewComponent } from './tickets/new/tickets-new.component';
+import { TicketsEditComponent } from './tickets/edit/tickets-edit.component';
 import { EventsFormComponent } from './events/form/events-form.component';
 import { SharedModule } from '../shared/shared.module';
 import { DashboardEventOverviewComponent } from './dashboard/event-overview/dashboard-event-overview.component';
@@ -40,6 +41,7 @@ import { FormField } from '@angular/forms/signals';
         EventsFormComponent,
         TicketsListComponent,
         TicketsNewComponent,
+        TicketsEditComponent,
         UsersListComponent,
         UsersFormComponent,
     ],

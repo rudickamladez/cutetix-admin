@@ -32,7 +32,8 @@
     }
   </select>
 
-  <button class="alt">
+  @let canCreate = canCreateTicketForSelectedGroup() | async;
+  <button class="alt" [disabled]="form.invalid || canCreate !== true">
     Create
   </button>
 </form>

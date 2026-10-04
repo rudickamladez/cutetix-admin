@@ -7,7 +7,7 @@ import { TicketGroupService } from '../../ticket_groups/ticket_groups.service';
 import { TicketGroup } from '../../ticket_groups/ticket_groups.types';
 import { TicketStatusEnum } from '../tickets.types';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
-import { Observable } from 'rxjs';
+import { Observable, of, take } from 'rxjs';
 
 @Component({
     selector: 'app-tickets-new',
@@ -23,6 +23,7 @@ export class TicketsNewComponent {
   readonly #toastr = inject(SnackbarToastrService);
   readonly #eventPermissions = inject(EventPermissionsService);
   readonly #createPermissions = new Map<number, Observable<boolean>>();
+  readonly #denied = of(false);
 
   public form = new FormGroup({
     firstname: new FormControl('', Validators.required),
@@ -30,17 +31,37 @@ export class TicketsNewComponent {
     email: new FormControl('', Validators.required),
     description: new FormControl(''),
     status: new FormControl(TicketStatusEnum.new, Validators.required),
-    groupId: new FormControl(0, Validators.required)
+    groupId: new FormControl<string | null>(null, Validators.required)
   });
   protected readonly groupsResource = this.#ticketgroupService.ticketGroups;
 
   public newTicketGroup() {
+    const group = this.#selectedGroup();
+    if (!group?.id) {
+      return;
+    }
+
+    this.#eventPermissions.canForEvent(group.event_id, 'tickets:edit').pipe(
+      take(1)
+    ).subscribe(canCreate => {
+      if (!canCreate) {
+        this.#toastr.error(
+          'You cannot create a ticket for this ticket group.',
+          'Ticket'
+        );
+        return;
+      }
+      this.#createTicket(group.id!);
+    });
+  }
+
+  #createTicket(groupId: string): void {
     this.#ticketService.create({
       firstname: this.form.value.firstname || '',
       lastname: this.form.value.lastname || '',
       email: this.form.value.email || '',
       status: this.form.value.status || TicketStatusEnum.new,
-      group_id: this.form.value.groupId || 0
+      group_id: Number(groupId)
     }).subscribe({
       next: (ticket) => {
         this.#toastr.info(
@@ -77,6 +98,16 @@ export class TicketsNewComponent {
     const permission = this.#eventPermissions.canForEvent(eventId, 'tickets:edit');
     this.#createPermissions.set(eventId, permission);
     return permission;
+  }
+
+  protected canCreateTicketForSelectedGroup(): Observable<boolean> {
+    const group = this.#selectedGroup();
+    return group ? this.canCreateTicket(group.event_id) : this.#denied;
+  }
+
+  #selectedGroup(): TicketGroup | undefined {
+    const selectedGroupId = this.form.controls.groupId.value;
+    return this.groups().find(group => group.id === selectedGroupId);
   }
 
   protected loadErrorText(): string {

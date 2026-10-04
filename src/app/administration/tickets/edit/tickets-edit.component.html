@@ -1,0 +1,43 @@
+@if (ticket.isLoading()) {
+  <app-loading></app-loading>
+}
+@if (ticket.error()) {
+  <div class="error"><p>There's problem loading ticket.</p></div>
+}
+@if (!ticket.isLoading() && !ticket.error()) {
+  <form [formGroup]="form" (submit)="editTicket()">
+    <h1>Edit ticket</h1>
+
+    <label for="firstname">Firstname</label>
+    <input type="text" name="firstname" formControlName="firstname" required>
+
+    <label for="lastname">Lastname</label>
+    <input type="text" name="lastname" formControlName="lastname" required>
+
+    <label for="email">E-Mail</label>
+    <input type="email" name="email" formControlName="email" required>
+
+    <label for="description">Description</label>
+    <input type="text" name="description" formControlName="description">
+
+    <label for="status">Status</label>
+    <select name="status" formControlName="status">
+      <option [ngValue]="0">New</option>
+      <option [ngValue]="1">Confirmed</option>
+      <option [ngValue]="2">Paid</option>
+      <option [ngValue]="3">Cancelled</option>
+    </select>
+
+    <label for="groupId">Group</label>
+    <select name="groupId" formControlName="groupId">
+      @for (group of groups(); track group) {
+        @if ((canEditGroup(group.event_id) | async) === true) {
+          <option [ngValue]="group.id">{{ group.event!.name }} - {{ group.name }}</option>
+        }
+      }
+    </select>
+
+    @let canEdit = canEditSelectedGroup() | async;
+    <button class="alt" [disabled]="form.invalid || canEdit !== true">Edit</button>
+  </form>
+}

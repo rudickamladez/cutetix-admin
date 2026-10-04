@@ -4,6 +4,8 @@ import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { EventPermissionsService } from 'src/app/services/event-permissions.service';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-tickets-list',
@@ -15,11 +17,30 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class TicketsListComponent {
   readonly #ticketsService = inject(TicketService);
   readonly #toastr = inject(SnackbarToastrService);
+  readonly #eventPermissions = inject(EventPermissionsService);
+  readonly #editPermissions = new Map<string, Observable<boolean>>();
+  readonly #denied = of(false);
 
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   protected readonly cancelIcon = faBan;
   protected readonly tickets = this.#ticketsService.tickets;
+
+  protected canEdit(ticket: Ticket): Observable<boolean> {
+    const eventId = ticket.group?.event_id;
+    if (eventId === undefined) {
+      return this.#denied;
+    }
+    const cacheKey = eventId.toString();
+    const cachedPermission = this.#editPermissions.get(cacheKey);
+    if (cachedPermission) {
+      return cachedPermission;
+    }
+
+    const permission = this.#eventPermissions.canForEvent(eventId, 'tickets:edit');
+    this.#editPermissions.set(cacheKey, permission);
+    return permission;
+  }
 
   #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
     this.#toastr.error(

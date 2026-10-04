@@ -2,7 +2,7 @@ import { HttpClient, HttpResourceRef, httpResource } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Ticket } from './tickets.types';
+import { Ticket, TicketUpdate } from './tickets.types';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { StorageService } from 'src/app/services/storage.service';
 
@@ -42,6 +42,10 @@ export class TicketService {
     });
   }
 
+  public getById(id: string): Observable<Ticket> {
+    return this.#httpClient.get<Ticket>(this.#endpoint(`/${id}/`));
+  }
+
   public create(ticket: Ticket): Observable<Ticket> {
     return this.#httpClient.post<Ticket>(
       this.#endpoint('/'),
@@ -54,6 +58,15 @@ export class TicketService {
   public delete(id: string): Observable<void> {
     return this.#httpClient.delete<void>(
       this.#endpoint(`/${id}/`),
+    ).pipe(
+      tap(() => this.tickets.reload())
+    );
+  }
+
+  public update(id: string, ticket: TicketUpdate): Observable<Ticket> {
+    return this.#httpClient.put<Ticket>(
+      this.#endpoint(`/${id}/`),
+      ticket
     ).pipe(
       tap(() => this.tickets.reload())
     );
