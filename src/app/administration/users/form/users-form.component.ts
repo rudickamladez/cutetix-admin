@@ -3,7 +3,7 @@ import { form, required, email, submit, disabled } from '@angular/forms/signals'
 import { Router } from '@angular/router';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { UserService } from '../users.service';
-import { User, UserUpdate } from '../users.types';
+import { User, UserCreate, UserUpdate } from '../users.types';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SCOPES_ENTRIES } from '../../../types/auth.types';
 
@@ -24,7 +24,7 @@ export class UsersFormComponent {
   readonly mode = input.required<'new' | 'edit' | 'detail'>();
   protected readonly user = this.#usersService.userByIdResource(() => this.id());
 
-  protected userModel = signal<UserUpdate>({
+  protected userModel = signal<UserCreate & Pick<UserUpdate, 'uuid'>>({
     email: '',
     username: '',
     full_name: '',
@@ -91,6 +91,19 @@ export class UsersFormComponent {
     });
   }
 
+  protected hasScope(scope: string): boolean {
+    return this.userModel().scopes.includes(scope);
+  }
+
+  protected updateScope(scope: string, checked: boolean): void {
+    this.userModel.update(user => ({
+      ...user,
+      scopes: checked
+        ? [...new Set([...user.scopes, scope])]
+        : user.scopes.filter(currentScope => currentScope !== scope),
+    }));
+  }
+
   protected saveUser(event: Event): void {
     event.preventDefault();
 
@@ -126,7 +139,11 @@ export class UsersFormComponent {
           return;
         }
 
-        await this.#usersService.update(currentUser.uuid, this.userModel()).subscribe({
+        const { plaintext_password: _plaintextPassword, ...userUpdate } = this.userModel();
+        await this.#usersService.update(currentUser.uuid, {
+          ...userUpdate,
+          uuid: currentUser.uuid,
+        }).subscribe({
           next: (user: User) => {
             this.#toastr.info(
               'Successfully edited.',

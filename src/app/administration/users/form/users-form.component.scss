@@ -16,6 +16,20 @@
   }
 }
 
+.global-scopes {
+  margin: 1rem 0 0;
+}
+
+.scopes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.25rem 1rem;
+
+  .checkbox {
+    margin-top: 0;
+  }
+}
+
 .hint {
   font-size: 0.85rem;
   margin: 0;
