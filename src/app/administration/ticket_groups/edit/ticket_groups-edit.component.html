@@ -24,11 +24,16 @@
   }
   <select name="eventId" formControlName="eventId">
     @for (event of events(); track event) {
-      <option [ngValue]="event.id">{{ event.name }}</option>
+      <option [ngValue]="event.id" [disabled]="(canEditEvent(event.id) | async) !== true">
+        {{ event.name }}
+      </option>
     }
   </select>
 
-  <button class="alt">
-    Edit
-  </button>
+  @if (!showDetail) {
+    @let canEditTarget = canEditEvent(form.controls.eventId.value) | async;
+    <button class="alt" [disabled]="form.invalid || canEditTarget !== true">
+      Edit
+    </button>
+  }
 </form>

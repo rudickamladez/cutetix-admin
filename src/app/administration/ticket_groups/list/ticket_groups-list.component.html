@@ -23,6 +23,7 @@
     </thead>
     <tbody>
       @for (ticket_group of ticketGroups.value(); track ticket_group) {
+      @let canEditTicketGroup = canEdit(ticket_group.event_id) | async;
       <tr>
         <td>{{ ticket_group.name }}</td>
         <!-- so hidden column with IDs is second -->
@@ -41,10 +42,12 @@
           }
         </td>
         <td class="actions">
-          <button class="edit" [routerLink]="['/ticket_groups', 'edit', ticket_group.id]">
+          <button class="edit" [routerLink]="['/ticket_groups', 'edit', ticket_group.id]"
+            [disabled]="canEditTicketGroup !== true">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
-          <button class="delete" (click)="deleteTicketGroup(ticket_group)">
+          <button class="delete" (click)="deleteTicketGroup(ticket_group)"
+            [disabled]="canEditTicketGroup !== true">
             <fa-icon [icon]="deleteIcon"></fa-icon>
           </button>
         </td>

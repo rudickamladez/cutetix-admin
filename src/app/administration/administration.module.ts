@@ -11,7 +11,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { LoadingComponent } from './loading/loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TicketGroupsListComponent } from './ticket_groups/list/ticket_groups-list.component';
-import { TicketGroupsEditComponent } from './ticket_groups/edit/events-edit.component';
+import { TicketGroupsEditComponent } from './ticket_groups/edit/ticket_groups-edit.component';
 import { TicketGroupsNewComponent } from './ticket_groups/new/ticket_groups-new.component';
 import { EventsListComponent } from './events/list/events-list.component';
 import { TicketsListComponent } from './tickets/list/tickets-list.component';
