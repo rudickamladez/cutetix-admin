@@ -55,12 +55,10 @@ export class TicketsListComponent {
     if (!eventId || !ticket.id) {
       return [];
     }
-    return [
-      (this.isGlobal ? '/events' : '/my-events'),
-      String(eventId), 'tickets',
-      ticket.id,
-      'edit'
-    ];
+    if (this.isGlobal) {
+      return ['tickets', ticket.id, 'edit'];
+    }
+    return ['/my-events', String(eventId), 'tickets', ticket.id, 'edit'];
   }
 
   #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
