@@ -30,7 +30,7 @@ export const eventTicketsReadGuard: CanActivateFn = route => {
   const eventPermissions = inject(EventPermissionsService);
   const router = inject(Router);
 
-  const eventId = route.paramMap.get('id');
+  const eventId = route.paramMap.get('event-id');
 
   if (!eventId) {
     return router.createUrlTree(['/my-events/list']);
