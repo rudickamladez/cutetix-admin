@@ -79,6 +79,11 @@ export class TicketsListComponent {
       },
       error: (err) => {
         this.#notCancelledTicketToastr(ticket, err);
+      },
+      complete: () => {
+        if (!this.isGlobal) {
+          this.tickets.reload();
+        }
       }
     });
   }
@@ -116,6 +121,11 @@ export class TicketsListComponent {
       },
       error: (err) => {
         this.#notDeletedTicketToastr(ticket, err);
+      },
+      complete: () => {
+        if (!this.isGlobal) {
+          this.tickets.reload();
+        }
       }
     });
   }
