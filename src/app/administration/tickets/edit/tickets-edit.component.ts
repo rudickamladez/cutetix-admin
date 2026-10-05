@@ -6,7 +6,7 @@ import { EventPermissionsService } from 'src/app/services/event-permissions.serv
 import { SnackbarToastrService } from 'src/app/services/snackbar-toastr.service';
 import { TicketGroupService } from '../../ticket_groups/ticket_groups.service';
 import { TicketGroup } from '../../ticket_groups/ticket_groups.types';
-import { TicketService } from '../tickets.service';
+import { TicketService } from '../../../services/tickets.service';
 import { TicketStatusEnum, TicketUpdate } from '../tickets.types';
 
 @Component({

@@ -25,3 +25,23 @@ export const eventEditGuard: CanActivateFn = route => {
     catchError(() => of(router.createUrlTree(['/events/list'])))
   );
 };
+
+export const eventTicketsReadGuard: CanActivateFn = route => {
+  const eventPermissions = inject(EventPermissionsService);
+  const router = inject(Router);
+
+  const eventId = route.paramMap.get('id');
+
+  if (!eventId) {
+    return router.createUrlTree(['/my-events/list']);
+  }
+
+  return eventPermissions.canForEvent(eventId, 'tickets:read').pipe(
+    map(canRead =>
+      canRead || router.createUrlTree(['/my-events/list'])
+    ),
+    catchError(() =>
+      of(router.createUrlTree(['/my-events/list']))
+    )
+  );
+};

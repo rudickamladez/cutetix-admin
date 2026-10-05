@@ -20,7 +20,9 @@
         <th>E-mail</th>
         <th class="d-none">Description</th>
         <th>Group</th>
-        <th>Event</th>
+        @if (isGlobal) {
+          <th>Event</th>
+        }
         <th class="d-md-none">Status</th>
         <th>Actions</th>
       </tr>
@@ -49,6 +51,7 @@
             </a>
           }
         </td>
+        @if (isGlobal) {
         <td>
           @if (ticket.group?.event == null) {
             <span>
@@ -60,6 +63,7 @@
             </a>
           }
         </td>
+        }
         <!-- <td *ngSwitch="ticket.status"> -->
         <td class="d-md-none">
           <!-- <span *ngSwitchCase="ticketStatusEnum.new"></span> -->

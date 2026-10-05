@@ -20,6 +20,7 @@ import { usersSectionGuard } from './guards/users-section.guard';
 import { eventCreateGuard, eventEditGuard } from './guards/event-permissions.guard';
 import { ticketGroupEditGuard } from './guards/ticket-group-permissions.guard';
 import { ticketEditGuard } from './guards/ticket-permissions.guard';
+import { eventTicketsReadGuard } from './guards/event-permissions.guard';
 
 let eventsChildren: Routes = [
   {
@@ -45,6 +46,11 @@ let eventsChildren: Routes = [
     path: 'detail/:id',
     component: EventsFormComponent
   },
+  {
+    path: ':id/tickets',
+    component: TicketsListComponent,
+    canActivate: [eventTicketsReadGuard]
+  }
 ];
 
 export let APP_ROUTES: Routes = [

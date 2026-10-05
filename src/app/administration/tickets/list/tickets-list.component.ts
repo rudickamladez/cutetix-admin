@@ -1,11 +1,12 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { TicketService } from '../tickets.service';
+import { TicketService } from '../../../services/tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable, of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-tickets-list',
@@ -24,7 +25,14 @@ export class TicketsListComponent {
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   protected readonly cancelIcon = faBan;
-  protected readonly tickets = this.#ticketsService.tickets;
+
+  readonly #route = inject(ActivatedRoute);
+  readonly #eventId = this.#route.snapshot.paramMap.get('id');
+  protected readonly isGlobal = !this.#eventId;
+
+  protected readonly tickets = this.isGlobal
+    ? this.#ticketsService.tickets
+    : this.#ticketsService.getTicketsByEventIdResource(() => this.#eventId);
 
   protected canEdit(ticket: Ticket): Observable<boolean> {
     const eventId = ticket.group?.event_id;

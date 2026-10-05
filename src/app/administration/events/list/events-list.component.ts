@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { EventService } from '../events.service';
 import { Event } from '../events.types';
-import { faPen, faStar, faStarHalfStroke, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faStar, faStarHalfStroke, faTicket, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
@@ -22,13 +22,17 @@ export class EventsListComponent {
   readonly #route = inject(ActivatedRoute);
   readonly #eventPermissions = inject(EventPermissionsService);
   readonly #editPermissions = new Map<string, Observable<boolean>>();
+  protected readonly isMyEvents = this.#route.parent?.routeConfig?.path === 'my-events';
+  protected readonly events = this.isMyEvents
+  ? this.eventsService.myEvents
+  : this.eventsService.events;
+  
+  // Icons
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
-  protected readonly events = this.#route.parent?.routeConfig?.path === 'my-events'
-    ? this.eventsService.myEvents
-    : this.eventsService.events;
   protected readonly favoriteEventIcon = faStar;
   protected readonly unfavoriteEventIcon = faStarHalfStroke;
+  protected readonly ticketsIcon = faTicket;
 
   favoriteIcon(eventId: string) {
     if (this.#usersService.isEventFavorited(eventId)) {
