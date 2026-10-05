@@ -1,0 +1,20 @@
+@use "../../../../styles/colors" as *;
+
+:host {
+    position: fixed;
+    z-index: 99;
+    top: 25px;
+
+    @media (max-width: 1200px) {
+        top: 0px;
+        left: 60px;
+
+        h2 {
+            margin: 0px;
+            padding: 5px 0px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}

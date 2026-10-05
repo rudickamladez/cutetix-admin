@@ -1,5 +1,5 @@
 import { HttpClient, HttpResourceRef, httpResource, HttpErrorResponse } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Event, EventCapacitySummary, EventCreate } from './events.types';
@@ -11,14 +11,19 @@ import { SnackbarToastrService } from '../../services/snackbar-toastr.service';
   providedIn: 'root'
 })
 export class EventService {
-  readonly #API_PATH = 'events';
-  
   readonly #httpClient = inject(HttpClient);
 
   readonly #storageService = inject(StorageService);
   readonly #toastr = inject(SnackbarToastrService);
 
   readonly #apiPath = 'events';
+
+  readonly #currentEvent = signal<Event | undefined>(undefined);
+  readonly currentEvent = this.#currentEvent.asReadonly();
+
+  setCurrentEvent(event: Event | undefined): void {
+    this.#currentEvent.set(event);
+  }
 
   readonly events = httpResource<Event[]>(
     () => this.#endpoint('/'),

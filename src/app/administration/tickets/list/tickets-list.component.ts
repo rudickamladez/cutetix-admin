@@ -1,11 +1,12 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { TicketService } from '../tickets.service';
+import { TicketService } from '../../../services/tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable, of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-tickets-list',
@@ -24,7 +25,14 @@ export class TicketsListComponent {
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
   protected readonly cancelIcon = faBan;
-  protected readonly tickets = this.#ticketsService.tickets;
+
+  readonly #route = inject(ActivatedRoute);
+  readonly #eventId = this.#route.snapshot.paramMap.get('event-id');
+  protected readonly isGlobal = !this.#eventId;
+
+  protected readonly tickets = this.isGlobal
+    ? this.#ticketsService.tickets
+    : this.#ticketsService.getTicketsByEventIdResource(() => this.#eventId);
 
   protected canEdit(ticket: Ticket): Observable<boolean> {
     const eventId = ticket.group?.event_id;
@@ -40,6 +48,17 @@ export class TicketsListComponent {
     const permission = this.#eventPermissions.canForEvent(eventId, 'tickets:edit');
     this.#editPermissions.set(cacheKey, permission);
     return permission;
+  }
+
+  protected editTicketRoute(ticket: Ticket): string[] {
+    const eventId = ticket.group?.event_id;
+    if (!eventId || !ticket.id) {
+      return [];
+    }
+    if (this.isGlobal) {
+      return ['tickets', ticket.id, 'edit'];
+    }
+    return ['/my-events', String(eventId), 'tickets', ticket.id, 'edit'];
   }
 
   #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
@@ -71,6 +90,11 @@ export class TicketsListComponent {
       },
       error: (err) => {
         this.#notCancelledTicketToastr(ticket, err);
+      },
+      complete: () => {
+        if (!this.isGlobal) {
+          this.tickets.reload();
+        }
       }
     });
   }
@@ -108,6 +132,11 @@ export class TicketsListComponent {
       },
       error: (err) => {
         this.#notDeletedTicketToastr(ticket, err);
+      },
+      complete: () => {
+        if (!this.isGlobal) {
+          this.tickets.reload();
+        }
       }
     });
   }

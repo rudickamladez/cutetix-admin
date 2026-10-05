@@ -1,6 +1,6 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { TicketService } from '../tickets.service';
+import { TicketService } from '../../../services/tickets.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { Router } from '@angular/router';
 import { TicketGroupService } from '../../ticket_groups/ticket_groups.service';

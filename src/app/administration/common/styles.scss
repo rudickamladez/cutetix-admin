@@ -6,6 +6,20 @@ button.action-button {
     padding: 10px;
     margin: 2.5px;
 
+    &.tickets {
+        background-color: gold;
+        box-shadow: inset 0 -2px 0 darkgoldenrod;
+
+        &:hover {
+            background-color: rgba($color: gold, $alpha: .5);
+            box-shadow: inset 0 -2px 0 gold;
+        }
+
+        fa-icon {
+            color: $foreColorDark;
+        }
+    }
+
     &.favorite {
         background-color: #1E90ED;
         box-shadow: inset 0 -2px 0 darkblue;

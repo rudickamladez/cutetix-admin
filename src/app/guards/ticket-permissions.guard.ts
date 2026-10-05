@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of, switchMap } from 'rxjs';
-import { TicketService } from '../administration/tickets/tickets.service';
+import { TicketService } from '../services/tickets.service';
 import { EventPermissionsService } from '../services/event-permissions.service';
 
 export const ticketEditGuard: CanActivateFn = route => {

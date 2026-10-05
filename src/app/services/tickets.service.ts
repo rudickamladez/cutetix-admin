@@ -2,7 +2,7 @@ import { HttpClient, HttpResourceRef, httpResource } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Ticket, TicketUpdate } from './tickets.types';
+import { Ticket, TicketUpdate } from '../administration/tickets/tickets.types';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { StorageService } from 'src/app/services/storage.service';
 
@@ -82,5 +82,26 @@ export class TicketService {
     ).pipe(
       tap(() => this.tickets.reload())
     );
+  }
+
+  public getTicketsByEventIdResource(
+    getEventId: () => string | null
+  ): HttpResourceRef<Ticket[]> {
+    return httpResource<Ticket[]>(() => {
+      const eventId = getEventId();
+
+      if (!eventId) {
+        return undefined;
+      }
+
+      return new URL(
+        `events/${eventId}/tickets`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href;
+    },
+    {
+      defaultValue: [],
+    }
+  );
   }
 }

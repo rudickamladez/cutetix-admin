@@ -24,6 +24,7 @@ import { UsersListComponent } from './users/list/users-list.component';
 import { UsersFormComponent } from './users/form/users-form.component';
 import { FormField } from '@angular/forms/signals';
 import { EventPermissionsComponent } from './events/permissions/event-permissions.component';
+import { CurrentEventComponent } from './layout/current-event/current-event.component';
 
 @NgModule({
     declarations: [
@@ -54,6 +55,7 @@ import { EventPermissionsComponent } from './events/permissions/event-permission
         SharedModule,
         FormField,
         EventPermissionsComponent,
+        CurrentEventComponent,
     ]
 })
 export class AdministrationModule { }
