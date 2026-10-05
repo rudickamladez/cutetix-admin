@@ -21,7 +21,7 @@
         <th class="d-none">Description</th>
         <th>Group</th>
         @if (isGlobal) {
-          <th>Event</th>
+        <th>Event</th>
         }
         <th class="d-md-none">Status</th>
         <th>Actions</th>
@@ -42,25 +42,25 @@
         <td class="d-none">{{ ticket.description }}</td>
         <td>
           @if (ticket.group == null) {
-            <span>
-              No group
-            </span>
+          <span>
+            No group
+          </span>
           } @else {
-            <a [routerLink]="['/ticket_groups', 'detail', ticket.group.id]">
-              {{ ticket.group.name}}
-            </a>
+          <a [routerLink]="['/ticket_groups', 'detail', ticket.group.id]">
+            {{ ticket.group.name}}
+          </a>
           }
         </td>
         @if (isGlobal) {
         <td>
           @if (ticket.group?.event == null) {
-            <span>
-              No event for group
-            </span>
+          <span>
+            No event for group
+          </span>
           } @else {
-            <a [routerLink]="['/events', 'detail', $safeNavigationMigration(ticket.group?.event?.id)]">
-              {{ ticket.group?.event?.name}}
-            </a>
+          <a [routerLink]="['/events', 'detail', $safeNavigationMigration(ticket.group?.event?.id)]">
+            {{ ticket.group?.event?.name}}
+          </a>
           }
         </td>
         }
@@ -84,7 +84,7 @@
           <button class="destructive" (click)="cancel(ticket)" [disabled]="canEditTicket !== true">
             <fa-icon [icon]="cancelIcon"></fa-icon>
           </button>
-          <button class="edit" [routerLink]="['/tickets', 'edit', ticket.id]" [disabled]="canEditTicket !== true">
+          <button class="edit" [routerLink]="editTicketRoute(ticket)" [disabled]="canEditTicket !== true">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>
           <button class="delete" (click)="deleteTicket(ticket)" [disabled]="canEditTicket !== true">

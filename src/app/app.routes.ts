@@ -47,9 +47,24 @@ let eventsChildren: Routes = [
     component: EventsFormComponent
   },
   {
-    path: ':id/tickets',
-    component: TicketsListComponent,
-    canActivate: [eventTicketsReadGuard]
+    path: ':event-id/tickets',
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'list',
+      },
+      {
+        path: 'list',
+        component: TicketsListComponent,
+        canActivate: [eventTicketsReadGuard],
+      },
+      {
+        path: ':id/edit',
+        component: TicketsEditComponent,
+        canActivate: [ticketEditGuard]
+      }
+    ]
   }
 ];
 

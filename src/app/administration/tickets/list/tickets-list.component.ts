@@ -27,7 +27,7 @@ export class TicketsListComponent {
   protected readonly cancelIcon = faBan;
 
   readonly #route = inject(ActivatedRoute);
-  readonly #eventId = this.#route.snapshot.paramMap.get('id');
+  readonly #eventId = this.#route.snapshot.paramMap.get('event-id');
   protected readonly isGlobal = !this.#eventId;
 
   protected readonly tickets = this.isGlobal
@@ -48,6 +48,19 @@ export class TicketsListComponent {
     const permission = this.#eventPermissions.canForEvent(eventId, 'tickets:edit');
     this.#editPermissions.set(cacheKey, permission);
     return permission;
+  }
+
+  protected editTicketRoute(ticket: Ticket): string[] {
+    const eventId = ticket.group?.event_id;
+    if (!eventId || !ticket.id) {
+      return [];
+    }
+    return [
+      (this.isGlobal ? '/events' : '/my-events'),
+      String(eventId), 'tickets',
+      ticket.id,
+      'edit'
+    ];
   }
 
   #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {

@@ -33,7 +33,7 @@
         <td class="actions">
           <button
             class="tickets"
-            [routerLink]="[(isMyEvents ? '/my-events' : '/events'), event.id, 'tickets']"
+            [routerLink]="[(isMyEvents ? '/my-events' : '/events'), event.id, 'tickets', 'list']"
             [disabled]="!(canViewTickets(event.id) | async)"
           >
             <fa-icon [icon]="ticketsIcon"></fa-icon>

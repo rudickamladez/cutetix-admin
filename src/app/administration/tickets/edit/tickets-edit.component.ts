@@ -27,6 +27,8 @@ export class TicketsEditComponent {
   readonly #ticketResource = this.#ticketService.ticketByIdResource(() => this.#id());
   readonly #editPermissions = new Map<string, Observable<boolean>>();
   readonly #denied = of(false);
+  protected readonly eventId = this.#route.snapshot.paramMap.get('event-id');
+  protected readonly isGlobal = !this.#route.snapshot.paramMap.get('event-id');
 
   readonly form = new FormGroup({
     firstname: new FormControl('', Validators.required),
@@ -73,11 +75,11 @@ export class TicketsEditComponent {
         );
         return;
       }
-      this.#updateTicket(ticketId, group.id!);
+      this.#updateTicket(ticketId, group.id!, group.event_id);
     });
   }
 
-  #updateTicket(ticketId: string, groupId: string): void {
+  #updateTicket(ticketId: string, groupId: string, eventId: number): void {
     const ticket: TicketUpdate = {
       firstname: this.form.value.firstname || '',
       lastname: this.form.value.lastname || '',
@@ -87,7 +89,13 @@ export class TicketsEditComponent {
       group_id: Number(groupId),
     };
     this.#ticketService.update(ticketId, ticket).subscribe({
-      next: () => this.#router.navigate(['/tickets/list']),
+      next: () => {
+        this.#router.navigate([
+          (this.isGlobal ? '' : `/my-events/${eventId}`),
+          'tickets',
+          'list',
+        ]);
+      },
       error: err => this.#toastr.error(`NOT EDITED! Error: ${err.error?.detail ?? err.message}`, 'Ticket'),
     });
   }
