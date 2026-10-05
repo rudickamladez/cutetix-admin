@@ -31,7 +31,11 @@
         <td class="d-sm-none">{{ event.tickets_sales_start | date : "medium" }}</td>
         <td class="d-sm-none">{{ event.tickets_sales_end | date : "medium" }}</td>
         <td class="actions">
-          <button class="tickets" [routerLink]="[(isMyEvents ? '/my-events' : '/events'), event.id, 'tickets']">
+          <button
+            class="tickets"
+            [routerLink]="[(isMyEvents ? '/my-events' : '/events'), event.id, 'tickets']"
+            [disabled]="!(canViewTickets(event.id) | async)"
+          >
             <fa-icon [icon]="ticketsIcon"></fa-icon>
           </button>
           <button class="favorite" (click)="favorite(event.id!)">

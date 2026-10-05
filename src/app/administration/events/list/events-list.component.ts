@@ -45,6 +45,10 @@ export class EventsListComponent {
     this.#usersService.toggleEventFavorite(eventId);
   }
 
+  public canViewTickets(eventId: string): Observable<boolean> {
+    return this.#eventPermissions.canForEvent(eventId, 'tickets:read');
+  }
+
   public edit(event: Event) {
     this.#router.navigate(['/events/edit/' + event.id])
   }
