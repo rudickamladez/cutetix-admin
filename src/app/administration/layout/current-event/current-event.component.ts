@@ -10,8 +10,6 @@ import { EventService } from '../../events/events.service';
 })
 export class CurrentEventComponent {
   readonly #eventsService = inject(EventService);
-  readonly #route = inject(ActivatedRoute);
-  readonly #eventId = this.#route.snapshot.paramMap.get('event-id');
-  protected readonly event = this.#eventsService.eventByIdResource(() => this.#eventId);
+  protected readonly event = this.#eventsService.currentEvent;
 
 }

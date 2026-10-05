@@ -34,6 +34,10 @@ export class EventsListComponent {
   protected readonly unfavoriteEventIcon = faStarHalfStroke;
   protected readonly ticketsIcon = faTicket;
 
+  constructor() {
+    this.eventsService.setCurrentEvent(undefined);
+  }
+
   favoriteIcon(eventId: string) {
     if (this.#usersService.isEventFavorited(eventId)) {
       return this.unfavoriteEventIcon; // icon for removal
@@ -43,6 +47,11 @@ export class EventsListComponent {
 
   favorite(eventId: string) {
     this.#usersService.toggleEventFavorite(eventId);
+  }
+
+  protected openEventTickets(event: Event) {
+    this.eventsService.setCurrentEvent(event);
+    this.#router.navigate([(this.isMyEvents ? '/my-events' : '/events'), event.id, 'tickets', 'list']);
   }
 
   public canViewTickets(eventId: string): Observable<boolean> {
