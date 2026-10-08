@@ -44,7 +44,8 @@ export class TicketsListComponent {
       ticket.description,
       ticket.group?.name,
       ticket.group?.event?.name,
-      ticket.group?.event?.id
+      ticket.group?.event?.id,
+      ticket.group?.event_id ?? this.#eventId
     ])
   ));
 
