@@ -24,3 +24,49 @@
 .details:nth-child(2n) {
     margin: 1.5rem 0;
 }
+
+.profile-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    h1 {
+        margin: 0;
+    }
+}
+
+.admin-mode-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    .info {
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 1.1;
+        margin: 0;
+        white-space: nowrap;
+
+        &:before {
+            content: attr(label);
+            font-size: 14px;
+            display: block;
+            font-weight: 400;
+        }
+    }
+
+    button {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        margin: 0;
+        padding: 0;
+
+        fa-icon {
+            margin: 0;
+            transform: scale(1.2);
+        }
+    }
+}

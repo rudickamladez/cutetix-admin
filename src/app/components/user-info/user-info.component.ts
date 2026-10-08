@@ -26,6 +26,10 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     transform: booleanAttribute,
   });
 
+  readonly show_profile_view = input(false, {
+    transform: booleanAttribute,
+  });
+
   protected readonly time_to_access_token_expire = signal("");
   protected readonly time_to_refresh_token_expire = signal("");
   #refreshingInterval?: number;

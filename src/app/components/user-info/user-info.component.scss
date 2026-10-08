@@ -18,8 +18,12 @@
 
     ul {
         display: inline-flex;
+        margin: 0;
+        padding: 0;
+
         li {
             list-style: none;
+
             &::after {
                 content: ', ';
                 display: inline-block;
@@ -29,6 +33,16 @@
             &:last-child::after {
                 display: none;
             }
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .info ul {
+        display: block;
+
+        li {
+            display: block;
         }
     }
 }
