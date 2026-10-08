@@ -39,6 +39,10 @@
     color: var(--color-background-medium);
     font-size: 0.875rem;
     white-space: nowrap;
+
+    @media (max-width: 767px) {
+      display: none;
+    }
   }
 
   @media (max-width: 640px) {
