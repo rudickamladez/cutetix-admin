@@ -1,5 +1,7 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { StorageKeys } from '../tokens/storage.tokens';
+import { AdminModeService } from '../services/adminMode.service';
+import { faRepeat } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-user-profile',
@@ -10,4 +12,6 @@ import { StorageKeys } from '../tokens/storage.tokens';
 })
 export class UserProfileComponent {
   readonly keys = StorageKeys;
+  readonly adminModeService = inject(AdminModeService);
+  readonly toggleIcon = faRepeat;
 }
