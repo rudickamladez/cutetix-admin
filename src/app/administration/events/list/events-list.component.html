@@ -45,8 +45,8 @@
         <td>{{ event.name }}</td>
         <!-- so hidden column with IDs is second -->
         <td class="d-none">{{ event.id }}</td>
-        <td class="d-sm-none">{{ event.tickets_sales_start | date : "medium" }}</td>
-        <td class="d-sm-none">{{ event.tickets_sales_end | date : "medium" }}</td>
+        <td class="d-sm-none">{{ event.tickets_sales_start | date : "yyyy-MM-dd h:mm a" }}</td>
+        <td class="d-sm-none">{{ event.tickets_sales_end   | date : "yyyy-MM-dd h:mm a" }}</td>
         <td class="actions">
           <button
             class="tickets"
