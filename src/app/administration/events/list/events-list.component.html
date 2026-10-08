@@ -19,6 +19,7 @@
           placeholder="Event name or ID"
         ></app-table-search>
       </div>
+      <span class="count">{{ filteredEvents().length }} / {{ events.value().length }}</span>
     </div>
   </div>
   <table>
