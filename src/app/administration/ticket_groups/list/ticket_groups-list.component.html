@@ -11,6 +11,14 @@
   </div>
   }
   @if (!ticketGroups.error()) {
+  <div class="toolbar">
+    <div class="filters">
+      <div label="Search">
+        <app-table-search [(value)]="search" placeholder="Name, ID, or event"></app-table-search>
+      </div>
+      <span class="count">{{ filteredTicketGroups().length }} / {{ ticketGroups.value().length }}</span>
+    </div>
+  </div>
   <table>
     <thead>
       <tr>
@@ -22,7 +30,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (ticket_group of ticketGroups.value(); track ticket_group) {
+      @for (ticket_group of filteredTicketGroups(); track ticket_group) {
       @let canEditTicketGroup = canEdit(ticket_group.event_id) | async;
       <tr>
         <td>{{ ticket_group.name }}</td>

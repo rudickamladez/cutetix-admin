@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { TicketService } from '../../../services/tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -7,6 +7,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable, of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { matchesSearch } from '../../../shared/matches-search';
 
 @Component({
   selector: 'app-tickets-list',
@@ -33,6 +34,19 @@ export class TicketsListComponent {
   protected readonly tickets = this.isGlobal
     ? this.#ticketsService.tickets
     : this.#ticketsService.getTicketsByEventIdResource(() => this.#eventId);
+  protected readonly search = signal('');
+  protected readonly filteredTickets = computed(() => this.tickets.value().filter((ticket) =>
+    matchesSearch(this.search(), [
+      ticket.lastname,
+      ticket.firstname,
+      ticket.id,
+      ticket.email,
+      ticket.description,
+      ticket.group?.name,
+      ticket.group?.event?.name,
+      ticket.group?.event?.id
+    ])
+  ));
 
   protected canEdit(ticket: Ticket): Observable<boolean> {
     const eventId = ticket.group?.event_id;
