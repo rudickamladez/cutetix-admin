@@ -74,22 +74,25 @@ export class UsersListComponent {
   }
 
   #filterUsers(): User[] {
-    const search = this.search().trim().toLowerCase();
+    const terms = this.search().trim().toLowerCase().split(/\s+/).filter(Boolean);
 
     return this.users.value().filter((user) => {
       if (!this.includeDisabled() && user.disabled) {
         return false;
       }
 
-      if (!search) {
+      if (terms.length === 0) {
         return true;
       }
 
-      const scopes = (user.scopes ?? []).join(', ').toLowerCase();
-      return (user.username ?? '').toLowerCase().includes(search)
-        || (user.full_name ?? '').toLowerCase().includes(search)
-        || (user.email ?? '').toLowerCase().includes(search)
-        || scopes.includes(search);
+      const fields = [
+        user.username ?? '',
+        user.full_name ?? '',
+        user.email ?? '',
+        ...(user.scopes ?? [])
+      ].map((field) => field.toLowerCase());
+
+      return terms.every((term) => fields.some((field) => field.includes(term)));
     });
   }
 

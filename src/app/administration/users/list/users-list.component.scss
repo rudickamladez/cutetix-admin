@@ -20,6 +20,11 @@
   input[type='search'] {
     min-width: 22rem;
     padding: 0.4rem 0.6rem;
+
+    &:active,
+    &:focus {
+      border-color: var(--color-background-medium-dark);
+    }
   }
 
   .include-disabled {
