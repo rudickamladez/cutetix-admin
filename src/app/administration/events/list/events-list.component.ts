@@ -47,10 +47,6 @@ export class EventsListComponent {
   protected readonly unfavoriteEventIcon = faStarHalfStroke;
   protected readonly ticketsIcon = faTicket;
 
-  constructor() {
-    this.eventsService.setCurrentEvent(undefined);
-  }
-
   protected toggleSort(column: EventSortColumn): void {
     this.sortState.update((state) => toggleSort(state, column));
   }
@@ -71,7 +67,6 @@ export class EventsListComponent {
   }
 
   protected openEventTickets(event: Event) {
-    this.eventsService.setCurrentEvent(event);
     this.#router.navigate([(this.isMyEvents ? '/my-events' : '/events'), event.id, 'tickets', 'list']);
   }
 

@@ -20,7 +20,7 @@ export class EventsFormComponent {
   readonly #toastr = inject(SnackbarToastrService);
   readonly #eventPermissions = inject(EventPermissionsService);
   readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
-  readonly #eventResource = this.#eventService.eventByIdResource(() => this.#id());
+  readonly #eventResource = this.#eventService.activeEventResource;
   #loadErrorShown = false;
 
   public readonly event = this.#eventResource;
@@ -69,7 +69,7 @@ export class EventsFormComponent {
 
       effect(() => {
         const event = this.#eventResource.value();
-        if (!event) {
+        if (!event || String(event.id) !== this.#id()) {
           return;
         }
         this.form.setValue({
@@ -85,8 +85,9 @@ export class EventsFormComponent {
       });
 
       effect(() => {
+        const activeEventId = this.#eventService.activeEventId();
         const err = this.#eventResource.error();
-        if (!err || this.#loadErrorShown) {
+        if (activeEventId !== this.#id() || !err || this.#loadErrorShown) {
           return;
         }
         this.#loadErrorShown = true;
