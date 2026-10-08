@@ -25,15 +25,21 @@
   <table>
     <thead>
       <tr>
-        <th>Name</th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('name')">
+          <app-table-sort-header label="Name" column="name" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
         <th class="d-none">ID</th>
-        <th class="d-sm-none">Ticket sales start</th>
-        <th class="d-sm-none">Ticket sales end</th>
+        <th class="d-sm-none" scope="col" [attr.aria-sort]="sortAriaSort('tickets_sales_start')">
+          <app-table-sort-header label="Ticket sales start" column="tickets_sales_start" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th class="d-sm-none" scope="col" [attr.aria-sort]="sortAriaSort('tickets_sales_end')">
+          <app-table-sort-header label="Ticket sales end" column="tickets_sales_end" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      @for (event of filteredEvents(); track event) {
+      @for (event of sortedEvents(); track event) {
       @let canEditEvent = canEdit(event.id) | async;
       <tr>
         <td>{{ event.name }}</td>

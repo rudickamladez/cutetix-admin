@@ -8,6 +8,9 @@ import { EventPermissionsService } from 'src/app/services/event-permissions.serv
 import { Observable, of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { matchesSearch } from '../../../shared/matches-search';
+import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
+
+type TicketSortColumn = 'lastname' | 'firstname' | 'id' | 'email' | 'group' | 'event' | 'status';
 
 @Component({
   selector: 'app-tickets-list',
@@ -48,6 +51,26 @@ export class TicketsListComponent {
       ticket.group?.event_id ?? this.#eventId
     ])
   ));
+  protected readonly sortState = signal<TableSortState<TicketSortColumn>>({ column: null, direction: null });
+  protected readonly sortedTickets = computed(() => sortRows(
+    this.filteredTickets(),
+    this.sortState(),
+    (ticket, column) => {
+      switch (column) {
+        case 'group': return ticket.group?.name;
+        case 'event': return ticket.group?.event?.name ?? '';
+        default: return ticket[column];
+      }
+    }
+  ));
+
+  protected toggleSort(column: TicketSortColumn): void {
+    this.sortState.update((state) => toggleSort(state, column));
+  }
+
+  protected sortAriaSort(column: TicketSortColumn): 'ascending' | 'descending' | 'none' {
+    return getAriaSort(this.sortState(), column);
+  }
 
   protected canEdit(ticket: Ticket): Observable<boolean> {
     const eventId = ticket.group?.event_id;

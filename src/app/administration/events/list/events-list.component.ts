@@ -7,7 +7,9 @@ import { UsersService } from 'src/app/services/users.service';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable } from 'rxjs';
 import { matchesSearch } from '../../../shared/matches-search';
+import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
 
+type EventSortColumn = 'name' | 'tickets_sales_start' | 'tickets_sales_end';
 
 @Component({
   selector: 'app-events-list',
@@ -31,6 +33,12 @@ export class EventsListComponent {
   protected readonly filteredEvents = computed(() => this.events.value().filter((event) =>
     matchesSearch(this.search(), [event.name, event.id])
   ));
+  protected readonly sortState = signal<TableSortState<EventSortColumn>>({ column: null, direction: null });
+  protected readonly sortedEvents = computed(() => sortRows(
+    this.filteredEvents(),
+    this.sortState(),
+    (event, column) => event[column]
+  ));
   
   // Icons
   protected readonly editIcon = faPen;
@@ -41,6 +49,14 @@ export class EventsListComponent {
 
   constructor() {
     this.eventsService.setCurrentEvent(undefined);
+  }
+
+  protected toggleSort(column: EventSortColumn): void {
+    this.sortState.update((state) => toggleSort(state, column));
+  }
+
+  protected sortAriaSort(column: EventSortColumn): 'ascending' | 'descending' | 'none' {
+    return getAriaSort(this.sortState(), column);
   }
 
   favoriteIcon(eventId: string) {

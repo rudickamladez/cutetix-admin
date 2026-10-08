@@ -7,6 +7,9 @@ import { User } from '../users.types';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { matchesSearch } from '../../../shared/matches-search';
+import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
+
+type UserSortColumn = 'username' | 'full_name' | 'email' | 'disabled';
 
 @Component({
   selector: 'app-users-list',
@@ -26,8 +29,22 @@ export class UsersListComponent {
   protected readonly users = this.#usersService.users;
 
   protected filteredUsers = computed(() => this.#filterUsers());
+  protected sortState = signal<TableSortState<UserSortColumn>>({ column: null, direction: null });
+  protected sortedUsers = computed(() => sortRows(
+    this.filteredUsers(),
+    this.sortState(),
+    (user, column) => user[column]
+  ));
   protected search = signal('');
   protected includeDisabled = signal(true);
+
+  protected toggleSort(column: UserSortColumn): void {
+    this.sortState.update((state) => toggleSort(state, column));
+  }
+
+  protected sortAriaSort(column: UserSortColumn): 'ascending' | 'descending' | 'none' {
+    return getAriaSort(this.sortState(), column);
+  }
 
   protected clearFilters(): void {
     this.search.set('');
