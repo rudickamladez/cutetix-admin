@@ -37,7 +37,7 @@
   <table>
     <thead>
       <tr>
-        <th scope="col" [attr.aria-sort]="sortAriaSort('username')">
+        <th scope="col" [attr.aria-sort]="sortAriaSort('username')" class="d-sm-none">
           <app-table-sort-header label="Username" column="username" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th scope="col" [attr.aria-sort]="sortAriaSort('full_name')">
@@ -60,7 +60,7 @@
       }
       @for (user of sortedUsers(); track user.username) {
       <tr>
-        <td>{{ user.username }}</td>
+        <td class="d-sm-none">{{ user.username }}</td>
         <td>{{ user.full_name }}</td>
         <td class="d-sm-none">
           <a href="mailto:{{ user.email }}">
