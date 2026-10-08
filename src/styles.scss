@@ -6,6 +6,7 @@
 @use "styles/fonts" as *;
 @use "styles/typography";
 @use "styles/button";
+@import "@angular/cdk/a11y-prebuilt.css";
 
 *,
 *::before,
