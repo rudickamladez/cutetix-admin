@@ -16,4 +16,20 @@
     outline: 2px solid currentColor;
     outline-offset: 2px;
   }
+
+  .mobile-label-icon {
+    display: none;
+  }
+
+  &.has-mobile-icon {
+    @media (max-width: 575.98px) {
+      .sort-label {
+        display: none;
+      }
+
+      .mobile-label-icon {
+        display: inline-flex;
+      }
+    }
+  }
 }

@@ -55,6 +55,13 @@ button.action-button {
     }
 }
 
+.table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+}
+
 table {
     margin: 0px;
     width: 100%;

@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faPen, faTrash, faUserSlash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { UserService } from '../users.service';
 import { User } from '../users.types';
@@ -26,6 +26,7 @@ export class UsersListComponent {
   protected readonly editIcon = faPen;
   protected readonly detailIcon = faEye;
   protected readonly deleteIcon = faTrash;
+  protected readonly disabledIcon = faUserSlash;
   protected readonly users = this.#usersService.users;
 
   protected filteredUsers = computed(() => this.#filterUsers());

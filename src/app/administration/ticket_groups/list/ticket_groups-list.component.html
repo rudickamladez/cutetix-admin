@@ -19,6 +19,7 @@
       <span class="count">{{ filteredTicketGroups().length }} / {{ ticketGroups.value().length }}</span>
     </div>
   </div>
+  <div class="table-scroll">
   <table>
     <thead>
       <tr>
@@ -27,7 +28,7 @@
         </th>
         <th class="d-none">ID</th>
         <th scope="col" [attr.aria-sort]="sortAriaSort('capacity')">
-          <app-table-sort-header label="Capacity" column="capacity" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+          <app-table-sort-header label="Capacity" [mobileIcon]="capacityIcon" column="capacity" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th scope="col" [attr.aria-sort]="sortAriaSort('event')">
           <app-table-sort-header label="Event" column="event" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
@@ -69,5 +70,6 @@
       }
     </tbody>
   </table>
+  </div>
   }
 </div>

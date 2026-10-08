@@ -16,14 +16,17 @@
         top: 0;
 
         transform: translateX(-100%);
-        transition: transform 300ms;
+        visibility: hidden;
+        transition: transform 300ms, visibility 0s linear 300ms;
 
         &.visible {
             transform: translateX(0);
+            visibility: visible;
+            transition: transform 300ms, visibility 0s;
         }
     }
 
-    @media (max-width: 550px) {
+        @media (max-width: 550px) {
         width: 100%;
     }
 }

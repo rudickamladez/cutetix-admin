@@ -1,3 +1,7 @@
-<button type="button" class="sort-header default-style" (click)="sort.emit(column())">
-  {{ label() }} <fa-icon [icon]="icon()" aria-hidden="true"></fa-icon>
+<button type="button" class="sort-header default-style" [class.has-mobile-icon]="!!mobileIcon()" [attr.aria-label]="label()" (click)="sort.emit(column())">
+  <span class="sort-label">{{ label() }}</span>
+  @if (mobileIcon(); as mobileIcon) {
+    <fa-icon class="mobile-label-icon" [icon]="mobileIcon" aria-hidden="true"></fa-icon>
+  }
+  <fa-icon [icon]="icon()" aria-hidden="true"></fa-icon>
 </button>

@@ -1,4 +1,10 @@
-<button class="default-style toggle-button" (click)="toggle()">
+<button
+  class="default-style toggle-button"
+  type="button"
+  aria-controls="admin-navigation"
+  [attr.aria-label]="menuOpen() ? 'Close navigation menu' : 'Open navigation menu'"
+  [attr.aria-expanded]="menuOpen()"
+  (click)="toggle()">
   @if (!menuOpen()) {
     <fa-icon [icon]="menuClosedIcon"></fa-icon>
   }
@@ -7,7 +13,7 @@
   }
 </button>
 <div [class.visible]="menuOpen()" class="hide-nav-bar" (click)="hide()"></div>
-<div [class.visible]="menuOpen()" class="wrapper">
+<div id="admin-navigation" [class.visible]="menuOpen()" class="wrapper">
   <h1>
     <div>CuteTix</div>
     <div>Admin</div>
