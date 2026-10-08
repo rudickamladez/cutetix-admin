@@ -1,4 +1,9 @@
-<button class="default-style toggle-button" (click)="toggle()">
+<button
+  class="default-style toggle-button"
+  type="button"
+  [attr.aria-label]="menuOpen() ? 'Close navigation menu' : 'Open navigation menu'"
+  [attr.aria-expanded]="menuOpen()"
+  (click)="toggle()">
   @if (!menuOpen()) {
     <fa-icon [icon]="menuClosedIcon"></fa-icon>
   }
