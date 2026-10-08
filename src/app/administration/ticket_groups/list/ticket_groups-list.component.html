@@ -22,15 +22,21 @@
   <table>
     <thead>
       <tr>
-        <th>Name</th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('name')">
+          <app-table-sort-header label="Name" column="name" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
         <th class="d-none">ID</th>
-        <th>Capacity</th>
-        <th>Event</th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('capacity')">
+          <app-table-sort-header label="Capacity" column="capacity" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('event')">
+          <app-table-sort-header label="Event" column="event" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      @for (ticket_group of filteredTicketGroups(); track ticket_group) {
+      @for (ticket_group of sortedTicketGroups(); track ticket_group) {
       @let canEditTicketGroup = canEdit(ticket_group.event_id) | async;
       <tr>
         <td>{{ ticket_group.name }}</td>

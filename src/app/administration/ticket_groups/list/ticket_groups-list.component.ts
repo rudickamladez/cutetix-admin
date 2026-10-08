@@ -7,6 +7,9 @@ import { TicketGroup } from '../ticket_groups.types';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable } from 'rxjs';
 import { matchesSearch } from '../../../shared/matches-search';
+import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
+
+type TicketGroupSortColumn = 'name' | 'capacity' | 'event';
 
 @Component({
   selector: 'app-ticket_groups-list',
@@ -28,6 +31,20 @@ export class TicketGroupsListComponent {
   protected readonly filteredTicketGroups = computed(() => this.ticketGroups.value().filter((ticketGroup) =>
     matchesSearch(this.search(), [ticketGroup.name, ticketGroup.id, ticketGroup.event?.name, ticketGroup.event_id])
   ));
+  protected readonly sortState = signal<TableSortState<TicketGroupSortColumn>>({ column: null, direction: null });
+  protected readonly sortedTicketGroups = computed(() => sortRows(
+    this.filteredTicketGroups(),
+    this.sortState(),
+    (ticketGroup, column) => column === 'event' ? ticketGroup.event?.name : ticketGroup[column]
+  ));
+
+  protected toggleSort(column: TicketGroupSortColumn): void {
+    this.sortState.update((state) => toggleSort(state, column));
+  }
+
+  protected sortAriaSort(column: TicketGroupSortColumn): 'ascending' | 'descending' | 'none' {
+    return getAriaSort(this.sortState(), column);
+  }
 
   protected canEdit(eventId: number): Observable<boolean> {
     const cachedPermission = this.#editPermissions.get(eventId);

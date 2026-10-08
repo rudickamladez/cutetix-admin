@@ -22,21 +22,35 @@
   <table>
     <thead>
       <tr>
-        <th>Last Name</th>
-        <th>First Name</th>
-        <th>ID</th>
-        <th>E-mail</th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('lastname')">
+          <app-table-sort-header label="Last Name" column="lastname" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('firstname')">
+          <app-table-sort-header label="First Name" column="firstname" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('id')">
+          <app-table-sort-header label="ID" column="id" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('email')">
+          <app-table-sort-header label="E-mail" column="email" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
         <th class="d-none">Description</th>
-        <th>Group</th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('group')">
+          <app-table-sort-header label="Group" column="group" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
         @if (isGlobal) {
-        <th>Event</th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('event')">
+          <app-table-sort-header label="Event" column="event" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
         }
-        <th class="d-md-none">Status</th>
+        <th class="d-md-none" scope="col" [attr.aria-sort]="sortAriaSort('status')">
+          <app-table-sort-header label="Status" column="status" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      @for (ticket of filteredTickets(); track ticket) {
+      @for (ticket of sortedTickets(); track ticket) {
       @let canEditTicket = canEdit(ticket) | async;
       <tr>
         <td>{{ ticket.lastname }}</td>
