@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, effect, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, DestroyRef, effect, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -16,9 +16,15 @@ import { EventService } from '../events/events.service';
 export class AdministrationLayoutComponent {
     readonly #router = inject(Router);
     readonly #eventService = inject(EventService);
+    readonly #destroyRef = inject(DestroyRef);
     readonly #eventResource = this.#eventService.activeEventResource;
 
     constructor() {
+        this.#destroyRef.onDestroy(() => {
+            this.#eventService.setActiveEventId(null);
+            this.#eventService.setCurrentEvent(undefined);
+        });
+
         effect(() => {
             const eventId = this.#eventService.activeEventId();
             const event = this.#eventResource.value();
