@@ -41,13 +41,13 @@
           <app-table-sort-header label="Username" column="username" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th scope="col" [attr.aria-sort]="sortAriaSort('full_name')">
-          <app-table-sort-header label="Full name" column="full_name" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+          <app-table-sort-header label="Full&nbsp;name" column="full_name" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
-        <th scope="col" [attr.aria-sort]="sortAriaSort('email')">
+        <th scope="col" [attr.aria-sort]="sortAriaSort('email')" class="d-sm-none">
           <app-table-sort-header label="E-mail" column="email" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th scope="col" [attr.aria-sort]="sortAriaSort('disabled')">
-          <app-table-sort-header label="Disabled" column="disabled" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+          <app-table-sort-header label="Disabled" [mobileIcon]="disabledIcon" column="disabled" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th>Actions</th>
       </tr>
@@ -62,7 +62,7 @@
       <tr>
         <td>{{ user.username }}</td>
         <td>{{ user.full_name }}</td>
-        <td>
+        <td class="d-sm-none">
           <a href="mailto:{{ user.email }}">
             {{ user.email }}
           </a>
