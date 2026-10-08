@@ -1,7 +1,14 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
 .sort-header {
   all: unset;
   display: inline-flex;
+  width: 100%;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.4rem;
   cursor: pointer;
 
