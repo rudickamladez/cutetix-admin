@@ -18,8 +18,7 @@
         "PKief.material-icon-theme",
         "GitHub.vscode-github-actions",
         "GitHub.vscode-pull-request-github",
-        "openai.chatgpt",
-        "Google.geminicodeassist"
+        "openai.chatgpt"
       ]
     }
   }
