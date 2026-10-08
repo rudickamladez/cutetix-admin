@@ -31,3 +31,16 @@
 table td.actions {
   white-space: nowrap;
 }
+
+th .sort-header {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}

@@ -1,12 +1,15 @@
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faPen, faSort, faSortDown, faSortUp, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { UserService } from '../users.service';
 import { User } from '../users.types';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { matchesSearch } from '../../../shared/matches-search';
+import { sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
+
+type UserSortColumn = 'username' | 'full_name' | 'email' | 'disabled';
 
 @Component({
   selector: 'app-users-list',
@@ -26,8 +29,34 @@ export class UsersListComponent {
   protected readonly users = this.#usersService.users;
 
   protected filteredUsers = computed(() => this.#filterUsers());
+  protected sortState = signal<TableSortState<UserSortColumn>>({ column: null, direction: null });
+  protected sortedUsers = computed(() => sortRows(
+    this.filteredUsers(),
+    this.sortState(),
+    (user, column) => user[column]
+  ));
   protected search = signal('');
   protected includeDisabled = signal(true);
+
+  protected toggleSort(column: UserSortColumn): void {
+    this.sortState.update((state) => toggleSort(state, column));
+  }
+
+  protected sortIcon(column: UserSortColumn) {
+    const state = this.sortState();
+    if (state.column !== column) {
+      return faSort;
+    }
+    return state.direction === 'asc' ? faSortUp : faSortDown;
+  }
+
+  protected sortAriaSort(column: UserSortColumn): 'ascending' | 'descending' | 'none' {
+    const state = this.sortState();
+    if (state.column !== column || !state.direction) {
+      return 'none';
+    }
+    return state.direction === 'asc' ? 'ascending' : 'descending';
+  }
 
   protected clearFilters(): void {
     this.search.set('');
