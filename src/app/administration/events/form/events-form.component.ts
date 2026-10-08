@@ -1,4 +1,5 @@
 import { Component, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../events.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
@@ -91,11 +92,12 @@ export class EventsFormComponent {
           return;
         }
         this.#loadErrorShown = true;
+          const detail = err instanceof HttpErrorResponse ? err.error?.detail : undefined;
           this.form.get('name')?.disable();
           this.form.get('ticketsSalesStart')?.disable();
           this.form.get('ticketsSalesEnd')?.disable();
           this.#toastr.error(
-            err.error?.detail ?? err.message,
+            typeof detail === 'string' ? detail : err.message,
             'Cannot load event',
             {
               progressBar: true,
