@@ -1,6 +1,6 @@
 import { Component, computed, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { TicketGroupService } from '../ticket_groups.service';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faPeopleGroup, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TicketGroup } from '../ticket_groups.types';
@@ -26,6 +26,7 @@ export class TicketGroupsListComponent {
 
   protected readonly editIcon = faPen;
   protected readonly deleteIcon = faTrash;
+  protected readonly capacityIcon = faPeopleGroup;
   protected readonly ticketGroups = this.#ticket_groupService.ticketGroups;
   protected readonly search = signal('');
   protected readonly filteredTicketGroups = computed(() => this.ticketGroups.value().filter((ticketGroup) =>

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import { getSortDirection, TableSortState } from '../../shared/table-sort';
 
@@ -11,6 +12,7 @@ import { getSortDirection, TableSortState } from '../../shared/table-sort';
 })
 export class TableSortHeaderComponent<Column extends string = string> {
   readonly label = input.required<string>();
+  readonly mobileIcon = input<IconDefinition | null>(null);
   readonly column = input.required<Column>();
   readonly sortState = input.required<TableSortState<Column>>();
   readonly sort = output<Column>();
