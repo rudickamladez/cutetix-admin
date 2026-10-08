@@ -11,6 +11,16 @@
   </div>
   }
   @if (!events.error()) {
+  <div class="toolbar">
+    <div class="filters">
+      <div label="Search">
+        <app-table-search
+          [(value)]="search"
+          placeholder="Event name or ID"
+        ></app-table-search>
+      </div>
+    </div>
+  </div>
   <table>
     <thead>
       <tr>
@@ -22,7 +32,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (event of events.value(); track event) {
+      @for (event of filteredEvents(); track event) {
       @let canEditEvent = canEdit(event.id) | async;
       <tr>
         <td>{{ event.name }}</td>

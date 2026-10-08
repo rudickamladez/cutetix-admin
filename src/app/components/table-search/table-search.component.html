@@ -1,6 +1,7 @@
 <input
   type="search"
   class="input"
+  autofocus
   [value]="value()"
   (input)="value.set($any($event.target).value)"
   [placeholder]="placeholder()"

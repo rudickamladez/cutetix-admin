@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { EventService } from '../events.service';
 import { Event } from '../events.types';
 import { faPen, faStar, faStarHalfStroke, faTicket, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable } from 'rxjs';
+import { matchesSearch } from '../../../shared/matches-search';
 
 
 @Component({
@@ -26,6 +27,10 @@ export class EventsListComponent {
   protected readonly events = this.isMyEvents
   ? this.eventsService.myEvents
   : this.eventsService.events;
+  protected readonly search = signal('');
+  protected readonly filteredEvents = computed(() => this.events.value().filter((event) =>
+    matchesSearch(this.search(), [event.name, event.id])
+  ));
   
   // Icons
   protected readonly editIcon = faPen;
