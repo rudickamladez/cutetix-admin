@@ -95,8 +95,8 @@ export class EventsFormComponent {
           this.form.get('ticketsSalesStart')?.disable();
           this.form.get('ticketsSalesEnd')?.disable();
           this.#toastr.error(
-            err.message,
-            'Cannot load ticket group',
+            err.error?.detail ?? err.message,
+            'Cannot load event',
             {
               progressBar: true,
             }
