@@ -58,7 +58,7 @@ export class TicketsListComponent {
     (ticket, column) => {
       switch (column) {
         case 'group': return ticket.group?.name;
-        case 'event': return ticket.group?.event?.name ?? ticket.group?.event_id ?? this.#eventId;
+        case 'event': return ticket.group?.event?.name ?? '';
         default: return ticket[column];
       }
     }
