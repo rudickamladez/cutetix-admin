@@ -1,0 +1,10 @@
+<input
+  type="search"
+  class="input"
+  [value]="value()"
+  (input)="value.set($any($event.target).value)"
+  [placeholder]="placeholder()"
+>
+@if (value()) {
+<button type="button" aria-label="Clear search" (click)="value.set('')">Clear</button>
+}
