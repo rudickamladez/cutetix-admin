@@ -1,13 +1,13 @@
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { faEye, faPen, faSort, faSortDown, faSortUp, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { UserService } from '../users.service';
 import { User } from '../users.types';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { matchesSearch } from '../../../shared/matches-search';
-import { sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
+import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
 
 type UserSortColumn = 'username' | 'full_name' | 'email' | 'disabled';
 
@@ -42,20 +42,8 @@ export class UsersListComponent {
     this.sortState.update((state) => toggleSort(state, column));
   }
 
-  protected sortIcon(column: UserSortColumn) {
-    const state = this.sortState();
-    if (state.column !== column) {
-      return faSort;
-    }
-    return state.direction === 'asc' ? faSortUp : faSortDown;
-  }
-
   protected sortAriaSort(column: UserSortColumn): 'ascending' | 'descending' | 'none' {
-    const state = this.sortState();
-    if (state.column !== column || !state.direction) {
-      return 'none';
-    }
-    return state.direction === 'asc' ? 'ascending' : 'descending';
+    return getAriaSort(this.sortState(), column);
   }
 
   protected clearFilters(): void {

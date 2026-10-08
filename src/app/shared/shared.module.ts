@@ -5,12 +5,14 @@ import { CopyrightComponent } from '../components/copyright/copyright.component'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormatScopesPipe } from '../format-scopes.pipe';
 import { TableSearchComponent } from '../components/table-search/table-search.component';
+import { TableSortHeaderComponent } from '../components/table-sort-header/table-sort-header.component';
 
 @NgModule({
     declarations: [
         UserInfoComponent,
         CopyrightComponent,
         TableSearchComponent,
+        TableSortHeaderComponent,
     ],
     imports: [
         CommonModule,
@@ -21,6 +23,7 @@ import { TableSearchComponent } from '../components/table-search/table-search.co
         UserInfoComponent,
         CopyrightComponent,
         TableSearchComponent,
+        TableSortHeaderComponent,
     ],
 })
 export class SharedModule { }

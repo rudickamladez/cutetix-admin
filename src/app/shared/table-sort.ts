@@ -5,6 +5,21 @@ export interface TableSortState<Column extends string = string> {
   direction: SortDirection | null;
 }
 
+export function getSortDirection<Column extends string>(
+  state: TableSortState<Column>,
+  column: Column
+): SortDirection | null {
+  return state.column === column ? state.direction : null;
+}
+
+export function getAriaSort<Column extends string>(
+  state: TableSortState<Column>,
+  column: Column
+): 'ascending' | 'descending' | 'none' {
+  const direction = getSortDirection(state, column);
+  return direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none';
+}
+
 export function toggleSort<Column extends string>(
   state: TableSortState<Column>,
   column: Column

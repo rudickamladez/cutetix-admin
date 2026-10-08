@@ -37,24 +37,16 @@
     <thead>
       <tr>
         <th scope="col" [attr.aria-sort]="sortAriaSort('username')">
-          <button type="button" class="sort-header" (click)="toggleSort('username')">
-            Username <fa-icon [icon]="sortIcon('username')" aria-hidden="true"></fa-icon>
-          </button>
+          <app-table-sort-header label="Username" column="username" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th scope="col" [attr.aria-sort]="sortAriaSort('full_name')">
-          <button type="button" class="sort-header" (click)="toggleSort('full_name')">
-            Full name <fa-icon [icon]="sortIcon('full_name')" aria-hidden="true"></fa-icon>
-          </button>
+          <app-table-sort-header label="Full name" column="full_name" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th scope="col" [attr.aria-sort]="sortAriaSort('email')">
-          <button type="button" class="sort-header" (click)="toggleSort('email')">
-            E-mail <fa-icon [icon]="sortIcon('email')" aria-hidden="true"></fa-icon>
-          </button>
+          <app-table-sort-header label="E-mail" column="email" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th scope="col" [attr.aria-sort]="sortAriaSort('disabled')">
-          <button type="button" class="sort-header" (click)="toggleSort('disabled')">
-            Disabled <fa-icon [icon]="sortIcon('disabled')" aria-hidden="true"></fa-icon>
-          </button>
+          <app-table-sort-header label="Disabled" column="disabled" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th>Actions</th>
       </tr>
