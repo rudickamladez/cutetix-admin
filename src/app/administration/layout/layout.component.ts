@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, effect, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, DestroyRef, effect, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -16,12 +16,17 @@ import { EventService } from '../events/events.service';
 export class AdministrationLayoutComponent {
     readonly #router = inject(Router);
     readonly #eventService = inject(EventService);
-    readonly #activeEventId = signal<string | null>(null);
-    readonly #eventResource = this.#eventService.eventByIdResource(() => this.#activeEventId());
+    readonly #destroyRef = inject(DestroyRef);
+    readonly #eventResource = this.#eventService.activeEventResource;
 
     constructor() {
+        this.#destroyRef.onDestroy(() => {
+            this.#eventService.setActiveEventId(null);
+            this.#eventService.setCurrentEvent(undefined);
+        });
+
         effect(() => {
-            const eventId = this.#activeEventId();
+            const eventId = this.#eventService.activeEventId();
             const event = this.#eventResource.value();
 
             if (!eventId || this.#eventResource.error()) {
@@ -59,9 +64,9 @@ export class AdministrationLayoutComponent {
             eventId = ticketRoute?.paramMap.get('event-id') ?? eventFormRoute?.paramMap.get('id') ?? null;
         }
 
-        if (eventId !== this.#activeEventId()) {
+        if (eventId !== this.#eventService.activeEventId()) {
             this.#eventService.setCurrentEvent(undefined);
-            this.#activeEventId.set(eventId);
+            this.#eventService.setActiveEventId(eventId);
         }
     }
 }

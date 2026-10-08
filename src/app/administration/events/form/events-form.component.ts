@@ -1,4 +1,5 @@
 import { Component, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../events.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
@@ -20,7 +21,7 @@ export class EventsFormComponent {
   readonly #toastr = inject(SnackbarToastrService);
   readonly #eventPermissions = inject(EventPermissionsService);
   readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
-  readonly #eventResource = this.#eventService.eventByIdResource(() => this.#id());
+  readonly #eventResource = this.#eventService.activeEventResource;
   #loadErrorShown = false;
 
   public readonly event = this.#eventResource;
@@ -69,7 +70,7 @@ export class EventsFormComponent {
 
       effect(() => {
         const event = this.#eventResource.value();
-        if (!event) {
+        if (!event || String(event.id) !== this.#id()) {
           return;
         }
         this.form.setValue({
@@ -85,17 +86,19 @@ export class EventsFormComponent {
       });
 
       effect(() => {
+        const activeEventId = this.#eventService.activeEventId();
         const err = this.#eventResource.error();
-        if (!err || this.#loadErrorShown) {
+        if (activeEventId !== this.#id() || !err || this.#loadErrorShown) {
           return;
         }
         this.#loadErrorShown = true;
+          const detail = err instanceof HttpErrorResponse ? err.error?.detail : undefined;
           this.form.get('name')?.disable();
           this.form.get('ticketsSalesStart')?.disable();
           this.form.get('ticketsSalesEnd')?.disable();
           this.#toastr.error(
-            err.message,
-            'Cannot load ticket group',
+            typeof detail === 'string' ? detail : err.message,
+            'Cannot load event',
             {
               progressBar: true,
             }

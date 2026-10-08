@@ -20,6 +20,13 @@ export class EventService {
 
   readonly #currentEvent = signal<Event | undefined>(undefined);
   readonly currentEvent = this.#currentEvent.asReadonly();
+  readonly #activeEventId = signal<string | null>(null);
+  readonly activeEventId = this.#activeEventId.asReadonly();
+  readonly activeEventResource = this.eventByIdResource(() => this.#activeEventId());
+
+  setActiveEventId(eventId: string | null): void {
+    this.#activeEventId.set(eventId);
+  }
 
   setCurrentEvent(event: Event | undefined): void {
     this.#currentEvent.set(event);
@@ -94,6 +101,9 @@ export class EventService {
       tap(() => {
         this.events.reload();
         this.myEvents.reload();
+        if (this.#activeEventId() === id) {
+          this.activeEventResource.reload();
+        }
       })
     );
   }
