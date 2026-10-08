@@ -1,0 +1,28 @@
+@use '../../administration/common/styles.scss' as *;
+
+:host {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+input[type='search'] {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 42px;
+  margin: 0;
+  padding: 0.4rem 0.6rem;
+
+  &:active,
+  &:focus {
+    border-color: var(--color-background-medium-dark);
+  }
+}
+
+button {
+  height: 42px;
+  margin: 0;
+  min-width: 0;
+  padding: 0 0.65rem;
+}

@@ -14,13 +14,14 @@
   <div class="toolbar">
     <div class="filters">
       <div label="Search">
-        <input
-          type="search"
-          [value]="search()"
-          (input)="search.set($event.target.value)"
+        <app-table-search
+          [(value)]="search"
           placeholder="Username, full name, e-mail, scope"
-        >
+        ></app-table-search>
       </div>
+      <button type="button" (click)="clearFilters()">
+        Reset
+      </button>
       <label class="include-disabled">
         <input
           type="checkbox"
@@ -29,10 +30,7 @@
         >
         Include disabled users
       </label>
-      <button type="button" (click)="clearFilters()">
-        Reset
-      </button>
-      <span class="count">{{ filteredUsers().length }} / {{ users.value().length }}</span>
+      <div class="count">{{ filteredUsers().length }} / {{ users.value().length }}</div>
     </div>
   </div>
   <table>

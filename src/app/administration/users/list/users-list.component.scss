@@ -1,37 +1,21 @@
 @use '../../common/styles';
-
-.toolbar {
-  margin-bottom: 0.75rem;
-}
+@use '../../common/table-filters';
 
 .filters {
-  display: flex;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-
-  > div::before {
-    content: attr(label);
-    display: block;
-    font-size: 14px;
-    font-weight: 400;
-  }
-
-  input[type='search'] {
-    min-width: 22rem;
-    padding: 0.4rem 0.6rem;
-  }
-
   .include-disabled {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    line-height: 1;
-    margin-bottom: 0.5rem;
+    min-height: 42px;
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
 
     input[type='checkbox'] {
       width: auto;
       margin: 0;
+      accent-color: #49dd5d;
+      cursor: pointer;
     }
   }
 
@@ -39,13 +23,8 @@
     align-self: flex-end;
     margin: 0;
     min-width: 0;
-    padding: 0.4rem 0.6rem;
-  }
-
-  .count {
-    font-size: 0.9rem;
-    margin-left: 0.5rem;
-    opacity: 0.85;
+    height: 42px;
+    padding: 0 0.85rem;
   }
 }
 

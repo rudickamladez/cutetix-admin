@@ -6,6 +6,7 @@ import { UserService } from '../users.service';
 import { User } from '../users.types';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { matchesSearch } from '../../../shared/matches-search';
 
 @Component({
   selector: 'app-users-list',
@@ -74,22 +75,17 @@ export class UsersListComponent {
   }
 
   #filterUsers(): User[] {
-    const search = this.search().trim().toLowerCase();
-
     return this.users.value().filter((user) => {
       if (!this.includeDisabled() && user.disabled) {
         return false;
       }
 
-      if (!search) {
-        return true;
-      }
-
-      const scopes = (user.scopes ?? []).join(', ').toLowerCase();
-      return (user.username ?? '').toLowerCase().includes(search)
-        || (user.full_name ?? '').toLowerCase().includes(search)
-        || (user.email ?? '').toLowerCase().includes(search)
-        || scopes.includes(search);
+      return matchesSearch(this.search(), [
+        user.username ?? '',
+        user.full_name ?? '',
+        user.email ?? '',
+        ...(user.scopes ?? [])
+      ]);
     });
   }
 
