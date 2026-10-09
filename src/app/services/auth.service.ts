@@ -43,6 +43,8 @@ export class AuthService implements OnDestroy {
     #canRefreshToken = false;
     #isRefreshingToken = false;
     #refreshOperation$: Observable<string> | null = null;
+    #refreshWaitOperation$: Observable<string> | null = null;
+    #authSessionVersion = 0;
 
     #lockAbortController = new AbortController();
 
@@ -129,6 +131,8 @@ export class AuthService implements OnDestroy {
             return;
         }
 
+        this.#authSessionVersion++;
+
         if (this.#registerSub) {
             this.#registerSub.unsubscribe();
         }
@@ -177,6 +181,8 @@ export class AuthService implements OnDestroy {
         if (this.isLoggedIn()) {
             return;
         }
+
+        this.#authSessionVersion++;
 
         if (this.#loginSub) {
             this.#loginSub.unsubscribe();
@@ -282,6 +288,13 @@ export class AuthService implements OnDestroy {
         }
 
         const refreshUrl = new URL("auth/refresh", apiUrl).href;
+        const accessToken = this.getAccessToken();
+        const sessionVersion = this.#authSessionVersion;
+        const sessionIsCurrent = () =>
+            this.#authSessionVersion === sessionVersion &&
+            this.#storageService.get(StorageKeys.API_URL) === apiUrl &&
+            this.getAccessToken() === accessToken &&
+            this.getRefreshToken() === refreshToken;
         const accessTokenPayload = Object(this.getDecodedAccessToken());
         this.#logging.log("auth", "Refreshing of access token.");
         this.#isRefreshingToken = true;
@@ -294,10 +307,10 @@ export class AuthService implements OnDestroy {
             },
         ).pipe(
             map(({ refresh_token, access_token }) => {
-                // The API may have changed while this request was in flight.
-                // Never persist credentials issued by the previous API.
-                if (this.#storageService.get(StorageKeys.API_URL) !== apiUrl) {
-                    throw new Error("API URL changed while refreshing credentials.");
+                // Do not let an in-flight response replace credentials after
+                // logout, login, refresh-token rotation, or an API URL change.
+                if (!sessionIsCurrent()) {
+                    throw new Error("Authentication session changed while refreshing credentials.");
                 }
 
                 this.#logging.log("auth", "Access token was refreshed.");
@@ -310,6 +323,20 @@ export class AuthService implements OnDestroy {
             }),
             catchError((err: unknown) => {
                 this.#logging.error("auth", "Error while refreshing token.", err);
+
+                // A failed request from an old session must not log out a
+                // newer session. Keep the current session's refresh schedule.
+                if (!sessionIsCurrent()) {
+                    const hasNewerSession = this.isLoggedIn() && (
+                        this.getAccessToken() !== accessToken ||
+                        this.getRefreshToken() !== refreshToken ||
+                        this.#storageService.get(StorageKeys.API_URL) !== apiUrl
+                    );
+                    if (hasNewerSession) {
+                        this.#scheduleNextRefresh();
+                    }
+                    return throwError(() => err);
+                }
 
                 // Rejected/invalid refresh credentials are definitive. Clear
                 // locally without making another request to the failed backend.
@@ -335,7 +362,9 @@ export class AuthService implements OnDestroy {
     }
 
     #waitForRefreshFromLockOwner(failedAccessToken: string): Observable<string> {
-        return new Observable<string>(subscriber => {
+        if (this.#refreshWaitOperation$) return this.#refreshWaitOperation$;
+
+        const operation$ = new Observable<string>(subscriber => {
             const timeoutId = setTimeout(() => {
                 subscriber.error(new Error("Timed out waiting for another tab to refresh the access token."));
             }, REFRESH_WAIT_MS);
@@ -372,10 +401,20 @@ export class AuthService implements OnDestroy {
                 clearTimeout(timeoutId);
                 accessTokenSub.unsubscribe();
             };
-        });
+        }).pipe(
+            finalize(() => {
+                this.#refreshWaitOperation$ = null;
+            }),
+            shareReplay({ bufferSize: 1, refCount: false }),
+        );
+
+        this.#refreshWaitOperation$ = operation$;
+        return operation$;
     }
 
     logout(skipBackendRequest = false): void {
+        this.#authSessionVersion++;
+
         const logoutLogic = () => {
             this.#storageService
                 .delete(StorageKeys.ACCESS_TOKEN)
