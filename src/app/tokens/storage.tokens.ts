@@ -4,6 +4,7 @@ export const StorageKeys = {
   ACCESS_TOKEN: "access_token",
   REFRESH_TOKEN: "refresh_token",
   API_URL: "api_url",
+  AUTH_REFRESH_REQUEST: "auth_refresh_request",
   THEME: "theme",
   BROWSER_CORE_CHECK: "browser_core_check",
   SUDO_PASSWORD_MODE: "sudo_password_mode",
