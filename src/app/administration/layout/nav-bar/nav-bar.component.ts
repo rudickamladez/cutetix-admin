@@ -92,7 +92,10 @@ export class NavBarComponent implements OnInit {
     }
 
     protected canSeeTicketGroups(eventId: string | number) {
-        return this.#eventPermissions.canForEvent(eventId, 'ticket_groups:read');
+        return this.#eventPermissions.canForEvent(
+            eventId,
+            this.#eventPermissions.hasGlobalScope('ticket_groups:edit') ? 'ticket_groups:edit' : 'ticket_groups:read'
+        );
     }
 
     toggle(): void {
