@@ -3,11 +3,10 @@ import {
     HttpErrorResponse,
     HttpRequest,
     HttpHandlerFn,
-    HttpEvent
+    HttpEvent,
 } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { BehaviorSubject, Observable, throwError, of, timeout } from 'rxjs';
-import { catchError, filter, map, switchMap, take } from 'rxjs/operators';
+import { Observable, catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { StorageService } from '../services/storage.service';
 import { StorageKeys } from '../tokens/storage.tokens';
@@ -15,93 +14,112 @@ import { StorageKeys } from '../tokens/storage.tokens';
 const SKIP_AUTH_HEADER = 'X-Skip-Auth';
 const SKIP_REFRESH_HEADER = 'X-Skip-Refresh';
 
-let refreshInProgress = false;
-const refreshToken$ = new BehaviorSubject<string | null>(null);
-
-// bezpečný limit, ať to nevisí navždy (můžeš upravit)
-const REFRESH_WAIT_MS = 10_000;
+type AuthEndpoint = 'login' | 'register' | 'refresh' | 'logout';
 
 export const authInterceptor: HttpInterceptorFn =
     (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
+        // Resolve dependencies synchronously, while Angular's injection context is active.
         const auth = inject(AuthService);
+        const storage = inject(StorageService);
+        const apiUrl = storage.get(StorageKeys.API_URL);
+        const apiRequest = isWithinApiBase(req.url, apiUrl);
+        const authEndpoint = apiRequest ? getAuthEndpoint(req.url, apiUrl) : null;
+        const skipAuth = req.headers.has(SKIP_AUTH_HEADER);
+        const skipRefresh = req.headers.has(SKIP_REFRESH_HEADER);
 
-        let request = req;
+        let request = req.clone({
+            headers: req.headers
+                .delete(SKIP_AUTH_HEADER)
+                .delete(SKIP_REFRESH_HEADER),
+        });
 
-        // Přidej Authorization, pokud není výslovně zakázáno
-        if (!req.headers.has(SKIP_AUTH_HEADER)) {
-            const accessToken = auth.getAccessToken();
-            if (accessToken) {
-                request = addAuthHeader(req, accessToken);
+        let attachedAccessToken: string | null = null;
+        const shouldAttachAuth = authEndpoint === null || authEndpoint === 'logout';
+        if (apiRequest && shouldAttachAuth && !skipAuth) {
+            attachedAccessToken = auth.getAccessToken();
+            if (attachedAccessToken) {
+                request = addAuthHeader(request, attachedAccessToken);
             }
-        } else {
-            // odstraň marker, ať neleze ven
-            request = req.clone({ headers: req.headers.delete(SKIP_AUTH_HEADER) });
         }
 
         return next(request).pipe(
-            catchError(err => {
-                if (err instanceof HttpErrorResponse && err.status === 401 && !request.headers.has(SKIP_REFRESH_HEADER)) {
-                    return handle401(request, next);
+            catchError((err: unknown) => {
+                // Auth endpoints and non-API URLs must never start an automatic refresh.
+                if (
+                    !(err instanceof HttpErrorResponse) ||
+                    err.status !== 401 ||
+                    !apiRequest ||
+                    authEndpoint !== null ||
+                    skipRefresh ||
+                    !attachedAccessToken ||
+                    storage.get(StorageKeys.API_URL) !== apiUrl ||
+                    !isWithinApiBase(request.url, storage.get(StorageKeys.API_URL))
+                ) {
+                    return throwError(() => err);
                 }
-                return throwError(() => err);
-            })
+
+                return auth.refreshForUnauthorizedRequest(attachedAccessToken).pipe(
+                    switchMap((newToken) => {
+                        // The configured API may have changed while refresh was in flight.
+                        // Do not retry an old URL or attach credentials from the new session.
+                        if (
+                            storage.get(StorageKeys.API_URL) !== apiUrl ||
+                            !isWithinApiBase(request.url, storage.get(StorageKeys.API_URL)) ||
+                            auth.getAccessToken() !== newToken
+                        ) {
+                            return throwError(() => err);
+                        }
+
+                        // Calling next() retries only downstream interceptors; this request is
+                        // therefore attempted at most once after refresh.
+                        return next(addAuthHeader(request, newToken));
+                    }),
+                );
+            }),
         );
     };
 
-function handle401(originalReq: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> {
-    const auth = inject(AuthService);
-    const storage = inject(StorageService);
+function addAuthHeader(req: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
+    return req.clone({ headers: req.headers.set('Authorization', `Bearer ${token}`) });
+}
 
-    const previousToken = auth.getAccessToken();
+function isWithinApiBase(requestUrl: string, apiUrl: string | null): boolean {
+    if (!apiUrl) return false;
 
-    // Pokud už někdo refresuje (v tomto okně), jen počkáme na výsledek
-    if (refreshInProgress) {
-        return refreshToken$.pipe(
-            filter((t): t is string => t !== null),
-            take(1),
-            switchMap((newToken) => next(addAuthHeader(originalReq, newToken)))
-        );
+    try {
+        const base = new URL(apiUrl, window.location.origin);
+        const request = new URL(requestUrl, window.location.origin);
+        if (base.origin !== request.origin) return false;
+
+        const baseSegments = pathSegments(base.pathname);
+        const requestSegments = pathSegments(request.pathname);
+        return baseSegments.every((segment, index) => requestSegments[index] === segment);
+    } catch {
+        return false;
     }
-
-    refreshInProgress = true;
-    refreshToken$.next(null);
-
-    // Vyvolej refresh v tomto okně (může být no-op, pokud nemáme lock; v tom případě počkáme na event ze "správného" okna)
-    auth.refresh();
-
-    return waitForAccessTokenChange$(storage, previousToken).pipe(
-        switchMap((newToken) => {
-            refreshInProgress = false;
-            refreshToken$.next(newToken);
-            return next(addAuthHeader(originalReq, newToken));
-        }),
-        catchError(err => {
-            refreshInProgress = false;
-            refreshToken$.next(null);
-            return throwError(() => err);
-        })
-    );
 }
 
-/**
- * Čeká na událost změny ACCESS_TOKEN v localStorage, která má neprázdnou hodnotu
- * a liší se od previousToken. Má timeout, aby to neskončilo ve visu.
- */
-function waitForAccessTokenChange$(
-    storage: StorageService,
-    previousToken: string | null
-): Observable<string> {
-    return storage.storageEvent$(StorageKeys.ACCESS_TOKEN).pipe(
-        map(e => e.currentValue),                 // bereme novou hodnotu
-        filter((v): v is string => !!v && v !== previousToken),
-        take(1),
-        timeout({ first: REFRESH_WAIT_MS })
-    );
+function getAuthEndpoint(requestUrl: string, apiUrl: string | null): AuthEndpoint | null {
+    if (!apiUrl || !isWithinApiBase(requestUrl, apiUrl)) return null;
+
+    try {
+        const base = new URL(apiUrl, window.location.origin);
+        const request = new URL(requestUrl, window.location.origin);
+        const baseSegments = pathSegments(base.pathname);
+        const requestSegments = pathSegments(request.pathname);
+        if (requestSegments.length !== baseSegments.length + 2) return null;
+
+        const [authSegment, endpoint] = requestSegments.slice(baseSegments.length);
+        if (authSegment !== 'auth') return null;
+        if (endpoint === 'login' || endpoint === 'register' || endpoint === 'refresh' || endpoint === 'logout') {
+            return endpoint;
+        }
+        return null;
+    } catch {
+        return null;
+    }
 }
 
-function addAuthHeader(req: HttpRequest<any>, token: string) {
-    const headers = req.headers
-        .delete(SKIP_REFRESH_HEADER) // nešířit marker dál
-        .set('Authorization', `Bearer ${token}`);
-    return req.clone({ headers });
+function pathSegments(pathname: string): string[] {
+    return pathname.split('/').filter(Boolean);
 }
