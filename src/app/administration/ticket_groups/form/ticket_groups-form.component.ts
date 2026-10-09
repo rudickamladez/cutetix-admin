@@ -9,6 +9,7 @@ import { SnackbarToastrService } from '../../../services/snackbar-toastr.service
 import { TicketGroupService } from '../ticket_groups.service';
 import { LoadingComponent } from '../../loading/loading.component';
 import { AsyncPipe } from '@angular/common';
+import { errorMessage } from '../../../utils/error-message';
 
 @Component({
     selector: 'app-ticket-groups-form',
@@ -69,7 +70,7 @@ export class TicketGroupsFormComponent {
       const error = this.ticketGroup.error();
       if (error && !this.#loadErrorShown) {
         this.#loadErrorShown = true;
-        const message = error instanceof Error ? error.message : String(error);
+        const message = errorMessage(error);
         this.#toastr.error(message, 'Cannot load ticket group', { progressBar: true });
       }
     });
@@ -114,7 +115,7 @@ export class TicketGroupsFormComponent {
       this.#toastr.info('Successfully created.', `TicketGroup called '${ticketGroup.name}'`, { progressBar: true });
       await this.#router.navigate(['/ticket_groups/list']);
     } catch (error) {
-      this.#toastr.error(`NOT CREATED! Error: ${this.#errorMessage(error)}`, 'TicketGroup', { progressBar: true });
+      this.#toastr.error(`NOT CREATED! Error: ${errorMessage(error)}`, 'TicketGroup', { progressBar: true });
     }
   }
 
@@ -129,7 +130,7 @@ export class TicketGroupsFormComponent {
       this.#toastr.info('Successfully edited.', `TicketGroup called '${ticketGroup.name}'`, { progressBar: true });
       await this.#router.navigate(['/ticket_groups/list']);
     } catch (error) {
-      this.#toastr.error(`NOT EDITED! Error: ${this.#errorMessage(error)}`, 'TicketGroup', { progressBar: true });
+      this.#toastr.error(`NOT EDITED! Error: ${errorMessage(error)}`, 'TicketGroup', { progressBar: true });
     }
   }
 
@@ -156,14 +157,6 @@ export class TicketGroupsFormComponent {
     if (!error) {
       return '';
     }
-    return error instanceof Error ? error.message : String(error);
-  }
-
-  #errorMessage(error: unknown): string {
-    if (typeof error === 'object' && error !== null && 'error' in error) {
-      const httpError = error as { error?: { detail?: string }; message?: string };
-      return httpError.error?.detail ?? httpError.message ?? String(error);
-    }
-    return error instanceof Error ? error.message : String(error);
+    return errorMessage(error);
   }
 }

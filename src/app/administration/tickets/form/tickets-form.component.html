@@ -51,7 +51,7 @@
 
   @if (mode() !== 'detail') {
     @let canEdit = canEditSelectedGroup() | async;
-    <button class="alt" [disabled]="ticketForm().invalid() || canEdit !== true">
+    <button class="alt" [disabled]="ticketForm().invalid() || ticketForm().submitting() || canEdit !== true">
       {{ mode() === 'new' ? 'Create' : 'Edit' }}
     </button>
   }

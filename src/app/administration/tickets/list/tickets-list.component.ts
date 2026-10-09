@@ -3,7 +3,6 @@ import { TicketService } from '../../../services/tickets.service';
 import { Ticket } from '../tickets.types';
 import { faBan, faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable, of } from 'rxjs';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -15,6 +14,7 @@ import { TableSearchComponent } from '../../../components/table-search/table-sea
 import { TableSortHeaderComponent } from '../../../components/table-sort-header/table-sort-header.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { AsyncPipe } from '@angular/common';
+import { errorMessage } from '../../../utils/error-message';
 
 type TicketSortColumn = 'lastname' | 'firstname' | 'id' | 'email' | 'group' | 'event' | 'status';
 
@@ -131,9 +131,9 @@ export class TicketsListComponent {
     return ['/my-events', String(eventId), 'tickets', ticket.id, 'detail'];
   }
 
-  #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
+  #notCancelledTicketToastr(ticket: Ticket, error: unknown) {
     this.#toastr.error(
-      this.#errorMessage(error),
+      errorMessage(error),
       'Ticket wasn\'t cancelled!',
       {
         progressBar: true,
@@ -173,9 +173,9 @@ export class TicketsListComponent {
     });
   }
 
-  #notDeletedTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
+  #notDeletedTicketToastr(ticket: Ticket, error: unknown) {
     this.#toastr.error(
-      this.#errorMessage(error),
+      errorMessage(error),
       'Ticket wasn\'t deleted!',
       {
         progressBar: true,
@@ -219,13 +219,4 @@ export class TicketsListComponent {
     });
   }
 
-  #errorMessage(error: HttpErrorResponse | Error | string): string {
-    if (typeof error === 'string') {
-      return error;
-    }
-    if (error instanceof HttpErrorResponse) {
-      return error.error?.detail ?? error.message;
-    }
-    return error.message;
-  }
 }
