@@ -8,7 +8,6 @@ import { EventService } from '../../events/events.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { TicketGroupService } from '../ticket_groups.service';
 import { LoadingComponent } from '../../loading/loading.component';
-import { ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
@@ -16,7 +15,7 @@ import { AsyncPipe } from '@angular/common';
     templateUrl: './ticket_groups-form.component.html',
     styleUrls: ['./ticket_groups-form.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [LoadingComponent, ReactiveFormsModule, FormField, AsyncPipe]
+    imports: [LoadingComponent, FormField, AsyncPipe]
 })
 export class TicketGroupsFormComponent {
   readonly #router = inject(Router);

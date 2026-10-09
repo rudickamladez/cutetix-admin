@@ -8,7 +8,6 @@ import { EventPermissionsService } from 'src/app/services/event-permissions.serv
 import { Observable, firstValueFrom, of } from 'rxjs';
 import { EventCreate } from '../events.types';
 import { LoadingComponent } from '../../loading/loading.component';
-import { ReactiveFormsModule } from '@angular/forms';
 import { EventPermissionsComponent } from '../permissions/event-permissions.component';
 import { AsyncPipe } from '@angular/common';
 
@@ -17,7 +16,7 @@ import { AsyncPipe } from '@angular/common';
     templateUrl: './events-form.component.html',
     styleUrls: ['./events-form.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [LoadingComponent, ReactiveFormsModule, FormField, EventPermissionsComponent, AsyncPipe]
+    imports: [LoadingComponent, FormField, EventPermissionsComponent, AsyncPipe]
 })
 export class EventsFormComponent {
   readonly #router = inject(Router);

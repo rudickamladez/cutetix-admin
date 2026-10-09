@@ -5,7 +5,6 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostListener, input, mo
     templateUrl: './table-search.component.html',
     styleUrls: ['./table-search.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: []
 })
 export class TableSearchComponent {
   @ViewChild('searchInput') private searchInput?: ElementRef<HTMLInputElement>;

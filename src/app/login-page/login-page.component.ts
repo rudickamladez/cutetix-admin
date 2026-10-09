@@ -6,7 +6,6 @@ import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
 import { faCog, faPersonCirclePlus, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import { UserLogin, UserRegister } from '../types/auth.types';
-import { ReactiveFormsModule } from '@angular/forms';
 import { LocalStorageFieldComponent } from '../components/local-storage-field/local-storage-field.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { CopyrightComponent } from '../components/copyright/copyright.component';
@@ -16,7 +15,6 @@ import { CopyrightComponent } from '../components/copyright/copyright.component'
     styleUrls: ['./login-page.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
-        ReactiveFormsModule,
         FormField,
         LocalStorageFieldComponent,
         FaIconComponent,

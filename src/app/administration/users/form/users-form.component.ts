@@ -7,14 +7,13 @@ import { User, UserCreate, UserUpdate } from '../users.types';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SCOPES_ENTRIES } from '../../../types/auth.types';
 import { LoadingComponent } from '../../loading/loading.component';
-import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-users-form',
     templateUrl: './users-form.component.html',
     styleUrls: ['./users-form.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [LoadingComponent, ReactiveFormsModule, FormField]
+    imports: [LoadingComponent, FormField]
 })
 export class UsersFormComponent {
   readonly #router = inject(Router);

@@ -9,7 +9,6 @@ import { TicketGroupService } from '../../ticket_groups/ticket_groups.service';
 import { TicketGroup } from '../../ticket_groups/ticket_groups.types';
 import { TicketStatusEnum, TicketUpdate } from '../tickets.types';
 import { LoadingComponent } from '../../loading/loading.component';
-import { ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
@@ -17,7 +16,7 @@ import { AsyncPipe } from '@angular/common';
     templateUrl: './tickets-form.component.html',
     styleUrls: ['./tickets-form.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [LoadingComponent, ReactiveFormsModule, FormField, AsyncPipe]
+    imports: [LoadingComponent, FormField, AsyncPipe]
 })
 export class TicketsFormComponent {
   readonly #router = inject(Router);
