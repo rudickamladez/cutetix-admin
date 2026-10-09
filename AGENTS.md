@@ -31,3 +31,10 @@
 - One task at a time.
 - Keep diffs small.
 - Explain blockers instead of implementing workarounds.
+
+## Form buttons
+- Form submit buttons are intentionally full-width.
+- Keep submit buttons as direct children of the form's flex-column layout.
+- Do not wrap form submit buttons in `.button-container`.
+- Reuse existing global button variants such as `.alt`.
+- Preserve the current full-width layout on both desktop and mobile.
