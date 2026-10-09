@@ -14,7 +14,7 @@ export const eventCreateGuard: CanActivateFn = () => {
 export const eventEditGuard: CanActivateFn = route => {
   const eventPermissions = inject(EventPermissionsService);
   const router = inject(Router);
-  const eventId = route.paramMap.get('id');
+  const eventId = route.paramMap.get('event-id');
 
   if (!eventId) {
     return router.createUrlTree(['/events/list']);

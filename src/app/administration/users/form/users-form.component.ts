@@ -20,9 +20,9 @@ export class UsersFormComponent {
   readonly #toastr = inject(SnackbarToastrService);
   protected readonly scopesEntries = SCOPES_ENTRIES;
 
-  readonly id = input<string | null>(null);
+  readonly userId = input<string | null>(null, { alias: 'user-id' });
   readonly mode = input.required<'new' | 'edit' | 'detail'>();
-  protected readonly user = this.#usersService.userByIdResource(() => this.id());
+  protected readonly user = this.#usersService.userByIdResource(() => this.userId());
 
   protected userModel = signal<UserCreate & Pick<UserUpdate, 'uuid'>>({
     email: '',
@@ -42,18 +42,18 @@ export class UsersFormComponent {
       required(schemaPath.email, { message: 'Email is required' });
       email(schemaPath.email, { message: 'Invalid email format' });
       required(schemaPath.full_name, { message: 'Full name is required' });
-      
-      // if (this.mode() == 'new') {
-        // required(schemaPath.plaintext_password, { message: 'Password is required' });
-      // }
+      required(schemaPath.plaintext_password, {
+        message: 'Password is required',
+        when: () => this.mode() === 'new',
+      });
 
-      disabled(schemaPath, () => { return this.mode() === 'detail'; });
+      disabled(schemaPath, { when: () => this.mode() === 'detail' });
     }
   );
 
   constructor() {
     effect(() => {
-      this.id();
+      this.userId();
       if (this.mode() === 'new') {
         return;
       }

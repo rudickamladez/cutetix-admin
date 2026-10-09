@@ -1,11 +1,12 @@
-import { Component, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { disabled, form, required, submit } from '@angular/forms/signals';
 import { EventService } from '../events.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
-import { Observable, of } from 'rxjs';
+import { Observable, firstValueFrom, of } from 'rxjs';
+import { EventCreate } from '../events.types';
 
 @Component({
     selector: 'app-events-form',
@@ -16,170 +17,99 @@ import { Observable, of } from 'rxjs';
 })
 export class EventsFormComponent {
   readonly #router = inject(Router);
-  readonly #route = inject(ActivatedRoute);
   readonly #eventService = inject(EventService);
   readonly #toastr = inject(SnackbarToastrService);
   readonly #eventPermissions = inject(EventPermissionsService);
-  readonly #id = signal<string | null>(this.#route.snapshot.paramMap.get('id'));
   readonly #eventResource = this.#eventService.activeEventResource;
   #loadErrorShown = false;
 
+  readonly mode = input.required<'new' | 'edit' | 'detail'>();
+  readonly eventIdParam = input<string | null>(null, { alias: 'event-id' });
   public readonly event = this.#eventResource;
-  public readonly isEditing = this.#id() != null;
-  public readonly eventId = this.#id() ?? '';
-  protected readonly canManagePermissions: Observable<boolean> = this.#id()
-    ? this.#eventPermissions.canForEvent(this.#id()!, 'events:edit')
-    : of(false);
-  public form = new FormGroup({
-    name: new FormControl('', Validators.required),
-    ticketsSalesStart: new FormControl(new Date().toISOString().substring(0, 16), Validators.required),
-    ticketsSalesEnd: new FormControl(new Date(new Date().getDate() + 14).toISOString().substring(0, 16), Validators.required),
-    smtpMailFrom: new FormControl(''),
-    mailTextNewTicket: new FormControl('New ticket has been created.', Validators.required),
-    mailHtmlNewTicket: new FormControl('<p>New ticket has been created.</p>', Validators.required),
-    mailTextCancelledTicket: new FormControl('Your ticket has been cancelled.', Validators.required),
-    mailHtmlCancelledTicket: new FormControl('<p>Your ticket has been cancelled.</p>', Validators.required),
+  public readonly isEditing = computed(() => this.mode() !== 'new');
+  public readonly eventId = computed(() => this.eventIdParam() ?? '');
+  protected readonly canManagePermissions = computed<Observable<boolean>>(() => this.eventIdParam()
+    ? this.#eventPermissions.canForEvent(this.eventIdParam()!, 'events:edit')
+    : of(false));
+  protected readonly eventModel = signal<EventCreate>({
+    name: '',
+    tickets_sales_start: new Date().toISOString().substring(0, 16),
+    tickets_sales_end: new Date(new Date().getDate() + 14).toISOString().substring(0, 16),
+    smtp_mail_from: '',
+    mail_text_new_ticket: 'New ticket has been created.',
+    mail_html_new_ticket: '<p>New ticket has been created.</p>',
+    mail_text_cancelled_ticket: 'Your ticket has been cancelled.',
+    mail_html_cancelled_ticket: '<p>Your ticket has been cancelled.</p>',
   });
-  public title: string = 'New event';
-  public editButtonEnabled: boolean = true;
-  public editButtonText: string = 'Create';
-  public formMethod: () => void = this.createEvent;
+  protected readonly eventForm = form(this.eventModel, path => {
+    required(path.name);
+    required(path.tickets_sales_start);
+    required(path.tickets_sales_end);
+    required(path.mail_text_new_ticket);
+    required(path.mail_html_new_ticket);
+    required(path.mail_text_cancelled_ticket);
+    required(path.mail_html_cancelled_ticket);
+    disabled(path, { when: () => this.mode() === 'detail' });
+  });
 
   constructor() {
-    // Check detail view
-    if (this.#router.url.includes('edit')) {
-      this.title = 'Event edit'
-      this.editButtonText = 'Edit';
-    } else if (this.#router.url.includes('detail')) {
-      this.title = 'Event detail';
-      this.editButtonEnabled = false;
-      this.form.get('name')?.disable();
-      this.form.get('ticketsSalesStart')?.disable();
-      this.form.get('ticketsSalesEnd')?.disable();
-      this.form.get('smtpMailFrom')?.disable();
-      this.form.get('mailTextNewTicket')?.disable();
-      this.form.get('mailHtmlNewTicket')?.disable();
-      this.form.get('mailTextCancelledTicket')?.disable();
-      this.form.get('mailHtmlCancelledTicket')?.disable();
-    }
-
-    // Editing event
-    if (this.isEditing) {
-      // Update form submit method
-      this.formMethod = this.editEvent;
-
-      effect(() => {
-        const event = this.#eventResource.value();
-        if (!event || String(event.id) !== this.#id()) {
-          return;
-        }
-        this.form.setValue({
+    effect(() => {
+      if (!this.isEditing()) {
+        return;
+      }
+      const event = this.#eventResource.value();
+      if (event && String(event.id) === this.eventIdParam()) {
+        this.eventModel.set({
           name: event.name,
-          ticketsSalesStart: event.tickets_sales_start,
-          ticketsSalesEnd: event.tickets_sales_end,
-          smtpMailFrom: event.smtp_mail_from,
-          mailTextNewTicket: event.mail_text_new_ticket,
-          mailHtmlNewTicket: event.mail_html_new_ticket,
-          mailTextCancelledTicket: event.mail_text_cancelled_ticket,
-          mailHtmlCancelledTicket: event.mail_html_cancelled_ticket,
+          tickets_sales_start: event.tickets_sales_start,
+          tickets_sales_end: event.tickets_sales_end,
+          smtp_mail_from: event.smtp_mail_from,
+          mail_text_new_ticket: event.mail_text_new_ticket,
+          mail_html_new_ticket: event.mail_html_new_ticket,
+          mail_text_cancelled_ticket: event.mail_text_cancelled_ticket,
+          mail_html_cancelled_ticket: event.mail_html_cancelled_ticket,
         });
-      });
+      }
 
-      effect(() => {
-        const activeEventId = this.#eventService.activeEventId();
-        const err = this.#eventResource.error();
-        if (activeEventId !== this.#id() || !err || this.#loadErrorShown) {
-          return;
-        }
-        this.#loadErrorShown = true;
-          const detail = err instanceof HttpErrorResponse ? err.error?.detail : undefined;
-          this.form.get('name')?.disable();
-          this.form.get('ticketsSalesStart')?.disable();
-          this.form.get('ticketsSalesEnd')?.disable();
-          this.#toastr.error(
-            typeof detail === 'string' ? detail : err.message,
-            'Cannot load event',
-            {
-              progressBar: true,
-            }
-          );
-      });
-    }
+      const activeEventId = this.#eventService.activeEventId();
+      const err = this.#eventResource.error();
+      if (activeEventId !== this.eventIdParam() || !err || this.#loadErrorShown) {
+        return;
+      }
+      this.#loadErrorShown = true;
+      const detail = err instanceof HttpErrorResponse ? err.error?.detail : undefined;
+      this.#toastr.error(
+        typeof detail === 'string' ? detail : err.message,
+        'Cannot load event',
+        { progressBar: true }
+      );
+    });
   }
 
-  public createEvent() {
-    this.#eventService.create(
-      {
-        name: this.form.value.name || '',
-        tickets_sales_start: this.form.value.ticketsSalesStart || new Date().toISOString().substring(0, 16),
-        tickets_sales_end: this.form.value.ticketsSalesEnd || new Date(new Date().getDate() + 14).toISOString().substring(0, 16),
-        smtp_mail_from: this.form.value.smtpMailFrom || '',
-        mail_text_new_ticket: this.form.value.mailTextNewTicket || '',
-        mail_html_new_ticket: this.form.value.mailHtmlNewTicket || '',
-        mail_text_cancelled_ticket: this.form.value.mailTextCancelledTicket || '',
-        mail_html_cancelled_ticket: this.form.value.mailHtmlCancelledTicket || '',
-      }
-    ).subscribe({
-      next: (event) => {
-        this.#toastr.info(
-          'Successfully created.',
-          `Event called '${event.name}'`,
-          {
-            progressBar: true
-          }
-        );
-        this.#router.navigate(['/events/detail/' + event.id]);
-      },
-      error: (err) => {
-        this.#toastr.error(
-          `NOT CREATED! Error: ${err.message}`,
-          'Event',
-          {
-            progressBar: true
-          }
-        )
-      }
-    })
-  }
-
-  public editEvent() {
-    const id = this.#id();
-    if (!id) {
+  protected saveEvent(event: Event): void {
+    event.preventDefault();
+    if (this.mode() === 'detail') {
       return;
     }
-    this.#eventService.update(
-      id,
-      {
-        name: this.form.value.name || '',
-        tickets_sales_start: this.form.value.ticketsSalesStart || new Date().toISOString().substring(0, 16),
-        tickets_sales_end: this.form.value.ticketsSalesEnd || new Date(new Date().getDate() + 14).toISOString().substring(0, 16),
-        smtp_mail_from: this.form.value.smtpMailFrom || '',
-        mail_text_new_ticket: this.form.value.mailTextNewTicket || '',
-        mail_html_new_ticket: this.form.value.mailHtmlNewTicket || '',
-        mail_text_cancelled_ticket: this.form.value.mailTextCancelledTicket || '',
-        mail_html_cancelled_ticket: this.form.value.mailHtmlCancelledTicket || '',
-      }
-    ).subscribe({
-      next: (event) => {
+    submit(this.eventForm, async () => {
+      try {
+        const event = this.mode() === 'new'
+          ? await firstValueFrom(this.#eventService.create(this.eventModel()))
+          : await firstValueFrom(this.#eventService.update(this.eventIdParam()!, this.eventModel()));
         this.#toastr.info(
-          'Successfully edited.',
+          this.mode() === 'new' ? 'Successfully created.' : 'Successfully edited.',
           `Event called '${event.name}'`,
-          {
-            progressBar: true
-          }
+          { progressBar: true }
         );
         this.#router.navigate(['/events/detail/' + event.id]);
-      },
-      error: (err) => {
+      } catch (err) {
         this.#toastr.error(
-          `NOT EDITED! Error: ${err.message}`,
+          `${this.mode() === 'new' ? 'NOT CREATED' : 'NOT EDITED'}! Error: ${err instanceof Error ? err.message : String(err)}`,
           'Event',
-          {
-            progressBar: true
-          }
-        )
+          { progressBar: true }
+        );
       }
-    })
+    });
   }
 
   protected loadErrorText(): string {

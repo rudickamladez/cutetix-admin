@@ -1,7 +1,7 @@
 import { Component, computed, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { TicketService } from '../../../services/tickets.service';
 import { Ticket } from '../tickets.types';
-import { faBan, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faBan, faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
@@ -27,6 +27,7 @@ export class TicketsListComponent {
   readonly #denied = of(false);
 
   protected readonly editIcon = faPen;
+  protected readonly viewIcon = faEye;
   protected readonly deleteIcon = faTrash;
   protected readonly cancelIcon = faBan;
 
@@ -88,15 +89,39 @@ export class TicketsListComponent {
     return permission;
   }
 
+  protected canRead(ticket: Ticket): Observable<boolean> {
+    if (
+      this.#eventPermissions.hasGlobalScope('tickets:read')
+      || this.#eventPermissions.hasGlobalScope('tickets:edit')
+    ) {
+      return of(true);
+    }
+    const eventId = ticket.group?.event_id;
+    return eventId === undefined
+      ? this.#denied
+      : this.#eventPermissions.canForEvent(eventId, 'tickets:read');
+  }
+
   protected editTicketRoute(ticket: Ticket): string[] {
     const eventId = ticket.group?.event_id;
     if (!eventId || !ticket.id) {
       return [];
     }
     if (this.isGlobal) {
-      return ['tickets', ticket.id, 'edit'];
+      return ['/tickets', 'edit', ticket.id];
     }
     return ['/my-events', String(eventId), 'tickets', ticket.id, 'edit'];
+  }
+
+  protected viewTicketRoute(ticket: Ticket): string[] {
+    const eventId = ticket.group?.event_id;
+    if (!eventId || !ticket.id) {
+      return [];
+    }
+    if (this.isGlobal) {
+      return ['/tickets', 'detail', ticket.id];
+    }
+    return ['/my-events', String(eventId), 'tickets', ticket.id, 'detail'];
   }
 
   #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {

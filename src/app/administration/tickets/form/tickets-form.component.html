@@ -1,0 +1,59 @@
+@if (mode() !== 'new' && ticket.isLoading()) {
+  <app-loading></app-loading>
+}
+@if (mode() !== 'new' && ticket.error()) {
+  <div class="error"><p>There's problem loading ticket.<br />{{ ticketLoadErrorText() }}</p></div>
+}
+@if (mode() === 'new' || (!ticket.isLoading() && !ticket.error())) {
+<form (submit)="saveTicket($event)">
+  <h1>{{ mode() === 'new' ? 'New ticket' : mode() === 'detail' ? 'Ticket detail' : 'Edit ticket' }}</h1>
+
+  <label for="firstname">Firstname</label>
+  <input type="text" [formField]="ticketForm.firstname">
+
+  <label for="lastname">Lastname</label>
+  <input type="text" [formField]="ticketForm.lastname">
+
+  <label for="email">E-Mail</label>
+  <input type="email" [formField]="ticketForm.email">
+
+  <label for="description">Description</label>
+  <input type="text" [formField]="ticketForm.description">
+
+  <label for="status">Status</label>
+  <select [formField]="ticketForm.status">
+    <option value="0">New</option>
+    @if (mode() !== 'new') {
+      <option value="1">Confirmed</option>
+      <option value="2">Paid</option>
+      <option value="3">Cancelled</option>
+    }
+  </select>
+
+  <label for="groupId">Group</label>
+  @if (groupsResource.isLoading()) {
+    <p>Loading ticket groups...</p>
+  }
+  @if (groupsResource.error()) {
+    <p>{{ loadErrorText() }}</p>
+  }
+  @if (mode() === 'detail') {
+    <p>{{ groupDisplay() }}</p>
+  } @else {
+    <select [formField]="ticketForm.groupId">
+      @for (group of groups(); track group) {
+        @if ((canEditGroup(group.event_id) | async) === true) {
+          <option [value]="group.id">{{ group.event?.name }} - {{ group.name }}</option>
+        }
+      }
+    </select>
+  }
+
+  @if (mode() !== 'detail') {
+    @let canEdit = canEditSelectedGroup() | async;
+    <button class="alt" [disabled]="ticketForm().invalid() || canEdit !== true">
+      {{ mode() === 'new' ? 'Create' : 'Edit' }}
+    </button>
+  }
+</form>
+}
