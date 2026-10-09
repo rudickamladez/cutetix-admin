@@ -100,7 +100,10 @@ export class EventsListComponent {
   }
 
   public canViewTicketGroups(eventId: string): Observable<boolean> {
-    return this.#eventPermissions.canForEvent(eventId, 'ticket_groups:read');
+    return this.#eventPermissions.canForEvent(
+      eventId,
+      this.#eventPermissions.hasGlobalScope('ticket_groups:edit') ? 'ticket_groups:edit' : 'ticket_groups:read'
+    );
   }
 
   public edit(event: Event) {
