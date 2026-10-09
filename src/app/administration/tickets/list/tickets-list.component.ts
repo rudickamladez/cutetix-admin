@@ -6,7 +6,7 @@ import { SnackbarToastrService } from '../../../services/snackbar-toastr.service
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable, of } from 'rxjs';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { matchesSearch } from '../../../shared/matches-search';
 import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
 import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
@@ -39,6 +39,7 @@ export class TicketsListComponent {
   protected readonly cancelIcon = faBan;
 
   readonly #route = inject(ActivatedRoute);
+  readonly #router = inject(Router);
   readonly #eventId = this.#route.snapshot.paramMap.get('event-id');
   protected readonly isGlobal = !this.#eventId;
 
@@ -117,7 +118,8 @@ export class TicketsListComponent {
     if (this.isGlobal) {
       return ['/tickets', 'edit', ticket.id];
     }
-    return ['/my-events', String(eventId), 'tickets', ticket.id, 'edit'];
+    const eventBase = this.#router.url.startsWith('/events/') ? '/events' : '/my-events';
+    return [eventBase, String(eventId), 'tickets', ticket.id, 'edit'];
   }
 
   protected viewTicketRoute(ticket: Ticket): string[] {
@@ -128,7 +130,8 @@ export class TicketsListComponent {
     if (this.isGlobal) {
       return ['/tickets', 'detail', ticket.id];
     }
-    return ['/my-events', String(eventId), 'tickets', ticket.id, 'detail'];
+    const eventBase = this.#router.url.startsWith('/events/') ? '/events' : '/my-events';
+    return [eventBase, String(eventId), 'tickets', ticket.id, 'detail'];
   }
 
   #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {
