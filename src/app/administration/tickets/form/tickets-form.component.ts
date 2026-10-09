@@ -145,7 +145,7 @@ export class TicketsFormComponent {
   #navigateToList(eventId?: number): void {
     this.#router.navigate(this.isGlobal || eventId === undefined
       ? ['/tickets/list']
-      : ['/my-events', String(eventId), 'tickets', 'list']);
+      : [this.#router.url.startsWith('/events/') ? '/events' : '/my-events', String(eventId), 'tickets', 'list']);
   }
 
   protected groups(): TicketGroup[] {

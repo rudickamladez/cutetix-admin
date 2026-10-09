@@ -6,7 +6,6 @@
     font-size: 16px;
     font-weight: 500;
     padding: 0 16px;
-    border-bottom: 1px solid $foreColorMedium;
     overflow: hidden;
 
     & > a {
@@ -34,16 +33,22 @@
 
         &.active {
             font-weight: 700;
+            color: inherit;
             &:before {
                 background: $accentColorLight;
             }
         }
 
         &:not(.active):hover {
-            color: $foreColorDark;
-            background: $backColorMedium;
+            color: $accentColorLight;
+            background: transparent;
             padding-left: 20px;
             cursor: pointer;
+        }
+
+        &:focus-visible {
+            outline: 1px solid $accentColorLight;
+            outline-offset: -1px;
         }
 
         &:not(.active) + .subitems {
@@ -51,8 +56,17 @@
         }
     }
 
-    @media (max-width: 1200px) {
-        border-bottom: none;
+    &.context-active > a {
+        font-weight: 700;
+        color: inherit;
+
+        &:before {
+            background: $accentColorLight;
+        }
+    }
+
+    &.context-active > a + .subitems {
+        display: block;
     }
 }
 

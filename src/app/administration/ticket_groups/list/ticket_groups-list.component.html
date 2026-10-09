@@ -14,7 +14,7 @@
       <div label="Search">
         <app-table-search [(value)]="search" placeholder="Name, ID, or event"></app-table-search>
       </div>
-      <span class="count">{{ filteredTicketGroups().length }} / {{ ticketGroups.value().length }}</span>
+        <span class="count">{{ filteredTicketGroups().length }} / {{ ticketGroups.value().length }}</span>
     </div>
   </div>
   <div class="table-scroll">
@@ -28,9 +28,11 @@
         <th scope="col" [attr.aria-sort]="sortAriaSort('capacity')">
           <app-table-sort-header label="Capacity" [mobileIcon]="capacityIcon" column="capacity" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
-        <th scope="col" [attr.aria-sort]="sortAriaSort('event')">
-          <app-table-sort-header label="Event" column="event" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
-        </th>
+        @if (isGlobal) {
+          <th scope="col" [attr.aria-sort]="sortAriaSort('event')">
+            <app-table-sort-header label="Event" column="event" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+          </th>
+        }
         <th>Actions</th>
       </tr>
     </thead>
@@ -42,20 +44,22 @@
         <!-- so hidden column with IDs is second -->
         <td class="d-none">{{ ticket_group.id }}</td>
         <td>{{ ticket_group.capacity }}</td>
-        <td>
-          @if (ticket_group.event != null) {
-          <a [routerLink]="['/events', 'detail', ticket_group.event.id]">
-            {{ ticket_group.event.name}}
-          </a>
-          }
-          @if (ticket_group.event == null) {
-          <span>
-            No event
-          </span>
-          }
-        </td>
+        @if (isGlobal) {
+          <td>
+            @if (ticket_group.event != null) {
+            <a [routerLink]="['/events', 'detail', ticket_group.event.id]">
+              {{ ticket_group.event.name}}
+            </a>
+            }
+            @if (ticket_group.event == null) {
+            <span>
+              No event
+            </span>
+            }
+          </td>
+        }
         <td class="actions">
-          <button class="edit" [routerLink]="['/ticket_groups', 'edit', ticket_group.id]"
+          <button class="edit" [routerLink]="ticketGroupEditLink(ticket_group)"
             [disabled]="canEditTicketGroup !== true">
             <fa-icon [icon]="editIcon"></fa-icon>
           </button>

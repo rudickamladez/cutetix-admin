@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, effect, inject, input, signal } from '@angular/core';
 import { disabled, form, required, submit, FormField } from '@angular/forms/signals';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, firstValueFrom, of } from 'rxjs';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Event as EventItem } from '../../events/events.types';
@@ -20,6 +20,7 @@ import { errorMessage } from '../../../utils/error-message';
 })
 export class TicketGroupsFormComponent {
   readonly #router = inject(Router);
+  readonly #route = inject(ActivatedRoute);
   readonly #ticketGroupService = inject(TicketGroupService);
   readonly #eventService = inject(EventService);
   readonly #toastr = inject(SnackbarToastrService);
@@ -113,7 +114,7 @@ export class TicketGroupsFormComponent {
         event_id: Number(eventId)
       }));
       this.#toastr.info('Successfully created.', `TicketGroup called '${ticketGroup.name}'`, { progressBar: true });
-      await this.#router.navigate(['/ticket_groups/list']);
+      await this.#router.navigate(this.#ticketGroupListUrl());
     } catch (error) {
       this.#toastr.error(`NOT CREATED! Error: ${errorMessage(error)}`, 'TicketGroup', { progressBar: true });
     }
@@ -128,7 +129,7 @@ export class TicketGroupsFormComponent {
         event_id: eventId
       }));
       this.#toastr.info('Successfully edited.', `TicketGroup called '${ticketGroup.name}'`, { progressBar: true });
-      await this.#router.navigate(['/ticket_groups/list']);
+      await this.#router.navigate(this.#ticketGroupListUrl());
     } catch (error) {
       this.#toastr.error(`NOT EDITED! Error: ${errorMessage(error)}`, 'TicketGroup', { progressBar: true });
     }
@@ -150,6 +151,17 @@ export class TicketGroupsFormComponent {
 
   protected events(): EventItem[] {
     return this.eventsResource.value();
+  }
+
+  #ticketGroupListUrl(): string[] {
+    const eventId = this.#route.pathFromRoot
+      .map(route => route.snapshot.paramMap.get('event-id'))
+      .find(value => value !== null);
+    if (!eventId) {
+      return ['/ticket_groups/list'];
+    }
+    const eventBase = this.#router.url.startsWith('/events/') ? '/events' : '/my-events';
+    return [eventBase, eventId, 'ticket-groups', 'list'];
   }
 
   protected ticketGroupLoadErrorText(): string {

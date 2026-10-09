@@ -1,3 +1,3 @@
-<a [routerLink]="link" [state]="{navBarVisible: false}" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="active">
+<a [routerLink]="link" [routerLinkActiveOptions]="{exact}" [class.active]="activeOverride" routerLinkActive="active">
     {{name}}
 </a>
