@@ -6,6 +6,8 @@ import { Event, EventCapacitySummary, EventCreate } from './events.types';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { StorageService } from 'src/app/services/storage.service';
 import { SnackbarToastrService } from '../../services/snackbar-toastr.service';
+import { TicketGroupService } from '../ticket_groups/ticket_groups.service';
+import { TicketService } from '../../services/tickets.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +17,8 @@ export class EventService {
 
   readonly #storageService = inject(StorageService);
   readonly #toastr = inject(SnackbarToastrService);
+  readonly #ticketGroups = inject(TicketGroupService);
+  readonly #tickets = inject(TicketService);
 
   readonly #apiPath = 'events';
 
@@ -115,6 +119,9 @@ export class EventService {
       tap(() => {
         this.events.reload();
         this.myEvents.reload();
+        this.#ticketGroups.ticketGroups.reload();
+        this.#ticketGroups.activeSum.reload();
+        this.#tickets.tickets.reload();
       })
     ).subscribe({
       next: () => {

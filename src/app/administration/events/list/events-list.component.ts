@@ -72,7 +72,12 @@ export class EventsListComponent {
     this.#router.navigate([(this.isMyEvents ? '/my-events' : '/events'), event.id, 'tickets', 'list']);
   }
 
-  protected deleteEvent(event: Event): void {
+  protected deleteEvent(event: Event, shouldConfirm = true): void {
+    if (!shouldConfirm) {
+      this.eventsService.delete(event);
+      return;
+    }
+
     this.#confirmDialog.confirm({
       title: 'Delete event',
       message: `Are you sure to delete event "${event.name}"?`,
