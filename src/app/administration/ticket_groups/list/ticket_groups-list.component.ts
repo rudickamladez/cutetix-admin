@@ -8,6 +8,7 @@ import { EventPermissionsService } from 'src/app/services/event-permissions.serv
 import { Observable } from 'rxjs';
 import { matchesSearch } from '../../../shared/matches-search';
 import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
+import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
 
 type TicketGroupSortColumn = 'name' | 'capacity' | 'event';
 
@@ -21,6 +22,7 @@ type TicketGroupSortColumn = 'name' | 'capacity' | 'event';
 export class TicketGroupsListComponent {
   readonly #ticket_groupService = inject(TicketGroupService);
   readonly #toastr = inject(SnackbarToastrService);
+  readonly #confirmDialog = inject(ConfirmDialogService);
   readonly #eventPermissions = inject(EventPermissionsService);
   readonly #editPermissions = new Map<number, Observable<boolean>>();
 
@@ -62,35 +64,35 @@ export class TicketGroupsListComponent {
     if (!ticket_group.id) {
       return;
     }
-    if (!confirm(`Are you sure to delete ticket group "${ticket_group.name}"?`)) {
-      this.#toastr.error(
-          'Deletion cancelled by user.',
-          'Ticket group',
-          {
-            progressBar: true,
-          }
-        );
-      return;
-    }
-    this.#ticket_groupService.delete(ticket_group!.id).subscribe({
-      next: () => {
-        this.#toastr.info(
-          'Successfully deleted.',
-          'Ticket group',
-          {
-            progressBar: true
-          }
-        );
-      },
-      error: (err: HttpErrorResponse) => {
-        this.#toastr.error(
-          err.error?.detail ?? err.message,
-          'Ticket group wasn\'t deleted!',
-          {
-            progressBar: true,
-          }
-        );
+    this.#confirmDialog.confirm({
+      title: 'Delete ticket group',
+      message: `Are you sure to delete ticket group "${ticket_group.name}"?`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    }).subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
       }
+      this.#ticket_groupService.delete(ticket_group.id!).subscribe({
+        next: () => {
+          this.#toastr.info(
+            'Successfully deleted.',
+            'Ticket group',
+            {
+              progressBar: true
+            }
+          );
+        },
+        error: (err: HttpErrorResponse) => {
+          this.#toastr.error(
+            err.error?.detail ?? err.message,
+            'Ticket group wasn\'t deleted!',
+            {
+              progressBar: true,
+            }
+          );
+        }
+      });
     });
   }
 }

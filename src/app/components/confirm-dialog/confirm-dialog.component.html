@@ -1,0 +1,16 @@
+<section class="confirm-dialog" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-message">
+  <h2 id="confirm-dialog-title">{{ data.title }}</h2>
+  <p id="confirm-dialog-message">{{ data.message }}</p>
+  <div class="dialog-actions">
+    <button type="button" class="alt" (click)="close(false)">
+      {{ data.cancelLabel ?? 'Cancel' }}
+    </button>
+    <button
+      type="button"
+      [class.destructive]="data.destructive"
+      (click)="close(true)"
+    >
+      {{ data.confirmLabel ?? 'Confirm' }}
+    </button>
+  </div>
+</section>

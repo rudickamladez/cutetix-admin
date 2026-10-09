@@ -7,6 +7,13 @@
 @use "styles/typography";
 @use "styles/button";
 @import "@angular/cdk/a11y-prebuilt.css";
+@import "@angular/cdk/overlay-prebuilt.css";
+
+.confirm-dialog-panel {
+    max-width: calc(100vw - 2rem);
+    border: 1px solid $backColorMediumDark;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
 
 *,
 *::before,

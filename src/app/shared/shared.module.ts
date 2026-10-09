@@ -6,6 +6,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormatScopesPipe } from '../format-scopes.pipe';
 import { TableSearchComponent } from '../components/table-search/table-search.component';
 import { TableSortHeaderComponent } from '../components/table-sort-header/table-sort-header.component';
+import { DialogModule } from '@angular/cdk/dialog';
+import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
     declarations: [
@@ -13,9 +15,11 @@ import { TableSortHeaderComponent } from '../components/table-sort-header/table-
         CopyrightComponent,
         TableSearchComponent,
         TableSortHeaderComponent,
+        ConfirmDialogComponent,
     ],
     imports: [
         CommonModule,
+        DialogModule,
         FontAwesomeModule,
         FormatScopesPipe,
     ],
@@ -24,6 +28,7 @@ import { TableSortHeaderComponent } from '../components/table-sort-header/table-
         CopyrightComponent,
         TableSearchComponent,
         TableSortHeaderComponent,
+        ConfirmDialogComponent,
     ],
 })
 export class SharedModule { }
