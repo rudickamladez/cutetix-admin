@@ -10,6 +10,7 @@ import { TicketGroup } from '../../ticket_groups/ticket_groups.types';
 import { TicketStatusEnum, TicketUpdate } from '../tickets.types';
 import { LoadingComponent } from '../../loading/loading.component';
 import { AsyncPipe } from '@angular/common';
+import { errorMessage } from '../../../utils/error-message';
 
 @Component({
     selector: 'app-tickets-form',
@@ -116,7 +117,7 @@ export class TicketsFormComponent {
       this.#navigateToList(this.eventId ? Number(this.eventId) : undefined);
     } catch (err) {
       this.#toastr.error(
-        `NOT CREATED! Error: ${this.#errorMessage(err)}`,
+        `NOT CREATED! Error: ${errorMessage(err)}`,
         'Ticket',
         { progressBar: true }
       );
@@ -137,7 +138,7 @@ export class TicketsFormComponent {
       await firstValueFrom(this.#ticketService.update(ticketId, ticket));
       this.#navigateToList(eventId);
     } catch (err) {
-      this.#toastr.error(`NOT EDITED! Error: ${this.#errorMessage(err)}`, 'Ticket');
+      this.#toastr.error(`NOT EDITED! Error: ${errorMessage(err)}`, 'Ticket');
     }
   }
 
@@ -182,7 +183,7 @@ export class TicketsFormComponent {
     if (!error) {
       return '';
     }
-    return error instanceof Error ? error.message : String(error);
+    return errorMessage(error);
   }
 
   protected ticketLoadErrorText(): string {
@@ -190,14 +191,6 @@ export class TicketsFormComponent {
     if (!error) {
       return '';
     }
-    return error instanceof Error ? error.message : String(error);
-  }
-
-  #errorMessage(error: unknown): string {
-    if (typeof error === 'object' && error !== null && 'error' in error) {
-      const httpError = error as { error?: { detail?: string }; message?: string };
-      return httpError.error?.detail ?? httpError.message ?? String(error);
-    }
-    return error instanceof Error ? error.message : String(error);
+    return errorMessage(error);
   }
 }

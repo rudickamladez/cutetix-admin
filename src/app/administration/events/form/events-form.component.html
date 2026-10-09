@@ -40,7 +40,7 @@
   <textarea id="mailHtmlCancelledTicket" [formField]="eventForm.mail_html_cancelled_ticket" rows="10" cols="5"></textarea>
 
   @if (mode() !== 'detail') {
-    <button class="alt" [disabled]="eventForm().invalid()">
+    <button class="alt" [disabled]="eventForm().invalid() || eventForm().submitting()">
       {{ mode() === 'new' ? 'Create' : 'Edit' }}
     </button>
   }
