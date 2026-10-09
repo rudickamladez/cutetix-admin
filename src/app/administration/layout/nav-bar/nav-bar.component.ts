@@ -79,10 +79,6 @@ export class NavBarComponent implements OnInit {
         return !!this.currentEvent() && this.isEventSection(item) && this.isEventTicketGroupsRoute();
     }
 
-    protected isScopedTicketGroupsRoute(): boolean {
-        return this.isEventTicketGroupsRoute();
-    }
-
     private isEventTicketGroupsRoute(): boolean {
         return /^\/(?:events|my-events)\/[^/?]+\/ticket-groups(?:\/|$)/.test(this.#router.url);
     }
