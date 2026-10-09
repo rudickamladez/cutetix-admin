@@ -8,6 +8,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { SnackbarToastrService } from '../../services/snackbar-toastr.service';
 import { TicketGroupService } from '../ticket_groups/ticket_groups.service';
 import { TicketService } from '../../services/tickets.service';
+import { LoggingService } from '../../services/logging.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class EventService {
   readonly #toastr = inject(SnackbarToastrService);
   readonly #ticketGroups = inject(TicketGroupService);
   readonly #tickets = inject(TicketService);
+  readonly #logging = inject(LoggingService);
 
   readonly #apiPath = 'events';
 
@@ -134,7 +136,7 @@ export class EventService {
         );
       },
       error: (err: HttpErrorResponse) => {
-        console.error(err);
+        this.#logging.error('events', 'Event deletion failed.', err);
         this.#toastr.error(
           `Error: ${err.error?.detail ?? err.message}`,
           'Event wasn\'t deleted!',

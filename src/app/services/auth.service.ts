@@ -122,7 +122,6 @@ export class AuthService implements OnDestroy {
             },
             error: (err: HttpErrorResponse) => {
                 this.#logging.error("auth", "User register failed.", err);
-                console.error(err);
                 if (err.error.detail) {
                     this.#toastr.error(
                         err.error.detail,
@@ -183,7 +182,6 @@ export class AuthService implements OnDestroy {
             },
             error: (err: HttpErrorResponse) => {
                 this.#logging.error("auth", "User login failed.", err);
-                console.error(err);
                 if (err.error.detail) {
                     this.#toastr.error(
                         err.error.detail,
@@ -297,7 +295,6 @@ export class AuthService implements OnDestroy {
             },
             error: (err: HttpErrorResponse) => {
                 this.#logging.error("auth", "User logout failed.", err);
-                console.error(err);
                 this.#toastr.error(
                     `Logout request failed. You might still be logged in on the server. Error: ${err.message}`,
                     "Logout",

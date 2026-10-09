@@ -7,6 +7,7 @@ import { User, UserCreate, UserUpdate } from '../users.types';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SCOPES_ENTRIES } from '../../../types/auth.types';
 import { LoadingComponent } from '../../loading/loading.component';
+import { LoggingService } from '../../../services/logging.service';
 
 @Component({
     selector: 'app-users-form',
@@ -19,6 +20,7 @@ export class UsersFormComponent {
   readonly #router = inject(Router);
   readonly #usersService = inject(UserService);
   readonly #toastr = inject(SnackbarToastrService);
+  readonly #logging = inject(LoggingService);
   protected readonly scopesEntries = SCOPES_ENTRIES;
 
   readonly userId = input<string | null>(null, { alias: 'user-id' });
@@ -122,7 +124,7 @@ export class UsersFormComponent {
             this.#router.navigate(['users']);
           },
           error: (err: HttpErrorResponse) => {
-            console.error(err);
+            this.#logging.error('user', 'User creation failed.', err);
             this.#toastr.error(
               err.error.detail ? err.error.detail : err.message,
               'User not created',
@@ -156,7 +158,7 @@ export class UsersFormComponent {
             this.#router.navigate(['/users/edit', user.uuid]);
           },
           error: (err: HttpErrorResponse) => {
-            console.error(err);
+            this.#logging.error('user', 'User update failed.', err);
             this.#toastr.error(
               err.error.detail ? err.error.detail : err.message,
               'User not edited',
