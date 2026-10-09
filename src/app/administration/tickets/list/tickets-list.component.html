@@ -104,7 +104,7 @@
           }
         </td>
         <td class="actions">
-          <button class="detail" [routerLink]="viewTicketRoute(ticket)" [disabled]="(canRead(ticket) | async) !== true">
+          <button class="detail" aria-label="View ticket details" [routerLink]="viewTicketRoute(ticket)" [disabled]="(canRead(ticket) | async) !== true">
             <fa-icon [icon]="viewIcon"></fa-icon>
           </button>
           <button class="destructive" (click)="cancel(ticket)" [disabled]="canEditTicket !== true">
