@@ -3,6 +3,8 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-local-storage-field',
@@ -13,6 +15,8 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
 })
 export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   readonly #storageService = inject(StorageService);
+  readonly #authService = inject(AuthService);
+  readonly #router = inject(Router);
   readonly #destroy$ = new Subject<void>();
 
   @Input({ required: true }) key!: StorageKeys;
@@ -79,6 +83,18 @@ export class LocalStorageFieldComponent implements OnInit, OnDestroy {
   // }
 
   #write(val: string | boolean | null | undefined) {
+    const value = this.isCheckbox ? (this.#toBool(val) ? 'true' : 'false') : (val ?? '').toString();
+    const currentValue = this.#storageService.get(this.key);
+
+    if (this.key === StorageKeys.API_URL && value !== currentValue) {
+      this.#authService.logout(true);
+      this.#storageService.set(this.key, value);
+      this.dirty.set(false);
+      this.#flashStatus('Saved');
+      void this.#router.navigate(['/login']);
+      return;
+    }
+
     if (this.isCheckbox) {
       const b = this.#toBool(val);
       this.#storageService.set(this.key, b ? 'true' : 'false'); // kompatibilně jako string
