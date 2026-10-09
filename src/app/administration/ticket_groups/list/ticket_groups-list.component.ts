@@ -13,7 +13,7 @@ import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
 type TicketGroupSortColumn = 'name' | 'capacity' | 'event';
 
 @Component({
-  selector: 'app-ticket_groups-list',
+  selector: 'app-ticket-groups-list',
   templateUrl: './ticket_groups-list.component.html',
   styleUrls: ['./ticket_groups-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
