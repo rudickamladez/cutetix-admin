@@ -8,7 +8,11 @@ export const ticketGroupEditGuard: CanActivateFn = route => {
   const eventPermissions = inject(EventPermissionsService);
   const router = inject(Router);
   const ticketGroupId = route.paramMap.get('ticket-group-id');
-  const denied = router.createUrlTree(['/ticket_groups/list']);
+  const eventId = route.parent?.paramMap.get('event-id');
+  const eventPath = route.pathFromRoot.some(snapshot => snapshot.routeConfig?.path === 'events') ? '/events' : '/my-events';
+  const denied = eventId
+    ? router.createUrlTree([eventPath, eventId, 'ticket-groups', 'list'])
+    : router.createUrlTree(['/ticket_groups/list']);
 
   if (!ticketGroupId) {
     return denied;

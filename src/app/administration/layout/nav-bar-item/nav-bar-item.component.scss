@@ -34,21 +34,40 @@
 
         &.active {
             font-weight: 700;
+            color: inherit;
             &:before {
                 background: $accentColorLight;
             }
         }
 
         &:not(.active):hover {
-            color: $foreColorDark;
-            background: $backColorMedium;
+            color: $accentColorLight;
+            background: transparent;
             padding-left: 20px;
             cursor: pointer;
+        }
+
+        &:focus-visible {
+            outline: 1px solid $accentColorLight;
+            outline-offset: -1px;
         }
 
         &:not(.active) + .subitems {
             display: none;
         }
+    }
+
+    &.context-active > a {
+        font-weight: 700;
+        color: inherit;
+
+        &:before {
+            background: $accentColorLight;
+        }
+    }
+
+    &.context-active > a + .subitems {
+        display: block;
     }
 
     @media (max-width: 1200px) {

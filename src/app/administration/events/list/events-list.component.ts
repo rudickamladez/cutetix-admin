@@ -1,7 +1,7 @@
 import { Component, computed, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { EventService } from '../events.service';
 import { Event } from '../events.types';
-import { faPen, faStar, faStarHalfStroke, faTicket, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faPeopleGroup, faStar, faStarHalfStroke, faTicket, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
@@ -53,6 +53,7 @@ export class EventsListComponent {
   protected readonly favoriteEventIcon = faStar;
   protected readonly unfavoriteEventIcon = faStarHalfStroke;
   protected readonly ticketsIcon = faTicket;
+  protected readonly ticketGroupsIcon = faPeopleGroup;
 
   protected toggleSort(column: EventSortColumn): void {
     this.sortState.update((state) => toggleSort(state, column));
@@ -77,6 +78,10 @@ export class EventsListComponent {
     this.#router.navigate([(this.isMyEvents ? '/my-events' : '/events'), event.id, 'tickets', 'list']);
   }
 
+  protected openEventTicketGroups(event: Event) {
+    this.#router.navigate([(this.isMyEvents ? '/my-events' : '/events'), event.id, 'ticket-groups', 'list']);
+  }
+
   protected deleteEvent(event: Event): void {
     this.#confirmDialog.confirm({
       title: 'Delete event',
@@ -92,6 +97,10 @@ export class EventsListComponent {
 
   public canViewTickets(eventId: string): Observable<boolean> {
     return this.#eventPermissions.canForEvent(eventId, 'tickets:read');
+  }
+
+  public canViewTicketGroups(eventId: string): Observable<boolean> {
+    return this.#eventPermissions.canForEvent(eventId, 'ticket_groups:read');
   }
 
   public edit(event: Event) {

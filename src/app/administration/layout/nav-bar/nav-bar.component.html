@@ -20,12 +20,25 @@
   </h1>
   <nav>
     @for (item of availableItems(); track item) {
-      <app-nav-bar-item [item]="item">
-        @for (subItem of item.subItems; track subItem) {
-          <app-nav-bar-subitem [name]="subItem.name" [link]="subItem.link" (click)="hide()">
-          </app-nav-bar-subitem>
-        }
-      </app-nav-bar-item>
+      @if (item.link !== 'ticket_groups' || !isScopedTicketGroupsRoute()) {
+        <app-nav-bar-item [item]="item" [selected]="isEventContextMenuOpen(item)">
+          @for (subItem of item.subItems; track subItem) {
+            <app-nav-bar-subitem [name]="subItem.name" [link]="subItem.link" (click)="hide()">
+            </app-nav-bar-subitem>
+          }
+          @if (currentEvent(); as event) {
+            @if (isEventSection(item)) {
+              <app-nav-bar-subitem [name]="'Details'" [link]="eventBase + '/detail/' + event.id" [activeOverride]="isEventDetailsActive(event.id)" (click)="hide()"></app-nav-bar-subitem>
+              @if (canSeeTickets(event.id) | async) {
+                <app-nav-bar-subitem [name]="'Tickets'" [link]="eventBase + '/' + event.id + '/tickets'" [exact]="false" (click)="hide()"></app-nav-bar-subitem>
+              }
+              @if (canSeeTicketGroups(event.id) | async) {
+                <app-nav-bar-subitem [name]="'Ticket groups'" [link]="eventBase + '/' + event.id + '/ticket-groups'" [exact]="false" (click)="hide()"></app-nav-bar-subitem>
+              }
+            }
+          }
+        </app-nav-bar-item>
+      }
     }
   </nav>
 </div>

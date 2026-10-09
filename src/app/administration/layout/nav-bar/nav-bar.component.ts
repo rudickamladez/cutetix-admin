@@ -11,18 +11,23 @@ import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NavBarItemComponent } from '../nav-bar-item/nav-bar-item.component';
 import { NavBarSubitemComponent } from '../nav-bar-subitem/nav-bar-subitem.component';
+import { EventService } from '../../events/events.service';
+import { EventPermissionsService } from 'src/app/services/event-permissions.service';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'app-nav-bar',
     templateUrl: './nav-bar.component.html',
     styleUrls: ['./nav-bar.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FaIconComponent, NavBarItemComponent, NavBarSubitemComponent]
+    imports: [FaIconComponent, NavBarItemComponent, NavBarSubitemComponent, AsyncPipe]
 })
 export class NavBarComponent implements OnInit {
     readonly #authService = inject(AuthService);
     readonly #router = inject(Router);
     readonly #storageService = inject(StorageService);
+    readonly #eventService = inject(EventService);
+    readonly #eventPermissions = inject(EventPermissionsService);
     readonly #destroyRef = inject(DestroyRef);
 
     dashboardItem = new MenuItem('Dashboard', 'dashboard', faChartLine);
@@ -30,6 +35,7 @@ export class NavBarComponent implements OnInit {
     logoutItem =  new MenuItem('Log out', '', faSignOutAlt, () => this.#authService.logout());
     builder = new MenuBuilder()
     readonly availableItems = signal<MenuItem[]>([]);
+    protected readonly currentEvent = this.#eventService.currentEvent;
     
     readonly #menuOpen = signal<boolean>(false);
     protected readonly menuOpen = this.#menuOpen.asReadonly();
@@ -54,6 +60,39 @@ export class NavBarComponent implements OnInit {
         ).subscribe(() => {
             this.#rebuildMenu(this.#router.url);
         });
+    }
+
+    protected get eventBase(): string {
+        return this.#router.url.startsWith('/events/') ? '/events' : '/my-events';
+    }
+
+    protected isEventDetailsActive(eventId: string | number): boolean {
+        const path = this.#router.url.split('?')[0];
+        return path === `${this.eventBase}/detail/${eventId}` || path === `${this.eventBase}/edit/${eventId}`;
+    }
+
+    protected isEventSection(item: MenuItem): boolean {
+        return item.link === this.eventBase.slice(1);
+    }
+
+    protected isEventContextMenuOpen(item: MenuItem): boolean {
+        return !!this.currentEvent() && this.isEventSection(item) && this.isEventTicketGroupsRoute();
+    }
+
+    protected isScopedTicketGroupsRoute(): boolean {
+        return this.isEventTicketGroupsRoute();
+    }
+
+    private isEventTicketGroupsRoute(): boolean {
+        return /^\/(?:events|my-events)\/[^/?]+\/ticket-groups(?:\/|$)/.test(this.#router.url);
+    }
+
+    protected canSeeTickets(eventId: string | number) {
+        return this.#eventPermissions.canForEvent(eventId, 'tickets:read');
+    }
+
+    protected canSeeTicketGroups(eventId: string | number) {
+        return this.#eventPermissions.canForEvent(eventId, 'ticket_groups:read');
     }
 
     toggle(): void {

@@ -54,6 +54,13 @@
           >
             <fa-icon [icon]="ticketsIcon"></fa-icon>
           </button>
+          <button
+            class="ticket-groups"
+            (click)="openEventTicketGroups(event)"
+            [disabled]="!(canViewTicketGroups(event.id) | async)"
+          >
+            <fa-icon [icon]="ticketGroupsIcon"></fa-icon>
+          </button>
           <button class="favorite" (click)="favorite(event.id!)">
             <fa-icon [icon]="favoriteIcon(event.id!)"></fa-icon>
           </button>

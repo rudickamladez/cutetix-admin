@@ -11,5 +11,7 @@ import { RouterLinkActive, RouterLink } from '@angular/router';
 export class NavBarSubitemComponent {
   @Input() name = '';
   @Input() link = '';
+  @Input() exact = true;
+  @Input() activeOverride = false;
   constructor() { }
 }

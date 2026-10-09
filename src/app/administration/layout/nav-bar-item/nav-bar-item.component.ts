@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, HostBinding } from '@angular/core';
 import { MenuItem } from '../nav-bar/menu-items';
 import { RouterLinkActive, RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -13,4 +13,9 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 export class NavBarItemComponent {
     @Input() selected = false;
     @Input() item!: MenuItem;
+
+    @HostBinding('class.context-active')
+    get contextActive(): boolean {
+        return this.selected;
+    }
 }
