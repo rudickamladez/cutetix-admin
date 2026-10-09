@@ -258,6 +258,8 @@ export class AuthService implements OnDestroy {
         };
 
         if (skipBackendRequest) {
+            this.#loginSub?.unsubscribe();
+            this.#registerSub?.unsubscribe();
             this.#refreshSub?.unsubscribe();
             this.#isRefreshingToken = false;
             if (this.#refreshingTimer !== null) {
