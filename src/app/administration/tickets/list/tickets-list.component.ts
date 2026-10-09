@@ -15,6 +15,7 @@ import { TableSearchComponent } from '../../../components/table-search/table-sea
 import { TableSortHeaderComponent } from '../../../components/table-sort-header/table-sort-header.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { AsyncPipe } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 type TicketSortColumn = 'lastname' | 'firstname' | 'id' | 'email' | 'group' | 'event' | 'status';
 
@@ -40,12 +41,12 @@ export class TicketsListComponent {
 
   readonly #route = inject(ActivatedRoute);
   readonly #router = inject(Router);
-  readonly #eventId = this.#route.snapshot.paramMap.get('event-id');
-  protected readonly isGlobal = !this.#eventId;
+  readonly #routeParams = toSignal(this.#route.paramMap, { initialValue: this.#route.snapshot.paramMap });
+  protected readonly isGlobal = this.#routeParams().get('event-id') === null;
 
   protected readonly tickets = this.isGlobal
     ? this.#ticketsService.tickets
-    : this.#ticketsService.getTicketsByEventIdResource(() => this.#eventId);
+    : this.#ticketsService.getTicketsByEventIdResource(() => this.#routeParams().get('event-id'));
   protected readonly search = signal('');
   protected readonly filteredTickets = computed(() => this.tickets.value().filter((ticket) =>
     matchesSearch(this.search(), [
@@ -57,7 +58,7 @@ export class TicketsListComponent {
       ticket.group?.name,
       ticket.group?.event?.name,
       ticket.group?.event?.id,
-      ticket.group?.event_id ?? this.#eventId
+      ticket.group?.event_id ?? this.#routeParams().get('event-id')
     ])
   ));
   protected readonly sortState = signal<TableSortState<TicketSortColumn>>({ column: null, direction: null });

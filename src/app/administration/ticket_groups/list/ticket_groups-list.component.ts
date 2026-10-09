@@ -15,6 +15,7 @@ import { TableSortHeaderComponent } from '../../../components/table-sort-header/
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { AsyncPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 type TicketGroupSortColumn = 'name' | 'capacity' | 'event';
 
@@ -32,8 +33,8 @@ export class TicketGroupsListComponent {
   readonly #eventPermissions = inject(EventPermissionsService);
   readonly #route = inject(ActivatedRoute);
   readonly #router = inject(Router);
-  readonly #eventId = this.#route.snapshot.paramMap.get('event-id');
-  protected readonly isGlobal = !this.#eventId;
+  readonly #routeParams = toSignal(this.#route.paramMap, { initialValue: this.#route.snapshot.paramMap });
+  protected readonly isGlobal = this.#routeParams().get('event-id') === null;
   readonly #editPermissions = new Map<number, Observable<boolean>>();
 
   // Icons
@@ -43,7 +44,7 @@ export class TicketGroupsListComponent {
 
   protected readonly ticketGroups = this.isGlobal
     ? this.#ticket_groupService.ticketGroups
-    : this.#ticket_groupService.ticketGroupsByEventIdResource(() => this.#eventId);
+    : this.#ticket_groupService.ticketGroupsByEventIdResource(() => this.#routeParams().get('event-id'));
   protected readonly search = signal('');
   protected readonly filteredTicketGroups = computed(() => this.ticketGroups.value().filter(ticketGroup =>
     matchesSearch(this.search(), [ticketGroup.name, ticketGroup.id, ticketGroup.event?.name, ticketGroup.event_id])
@@ -56,11 +57,12 @@ export class TicketGroupsListComponent {
   ));
 
   protected ticketGroupEditLink(ticketGroup: TicketGroup): string[] {
-    if (!this.#eventId) {
+    const eventId = this.#routeParams().get('event-id');
+    if (!eventId) {
       return ['/ticket_groups', 'edit', String(ticketGroup.id)];
     }
     const eventBase = this.#router.url.startsWith('/events/') ? '/events' : '/my-events';
-    return [eventBase, this.#eventId, 'ticket-groups', String(ticketGroup.id), 'edit'];
+    return [eventBase, eventId, 'ticket-groups', String(ticketGroup.id), 'edit'];
   }
 
   protected toggleSort(column: TicketGroupSortColumn): void {
