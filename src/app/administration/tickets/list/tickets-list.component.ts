@@ -9,6 +9,7 @@ import { Observable, of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { matchesSearch } from '../../../shared/matches-search';
 import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
+import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
 
 type TicketSortColumn = 'lastname' | 'firstname' | 'id' | 'email' | 'group' | 'event' | 'status';
 
@@ -22,6 +23,7 @@ type TicketSortColumn = 'lastname' | 'firstname' | 'id' | 'email' | 'group' | 'e
 export class TicketsListComponent {
   readonly #ticketsService = inject(TicketService);
   readonly #toastr = inject(SnackbarToastrService);
+  readonly #confirmDialog = inject(ConfirmDialogService);
   readonly #eventPermissions = inject(EventPermissionsService);
   readonly #editPermissions = new Map<string, Observable<boolean>>();
   readonly #denied = of(false);
@@ -135,30 +137,34 @@ export class TicketsListComponent {
   }
 
   public cancel(ticket: Ticket) {
-    if (!confirm(
-      `Are you sure to cancel ticket for "${ticket.firstname} ${ticket.lastname}"?`
-    )) {
-      this.#notCancelledTicketToastr(ticket, 'Cancellation cancelled by user.');
-      return;
-    }
-    this.#ticketsService.cancel(ticket).subscribe({
-      next: () => {
-        this.#toastr.info(
-          'Successfully cancelled.',
-          'Ticket',
-          {
-            progressBar: true
-          }
-        );
-      },
-      error: (err) => {
-        this.#notCancelledTicketToastr(ticket, err);
-      },
-      complete: () => {
-        if (!this.isGlobal) {
-          this.tickets.reload();
-        }
+    this.#confirmDialog.confirm({
+      title: 'Cancel ticket',
+      message: `Are you sure to cancel ticket for "${ticket.firstname} ${ticket.lastname}"?`,
+      confirmLabel: 'Cancel ticket',
+      destructive: true,
+    }).subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
       }
+      this.#ticketsService.cancel(ticket).subscribe({
+        next: () => {
+          this.#toastr.info(
+            'Successfully cancelled.',
+            'Ticket',
+            {
+              progressBar: true
+            }
+          );
+        },
+        error: (err) => {
+          this.#notCancelledTicketToastr(ticket, err);
+        },
+        complete: () => {
+          if (!this.isGlobal) {
+            this.tickets.reload();
+          }
+        }
+      });
     });
   }
 
@@ -177,30 +183,34 @@ export class TicketsListComponent {
       this.#notDeletedTicketToastr(ticket, 'Missing ID.');
       return;
     }
-    if (!confirm(
-      `Are you sure to delete ticket for "${ticket.firstname} ${ticket.lastname}"?`
-    )) {
-      this.#notDeletedTicketToastr(ticket, 'Deletion cancelled by user.');
-      return;
-    }
-    this.#ticketsService.delete(ticket.id).subscribe({
-      next: () => {
-        this.#toastr.info(
-          'Successfully deleted.',
-          'Ticket deleted',
-          {
-            progressBar: true
-          }
-        );
-      },
-      error: (err) => {
-        this.#notDeletedTicketToastr(ticket, err);
-      },
-      complete: () => {
-        if (!this.isGlobal) {
-          this.tickets.reload();
-        }
+    this.#confirmDialog.confirm({
+      title: 'Delete ticket',
+      message: `Are you sure to delete ticket for "${ticket.firstname} ${ticket.lastname}"?`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    }).subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
       }
+      this.#ticketsService.delete(ticket.id!).subscribe({
+        next: () => {
+          this.#toastr.info(
+            'Successfully deleted.',
+            'Ticket deleted',
+            {
+              progressBar: true
+            }
+          );
+        },
+        error: (err) => {
+          this.#notDeletedTicketToastr(ticket, err);
+        },
+        complete: () => {
+          if (!this.isGlobal) {
+            this.tickets.reload();
+          }
+        }
+      });
     });
   }
 

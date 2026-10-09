@@ -8,6 +8,7 @@ import { EventPermissionsService } from 'src/app/services/event-permissions.serv
 import { Observable } from 'rxjs';
 import { matchesSearch } from '../../../shared/matches-search';
 import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
+import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
 
 type EventSortColumn = 'name' | 'tickets_sales_start' | 'tickets_sales_end';
 
@@ -24,6 +25,7 @@ export class EventsListComponent {
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
   readonly #eventPermissions = inject(EventPermissionsService);
+  readonly #confirmDialog = inject(ConfirmDialogService);
   readonly #editPermissions = new Map<string, Observable<boolean>>();
   protected readonly isMyEvents = this.#route.parent?.routeConfig?.path === 'my-events';
   protected readonly events = this.isMyEvents
@@ -68,6 +70,19 @@ export class EventsListComponent {
 
   protected openEventTickets(event: Event) {
     this.#router.navigate([(this.isMyEvents ? '/my-events' : '/events'), event.id, 'tickets', 'list']);
+  }
+
+  protected deleteEvent(event: Event): void {
+    this.#confirmDialog.confirm({
+      title: 'Delete event',
+      message: `Are you sure to delete event "${event.name}"?`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    }).subscribe((confirmed) => {
+      if (confirmed) {
+        this.eventsService.delete(event);
+      }
+    });
   }
 
   public canViewTickets(eventId: string): Observable<boolean> {

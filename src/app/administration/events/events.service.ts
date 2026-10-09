@@ -108,13 +108,7 @@ export class EventService {
     );
   }
 
-  public delete(
-    event: Event,
-    shouldConfirm = true,
-  ): void {
-    if (shouldConfirm && !confirm(`Are you sure to delete event "${event.name}"?`)) {
-      return;
-    }
+  public delete(event: Event): void {
     this.#httpClient.delete<void>(
       this.#endpoint(`/${event.id}/`)
     ).pipe(

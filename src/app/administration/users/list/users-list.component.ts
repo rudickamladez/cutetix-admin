@@ -8,6 +8,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { matchesSearch } from '../../../shared/matches-search';
 import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
+import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
 
 type UserSortColumn = 'username' | 'full_name' | 'email' | 'disabled';
 
@@ -21,6 +22,7 @@ type UserSortColumn = 'username' | 'full_name' | 'email' | 'disabled';
 export class UsersListComponent {
   readonly #usersService = inject(UserService);
   readonly #toastr = inject(SnackbarToastrService);
+  readonly #confirmDialog = inject(ConfirmDialogService);
   protected readonly router = inject(Router);
   protected readonly authService = inject(AuthService);
   protected readonly editIcon = faPen;
@@ -64,31 +66,37 @@ export class UsersListComponent {
       return;
     }
 
-    if (!confirm(`Are you sure to delete user "${user.username}"?`)) {
-      return;
-    }
-
-    this.#usersService.delete(user.uuid).subscribe({
-      next: () => {
-        this.#filterUsers();
-        this.#toastr.info(
-          user.username,
-          'User deleted',
-          {
-            progressBar: true,
-          }
-        );
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error(err);
-        this.#toastr.error(
-          `Error: ${err.error?.detail ?? err.message}`,
-          'User wasn\'t deleted!',
-          {
-            progressBar: true,
-          }
-        );
+    this.#confirmDialog.confirm({
+      title: 'Delete user',
+      message: `Are you sure to delete user "${user.username}"?`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    }).subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
       }
+      this.#usersService.delete(user.uuid!).subscribe({
+        next: () => {
+          this.#filterUsers();
+          this.#toastr.info(
+            user.username,
+            'User deleted',
+            {
+              progressBar: true,
+            }
+          );
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error(err);
+          this.#toastr.error(
+            `Error: ${err.error?.detail ?? err.message}`,
+            'User wasn\'t deleted!',
+            {
+              progressBar: true,
+            }
+          );
+        }
+      });
     });
   }
 
