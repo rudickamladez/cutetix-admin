@@ -42,10 +42,10 @@ export class UsersFormComponent {
       required(schemaPath.email, { message: 'Email is required' });
       email(schemaPath.email, { message: 'Invalid email format' });
       required(schemaPath.full_name, { message: 'Full name is required' });
-      
-      // if (this.mode() == 'new') {
-        // required(schemaPath.plaintext_password, { message: 'Password is required' });
-      // }
+      required(schemaPath.plaintext_password, {
+        message: 'Password is required',
+        when: () => this.mode() === 'new',
+      });
 
       disabled(schemaPath, { when: () => this.mode() === 'detail' });
     }
