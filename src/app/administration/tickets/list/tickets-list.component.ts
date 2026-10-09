@@ -6,7 +6,7 @@ import { SnackbarToastrService } from '../../../services/snackbar-toastr.service
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable, of } from 'rxjs';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { matchesSearch } from '../../../shared/matches-search';
 import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
 import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
@@ -15,6 +15,7 @@ import { TableSearchComponent } from '../../../components/table-search/table-sea
 import { TableSortHeaderComponent } from '../../../components/table-sort-header/table-sort-header.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { AsyncPipe } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 type TicketSortColumn = 'lastname' | 'firstname' | 'id' | 'email' | 'group' | 'event' | 'status';
 
@@ -39,12 +40,13 @@ export class TicketsListComponent {
   protected readonly cancelIcon = faBan;
 
   readonly #route = inject(ActivatedRoute);
-  readonly #eventId = this.#route.snapshot.paramMap.get('event-id');
-  protected readonly isGlobal = !this.#eventId;
+  readonly #router = inject(Router);
+  readonly #routeParams = toSignal(this.#route.paramMap, { initialValue: this.#route.snapshot.paramMap });
+  protected readonly isGlobal = this.#routeParams().get('event-id') === null;
 
   protected readonly tickets = this.isGlobal
     ? this.#ticketsService.tickets
-    : this.#ticketsService.getTicketsByEventIdResource(() => this.#eventId);
+    : this.#ticketsService.getTicketsByEventIdResource(() => this.#routeParams().get('event-id'));
   protected readonly search = signal('');
   protected readonly filteredTickets = computed(() => this.tickets.value().filter((ticket) =>
     matchesSearch(this.search(), [
@@ -56,7 +58,7 @@ export class TicketsListComponent {
       ticket.group?.name,
       ticket.group?.event?.name,
       ticket.group?.event?.id,
-      ticket.group?.event_id ?? this.#eventId
+      ticket.group?.event_id ?? this.#routeParams().get('event-id')
     ])
   ));
   protected readonly sortState = signal<TableSortState<TicketSortColumn>>({ column: null, direction: null });
@@ -117,7 +119,8 @@ export class TicketsListComponent {
     if (this.isGlobal) {
       return ['/tickets', 'edit', ticket.id];
     }
-    return ['/my-events', String(eventId), 'tickets', ticket.id, 'edit'];
+    const eventBase = this.#router.url.startsWith('/events/') ? '/events' : '/my-events';
+    return [eventBase, String(eventId), 'tickets', ticket.id, 'edit'];
   }
 
   protected viewTicketRoute(ticket: Ticket): string[] {
@@ -128,7 +131,8 @@ export class TicketsListComponent {
     if (this.isGlobal) {
       return ['/tickets', 'detail', ticket.id];
     }
-    return ['/my-events', String(eventId), 'tickets', ticket.id, 'detail'];
+    const eventBase = this.#router.url.startsWith('/events/') ? '/events' : '/my-events';
+    return [eventBase, String(eventId), 'tickets', ticket.id, 'detail'];
   }
 
   #notCancelledTicketToastr(ticket: Ticket, error: HttpErrorResponse | Error | string) {

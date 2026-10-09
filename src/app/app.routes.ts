@@ -16,9 +16,9 @@ import { authGuard } from './guards/auth.guard';
 import { logoutGuard } from './guards/logout.guard';
 import { usersSectionGuard } from './guards/users-section.guard';
 import { eventCreateGuard, eventEditGuard } from './guards/event-permissions.guard';
-import { ticketGroupEditGuard } from './guards/ticket-group-permissions.guard';
+import { ticketGroupEditGuard, ticketGroupEventContextGuard } from './guards/ticket-group-permissions.guard';
 import { ticketEditGuard, ticketReadGuard } from './guards/ticket-permissions.guard';
-import { eventTicketsReadGuard } from './guards/event-permissions.guard';
+import { eventTicketGroupsReadGuard, eventTicketsReadGuard } from './guards/event-permissions.guard';
 
 let eventsChildren: Routes = [
   {
@@ -73,6 +73,33 @@ let eventsChildren: Routes = [
         canActivate: [ticketReadGuard]
       }
     ]
+  },
+  {
+    path: ':event-id/ticket-groups',
+    canActivate: [eventTicketGroupsReadGuard],
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'list',
+      },
+      {
+        path: 'list',
+        component: TicketGroupsListComponent,
+      },
+      {
+        path: ':ticket-group-id/edit',
+        component: TicketGroupsFormComponent,
+        data: { mode: 'edit' },
+        canActivate: [ticketGroupEditGuard],
+      },
+      {
+        path: ':ticket-group-id/detail',
+        component: TicketGroupsFormComponent,
+        data: { mode: 'detail' },
+        canActivate: [ticketGroupEventContextGuard],
+      },
+    ],
   }
 ];
 
