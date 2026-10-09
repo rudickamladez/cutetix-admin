@@ -13,6 +13,7 @@ import { EventsFormComponent } from './administration/events/form/events-form.co
 import { UsersListComponent } from './administration/users/list/users-list.component';
 import { UsersFormComponent } from './administration/users/form/users-form.component';
 import { authGuard } from './guards/auth.guard';
+import { guestGuard } from './guards/guest.guard';
 import { logoutGuard } from './guards/logout.guard';
 import { usersSectionGuard } from './guards/users-section.guard';
 import { eventCreateGuard, eventEditGuard } from './guards/event-permissions.guard';
@@ -112,6 +113,7 @@ export let APP_ROUTES: Routes = [
   {
     path: 'login',
     component: LoginPageComponent,
+    canActivate: [guestGuard],
   },
   {
     path: 'logout',
