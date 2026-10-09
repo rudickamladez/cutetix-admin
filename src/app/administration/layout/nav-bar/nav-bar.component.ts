@@ -83,6 +83,10 @@ export class NavBarComponent implements OnInit {
         return /^\/(?:events|my-events)\/[^/?]+\/ticket-groups(?:\/|$)/.test(this.#router.url);
     }
 
+    protected canEditEvent(eventId: string | number) {
+        return this.#eventPermissions.canForEvent(eventId, 'events:edit');
+    }
+
     protected canSeeTickets(eventId: string | number) {
         return this.#eventPermissions.canForEvent(eventId, 'tickets:read');
     }

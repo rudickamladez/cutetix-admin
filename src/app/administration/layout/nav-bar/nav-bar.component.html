@@ -27,7 +27,11 @@
         }
         @if (currentEvent(); as event) {
           @if (isEventSection(item)) {
-            <app-nav-bar-subitem [name]="'Details'" [link]="eventBase + '/detail/' + event.id" [activeOverride]="isEventDetailsActive(event.id)" (click)="hide()"></app-nav-bar-subitem>
+            @if (canEditEvent(event.id) | async) {
+              <app-nav-bar-subitem [name]="'Edit'" [link]="eventBase + '/edit/' + event.id" [exact]="false" (click)="hide()"></app-nav-bar-subitem>
+            } @else {
+              <app-nav-bar-subitem [name]="'Details'" [link]="eventBase + '/detail/' + event.id" [activeOverride]="isEventDetailsActive(event.id)" (click)="hide()"></app-nav-bar-subitem>
+            }
             @if (canSeeTickets(event.id) | async) {
               <app-nav-bar-subitem [name]="'Tickets'" [link]="eventBase + '/' + event.id + '/tickets'" [exact]="false" (click)="hide()"></app-nav-bar-subitem>
             }
