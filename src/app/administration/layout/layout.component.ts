@@ -60,8 +60,8 @@ export class AdministrationLayoutComponent {
 
         if (inEventSection) {
             const ticketRoute = routes.find(({ path }) => path === ':event-id/tickets');
-            const eventFormRoute = routes.find(({ path }) => path === 'edit/:id' || path === 'detail/:id');
-            eventId = ticketRoute?.paramMap.get('event-id') ?? eventFormRoute?.paramMap.get('id') ?? null;
+            const eventFormRoute = routes.find(({ path }) => path === 'edit/:event-id' || path === 'detail/:event-id');
+            eventId = ticketRoute?.paramMap.get('event-id') ?? eventFormRoute?.paramMap.get('event-id') ?? null;
         }
 
         if (eventId !== this.#eventService.activeEventId()) {

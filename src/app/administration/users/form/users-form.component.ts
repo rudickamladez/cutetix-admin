@@ -20,9 +20,9 @@ export class UsersFormComponent {
   readonly #toastr = inject(SnackbarToastrService);
   protected readonly scopesEntries = SCOPES_ENTRIES;
 
-  readonly id = input<string | null>(null);
+  readonly userId = input<string | null>(null, { alias: 'user-id' });
   readonly mode = input.required<'new' | 'edit' | 'detail'>();
-  protected readonly user = this.#usersService.userByIdResource(() => this.id());
+  protected readonly user = this.#usersService.userByIdResource(() => this.userId());
 
   protected userModel = signal<UserCreate & Pick<UserUpdate, 'uuid'>>({
     email: '',
@@ -53,7 +53,7 @@ export class UsersFormComponent {
 
   constructor() {
     effect(() => {
-      this.id();
+      this.userId();
       if (this.mode() === 'new') {
         return;
       }

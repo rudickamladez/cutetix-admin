@@ -7,7 +7,7 @@ import { EventPermissionsService } from '../services/event-permissions.service';
 export const ticketEditGuard: CanActivateFn = route => {
   const eventPermissions = inject(EventPermissionsService);
   const router = inject(Router);
-  const ticketId = route.paramMap.get('id');
+  const ticketId = route.paramMap.get('ticket-id');
   const routeEventId = route.paramMap.get('event-id')
     ?? route.parent?.paramMap.get('event-id');
   const denied = router.createUrlTree(['/tickets/list']);
@@ -37,7 +37,7 @@ export const ticketEditGuard: CanActivateFn = route => {
 export const ticketReadGuard: CanActivateFn = route => {
   const eventPermissions = inject(EventPermissionsService);
   const router = inject(Router);
-  const ticketId = route.paramMap.get('id');
+  const ticketId = route.paramMap.get('ticket-id');
   const eventId = route.paramMap.get('event-id')
     ?? route.parent?.paramMap.get('event-id');
   const denied = eventId

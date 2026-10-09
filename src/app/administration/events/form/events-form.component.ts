@@ -24,12 +24,12 @@ export class EventsFormComponent {
   #loadErrorShown = false;
 
   readonly mode = input.required<'new' | 'edit' | 'detail'>();
-  readonly id = input<string | null>(null);
+  readonly eventIdParam = input<string | null>(null, { alias: 'event-id' });
   public readonly event = this.#eventResource;
   public readonly isEditing = computed(() => this.mode() !== 'new');
-  public readonly eventId = computed(() => this.id() ?? '');
-  protected readonly canManagePermissions = computed<Observable<boolean>>(() => this.id()
-    ? this.#eventPermissions.canForEvent(this.id()!, 'events:edit')
+  public readonly eventId = computed(() => this.eventIdParam() ?? '');
+  protected readonly canManagePermissions = computed<Observable<boolean>>(() => this.eventIdParam()
+    ? this.#eventPermissions.canForEvent(this.eventIdParam()!, 'events:edit')
     : of(false));
   protected readonly eventModel = signal<EventCreate>({
     name: '',
@@ -58,7 +58,7 @@ export class EventsFormComponent {
         return;
       }
       const event = this.#eventResource.value();
-      if (event && String(event.id) === this.id()) {
+      if (event && String(event.id) === this.eventIdParam()) {
         this.eventModel.set({
           name: event.name,
           tickets_sales_start: event.tickets_sales_start,
@@ -73,7 +73,7 @@ export class EventsFormComponent {
 
       const activeEventId = this.#eventService.activeEventId();
       const err = this.#eventResource.error();
-      if (activeEventId !== this.id() || !err || this.#loadErrorShown) {
+      if (activeEventId !== this.eventIdParam() || !err || this.#loadErrorShown) {
         return;
       }
       this.#loadErrorShown = true;
@@ -95,7 +95,7 @@ export class EventsFormComponent {
       try {
         const event = this.mode() === 'new'
           ? await firstValueFrom(this.#eventService.create(this.eventModel()))
-          : await firstValueFrom(this.#eventService.update(this.id()!, this.eventModel()));
+          : await firstValueFrom(this.#eventService.update(this.eventIdParam()!, this.eventModel()));
         this.#toastr.info(
           this.mode() === 'new' ? 'Successfully created.' : 'Successfully edited.',
           `Event called '${event.name}'`,

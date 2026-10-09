@@ -27,12 +27,12 @@ export class TicketsFormComponent {
   readonly #denied = of(false);
 
   readonly mode = input.required<'new' | 'edit' | 'detail'>();
-  readonly id = input<string | null>(null);
+  readonly ticketId = input<string | null>(null, { alias: 'ticket-id' });
   protected readonly eventId = this.#route.snapshot.paramMap.get('event-id')
     ?? this.#route.parent?.snapshot.paramMap.get('event-id')
     ?? null;
   protected readonly isGlobal = this.eventId === null;
-  protected readonly ticket = this.#ticketService.ticketByIdResource(() => this.id());
+  protected readonly ticket = this.#ticketService.ticketByIdResource(() => this.ticketId());
   protected readonly groupsResource = this.#ticketGroupService.ticketGroups;
   protected readonly model = signal({
     firstname: '',
@@ -55,7 +55,7 @@ export class TicketsFormComponent {
   constructor() {
     effect(() => {
       const ticket = this.ticket.value();
-      if (!ticket || String(ticket.id) !== this.id()) {
+      if (!ticket || String(ticket.id) !== this.ticketId()) {
         return;
       }
       this.model.set({
@@ -93,8 +93,8 @@ export class TicketsFormComponent {
       }
       if (this.mode() === 'new') {
         await this.#createTicket(group.id);
-      } else if (this.id()) {
-        await this.#updateTicket(this.id()!, group.id, group.event_id);
+      } else if (this.ticketId()) {
+        await this.#updateTicket(this.ticketId()!, group.id, group.event_id);
       }
     });
   }

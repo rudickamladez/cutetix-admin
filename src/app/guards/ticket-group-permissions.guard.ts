@@ -7,7 +7,7 @@ import { EventPermissionsService } from '../services/event-permissions.service';
 export const ticketGroupEditGuard: CanActivateFn = route => {
   const eventPermissions = inject(EventPermissionsService);
   const router = inject(Router);
-  const ticketGroupId = route.paramMap.get('id');
+  const ticketGroupId = route.paramMap.get('ticket-group-id');
   const denied = router.createUrlTree(['/ticket_groups/list']);
 
   if (!ticketGroupId) {

@@ -37,13 +37,13 @@ let eventsChildren: Routes = [
     canActivate: [eventCreateGuard]
   },
   {
-    path: 'edit/:id',
+    path: 'edit/:event-id',
     component: EventsFormComponent,
     data: { mode: 'edit' },
     canActivate: [eventEditGuard]
   },
   {
-    path: 'detail/:id',
+    path: 'detail/:event-id',
     component: EventsFormComponent,
     data: { mode: 'detail' }
   },
@@ -61,13 +61,13 @@ let eventsChildren: Routes = [
         canActivate: [eventTicketsReadGuard],
       },
       {
-        path: ':id/edit',
+        path: ':ticket-id/edit',
         component: TicketsFormComponent,
         data: { mode: 'edit' },
         canActivate: [ticketEditGuard]
       },
       {
-        path: ':id/detail',
+        path: ':ticket-id/detail',
         component: TicketsFormComponent,
         data: { mode: 'detail' },
         canActivate: [ticketReadGuard]
@@ -127,13 +127,13 @@ export let APP_ROUTES: Routes = [
             data: { mode: 'new' }
           },
           {
-            path: 'edit/:id',
+            path: 'edit/:ticket-id',
             component: TicketsFormComponent,
             data: { mode: 'edit' },
             canActivate: [ticketEditGuard]
           },
           {
-            path: 'detail/:id',
+            path: 'detail/:ticket-id',
             component: TicketsFormComponent,
             data: { mode: 'detail' },
             canActivate: [ticketReadGuard]
@@ -158,13 +158,13 @@ export let APP_ROUTES: Routes = [
             data: { mode: 'new' }
           },
           {
-            path: 'edit/:id',
+            path: 'edit/:ticket-group-id',
             component: TicketGroupsFormComponent,
             data: { mode: 'edit' },
             canActivate: [ticketGroupEditGuard]
           },
           {
-            path: 'detail/:id',
+            path: 'detail/:ticket-group-id',
             component: TicketGroupsFormComponent,
             data: { mode: 'detail' },
           }
@@ -199,14 +199,14 @@ export let APP_ROUTES: Routes = [
             },
           },
           {
-            path: 'edit/:id',
+            path: 'edit/:user-id',
             component: UsersFormComponent,
             data: {
               mode: 'edit',
             },
           },
           {
-            path: 'detail/:id',
+            path: 'detail/:user-id',
             component: UsersFormComponent,
             data: {
               mode: 'detail',

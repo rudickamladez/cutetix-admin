@@ -28,9 +28,9 @@ export class TicketGroupsFormComponent {
   #missingIdShown = false;
 
   readonly mode = input.required<'new' | 'edit' | 'detail'>();
-  readonly id = input<string | null>(null);
+  readonly ticketGroupId = input<string | null>(null, { alias: 'ticket-group-id' });
   protected readonly eventsResource = this.#eventService.events;
-  protected readonly ticketGroup = this.#ticketGroupService.ticketGroupByIdResource(() => this.id());
+  protected readonly ticketGroup = this.#ticketGroupService.ticketGroupByIdResource(() => this.ticketGroupId());
   protected readonly model = signal({ name: '', capacity: 0, eventId: '' });
   protected readonly ticketGroupForm = form(this.model, path => {
     required(path.name);
@@ -44,7 +44,7 @@ export class TicketGroupsFormComponent {
       if (this.mode() === 'new') {
         return;
       }
-      if (!this.id()) {
+      if (!this.ticketGroupId()) {
         if (!this.#missingIdShown) {
           this.#missingIdShown = true;
           this.#toastr.error('Cannot load', 'Ticket group', { progressBar: true });
@@ -52,7 +52,7 @@ export class TicketGroupsFormComponent {
         return;
       }
       const ticketGroup = this.ticketGroup.value();
-      if (ticketGroup && String(ticketGroup.id) === this.id()) {
+      if (ticketGroup && String(ticketGroup.id) === this.ticketGroupId()) {
         this.model.set({
           name: ticketGroup.name,
           capacity: ticketGroup.capacity,
@@ -95,8 +95,8 @@ export class TicketGroupsFormComponent {
       }
       if (this.mode() === 'new') {
         await this.#createTicketGroup(eventId);
-      } else if (this.id()) {
-        await this.#updateTicketGroup(this.id()!, Number(eventId));
+      } else if (this.ticketGroupId()) {
+        await this.#updateTicketGroup(this.ticketGroupId()!, Number(eventId));
       }
     });
   }
