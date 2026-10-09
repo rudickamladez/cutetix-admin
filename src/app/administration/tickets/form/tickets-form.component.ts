@@ -183,7 +183,7 @@ export class TicketsFormComponent {
     if (!error) {
       return '';
     }
-    return error instanceof Error ? error.message : String(error);
+    return errorMessage(error);
   }
 
   protected ticketLoadErrorText(): string {

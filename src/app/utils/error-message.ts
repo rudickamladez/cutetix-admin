@@ -20,5 +20,37 @@ function errorDetail(payload: unknown): string | undefined {
     return undefined;
   }
   const detail = payload.detail;
-  return typeof detail === 'string' && detail ? detail : undefined;
+  if (typeof detail === 'string' && detail) {
+    return detail;
+  }
+  if (!Array.isArray(detail)) {
+    return undefined;
+  }
+
+  const messages = detail
+    .map(validationErrorMessage)
+    .filter((message): message is string => message !== undefined);
+  return messages.length > 0 ? messages.join('; ') : undefined;
+}
+
+function validationErrorMessage(value: unknown): string | undefined {
+  if (typeof value !== 'object' || value === null || !('msg' in value)
+      || typeof value.msg !== 'string' || !value.msg) {
+    return undefined;
+  }
+
+  const location = 'loc' in value && Array.isArray(value.loc)
+    ? value.loc.filter((part): part is string | number => typeof part === 'string' || typeof part === 'number')
+    : [];
+  while (typeof location[0] === 'string' && ['body', 'query', 'path'].includes(location[0])) {
+    location.shift();
+  }
+
+  const field = location.reduce<string>((path, part) => {
+    if (typeof part === 'number') {
+      return `${path}[${part}]`;
+    }
+    return path ? `${path}.${part}` : part;
+  }, '');
+  return field ? `${field}: ${value.msg}` : value.msg;
 }
