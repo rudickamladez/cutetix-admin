@@ -19,7 +19,7 @@ import { AsyncPipe } from '@angular/common';
 type TicketGroupSortColumn = 'name' | 'capacity' | 'event';
 
 @Component({
-    selector: 'app-ticket_groups-list',
+    selector: 'app-ticket-groups-list',
     templateUrl: './ticket_groups-list.component.html',
     styleUrls: ['./ticket_groups-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
