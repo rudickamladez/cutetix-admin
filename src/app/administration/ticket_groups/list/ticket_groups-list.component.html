@@ -14,7 +14,7 @@
       <div label="Search">
         <app-table-search [(value)]="search" placeholder="Name, ID, or event"></app-table-search>
       </div>
-        <span class="count">{{ filteredTicketGroups().length }} / {{ eventTicketGroups().length }}</span>
+        <span class="count">{{ filteredTicketGroups().length }} / {{ ticketGroups.value().length }}</span>
     </div>
   </div>
   <div class="table-scroll">
@@ -28,7 +28,7 @@
         <th scope="col" [attr.aria-sort]="sortAriaSort('capacity')">
           <app-table-sort-header label="Capacity" [mobileIcon]="capacityIcon" column="capacity" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
-        @if (isGlobal()) {
+        @if (isGlobal) {
           <th scope="col" [attr.aria-sort]="sortAriaSort('event')">
             <app-table-sort-header label="Event" column="event" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
           </th>
@@ -44,7 +44,7 @@
         <!-- so hidden column with IDs is second -->
         <td class="d-none">{{ ticket_group.id }}</td>
         <td>{{ ticket_group.capacity }}</td>
-        @if (isGlobal()) {
+        @if (isGlobal) {
           <td>
             @if (ticket_group.event != null) {
             <a [routerLink]="['/events', 'detail', ticket_group.event.id]">

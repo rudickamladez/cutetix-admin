@@ -15,7 +15,6 @@ import { TableSortHeaderComponent } from '../../../components/table-sort-header/
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { AsyncPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 type TicketGroupSortColumn = 'name' | 'capacity' | 'event';
 
@@ -33,8 +32,8 @@ export class TicketGroupsListComponent {
   readonly #eventPermissions = inject(EventPermissionsService);
   readonly #route = inject(ActivatedRoute);
   readonly #router = inject(Router);
-  readonly #eventRoute = this.#route.parent ?? this.#route;
-  protected readonly eventParams = toSignal(this.#eventRoute.paramMap, { initialValue: this.#eventRoute.snapshot.paramMap });
+  readonly #eventId = this.#route.snapshot.paramMap.get('event-id');
+  protected readonly isGlobal = !this.#eventId;
   readonly #editPermissions = new Map<number, Observable<boolean>>();
 
   // Icons
@@ -42,16 +41,11 @@ export class TicketGroupsListComponent {
   protected readonly deleteIcon = faTrash;
   protected readonly capacityIcon = faPeopleGroup;
 
-  protected readonly ticketGroups = this.#ticket_groupService.ticketGroups;
+  protected readonly ticketGroups = this.isGlobal
+    ? this.#ticket_groupService.ticketGroups
+    : this.#ticket_groupService.ticketGroupsByEventIdResource(() => this.#eventId);
   protected readonly search = signal('');
-  protected readonly isGlobal = computed(() => this.eventParams().get('event-id') === null);
-  protected readonly eventTicketGroups = computed(() => {
-    const eventId = this.eventParams().get('event-id');
-    return this.ticketGroups.value().filter(ticketGroup =>
-      eventId === null || String(ticketGroup.event_id) === eventId
-    );
-  });
-  protected readonly filteredTicketGroups = computed(() => this.eventTicketGroups().filter(ticketGroup =>
+  protected readonly filteredTicketGroups = computed(() => this.ticketGroups.value().filter(ticketGroup =>
     matchesSearch(this.search(), [ticketGroup.name, ticketGroup.id, ticketGroup.event?.name, ticketGroup.event_id])
   ));
   protected readonly sortState = signal<TableSortState<TicketGroupSortColumn>>({ column: null, direction: null });
@@ -62,12 +56,11 @@ export class TicketGroupsListComponent {
   ));
 
   protected ticketGroupEditLink(ticketGroup: TicketGroup): string[] {
-    const eventId = this.eventParams().get('event-id');
-    if (!eventId) {
+    if (!this.#eventId) {
       return ['/ticket_groups', 'edit', String(ticketGroup.id)];
     }
     const eventBase = this.#router.url.startsWith('/events/') ? '/events' : '/my-events';
-    return [eventBase, eventId, 'ticket-groups', String(ticketGroup.id), 'edit'];
+    return [eventBase, this.#eventId, 'ticket-groups', String(ticketGroup.id), 'edit'];
   }
 
   protected toggleSort(column: TicketGroupSortColumn): void {
@@ -120,6 +113,11 @@ export class TicketGroupsListComponent {
               progressBar: true,
             }
           );
+        },
+        complete: () => {
+          if (!this.isGlobal) {
+            this.ticketGroups.reload();
+          }
         }
       });
     });

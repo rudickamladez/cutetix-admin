@@ -16,7 +16,7 @@ import { authGuard } from './guards/auth.guard';
 import { logoutGuard } from './guards/logout.guard';
 import { usersSectionGuard } from './guards/users-section.guard';
 import { eventCreateGuard, eventEditGuard } from './guards/event-permissions.guard';
-import { ticketGroupEditGuard } from './guards/ticket-group-permissions.guard';
+import { ticketGroupEditGuard, ticketGroupEventContextGuard } from './guards/ticket-group-permissions.guard';
 import { ticketEditGuard, ticketReadGuard } from './guards/ticket-permissions.guard';
 import { eventTicketGroupsReadGuard, eventTicketsReadGuard } from './guards/event-permissions.guard';
 
@@ -97,6 +97,7 @@ let eventsChildren: Routes = [
         path: ':ticket-group-id/detail',
         component: TicketGroupsFormComponent,
         data: { mode: 'detail' },
+        canActivate: [ticketGroupEventContextGuard],
       },
     ],
   }
