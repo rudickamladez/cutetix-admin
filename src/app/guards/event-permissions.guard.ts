@@ -55,7 +55,10 @@ export const eventTicketGroupsReadGuard: CanActivateFn = route => {
     return router.createUrlTree(['/my-events/list']);
   }
 
-  return eventPermissions.canForEvent(eventId, 'ticket_groups:read').pipe(
+  return eventPermissions.canForEvent(
+    eventId,
+    eventPermissions.hasGlobalScope('ticket_groups:edit') ? 'ticket_groups:edit' : 'ticket_groups:read'
+  ).pipe(
     map(canRead => canRead || router.createUrlTree(['/my-events/list'])),
     catchError(() => of(router.createUrlTree(['/my-events/list'])))
   );
