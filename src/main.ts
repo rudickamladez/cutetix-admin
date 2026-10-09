@@ -9,6 +9,7 @@ import { DialogModule } from '@angular/cdk/dialog';
 import { AppComponent } from './app/app.component';
 import { APP_ROUTES } from './app/app.routes';
 import { authInterceptor } from './app/interceptors/auth.interceptor';
+import { LoggingService } from './app/services/logging.service';
 
 if (environment.production) {
   enableProdMode();
@@ -26,4 +27,4 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(MatSnackBarModule, DialogModule),
   ],
 })
-  .catch(err => console.error(err));
+  .catch(err => new LoggingService().error('app', 'Application bootstrap failed.', err));

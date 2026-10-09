@@ -13,6 +13,7 @@ import { LoadingComponent } from '../../loading/loading.component';
 import { TableSearchComponent } from '../../../components/table-search/table-search.component';
 import { TableSortHeaderComponent } from '../../../components/table-sort-header/table-sort-header.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { LoggingService } from '../../../services/logging.service';
 
 type UserSortColumn = 'username' | 'full_name' | 'email' | 'disabled';
 
@@ -27,6 +28,7 @@ export class UsersListComponent {
   readonly #usersService = inject(UserService);
   readonly #toastr = inject(SnackbarToastrService);
   readonly #confirmDialog = inject(ConfirmDialogService);
+  readonly #logging = inject(LoggingService);
   protected readonly router = inject(Router);
   protected readonly authService = inject(AuthService);
   protected readonly editIcon = faPen;
@@ -91,7 +93,7 @@ export class UsersListComponent {
           );
         },
         error: (err: HttpErrorResponse) => {
-          console.error(err);
+          this.#logging.error('user', 'User deletion failed.', err);
           this.#toastr.error(
             `Error: ${err.error?.detail ?? err.message}`,
             'User wasn\'t deleted!',
