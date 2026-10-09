@@ -1,18 +1,20 @@
 import { Component, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
-import { form, required, email, submit, disabled } from '@angular/forms/signals';
+import { form, required, email, submit, disabled, FormField } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { UserService } from '../users.service';
 import { User, UserCreate, UserUpdate } from '../users.types';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SCOPES_ENTRIES } from '../../../types/auth.types';
+import { LoadingComponent } from '../../loading/loading.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-users-form',
-  templateUrl: './users-form.component.html',
-  styleUrls: ['./users-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-users-form',
+    templateUrl: './users-form.component.html',
+    styleUrls: ['./users-form.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [LoadingComponent, ReactiveFormsModule, FormField]
 })
 export class UsersFormComponent {
   readonly #router = inject(Router);

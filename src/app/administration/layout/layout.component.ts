@@ -1,9 +1,13 @@
 import { Component, ChangeDetectionStrategy, DestroyRef, effect, inject } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UsersService } from '../../services/users.service';
 import { EventService } from '../events/events.service';
+import { NavBarComponent } from './nav-bar/nav-bar.component';
+import { CurrentEventComponent } from './current-event/current-event.component';
+import { LoggedUserComponent } from './logged-user/logged-user.component';
+import { CopyrightComponent } from '../../components/copyright/copyright.component';
 
 @Component({
     selector: 'app-administration-layout',
@@ -11,7 +15,7 @@ import { EventService } from '../events/events.service';
     styleUrls: ['./layout.component.scss'],
     providers: [UsersService],
     changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+    imports: [NavBarComponent, CurrentEventComponent, LoggedUserComponent, RouterOutlet, CopyrightComponent]
 })
 export class AdministrationLayoutComponent {
     readonly #router = inject(Router);

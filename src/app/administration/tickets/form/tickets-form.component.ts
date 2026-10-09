@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
-import { disabled, email, form, required, submit } from '@angular/forms/signals';
+import { disabled, email, form, required, submit, FormField } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, firstValueFrom, of } from 'rxjs';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
@@ -8,13 +8,16 @@ import { TicketService } from '../../../services/tickets.service';
 import { TicketGroupService } from '../../ticket_groups/ticket_groups.service';
 import { TicketGroup } from '../../ticket_groups/ticket_groups.types';
 import { TicketStatusEnum, TicketUpdate } from '../tickets.types';
+import { LoadingComponent } from '../../loading/loading.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-tickets-form',
-  templateUrl: './tickets-form.component.html',
-  styleUrls: ['./tickets-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-tickets-form',
+    templateUrl: './tickets-form.component.html',
+    styleUrls: ['./tickets-form.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [LoadingComponent, ReactiveFormsModule, FormField, AsyncPipe]
 })
 export class TicketsFormComponent {
   readonly #router = inject(Router);

@@ -1,12 +1,13 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
     selector: 'app-loading',
     templateUrl: './loading.component.html',
     styleUrls: ['./loading.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+    imports: [FaIconComponent]
 })
 export class LoadingComponent {
   protected readonly loadingIcon = faCircleNotch;

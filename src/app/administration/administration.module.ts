@@ -25,7 +25,15 @@ import { EventPermissionsComponent } from './events/permissions/event-permission
 import { CurrentEventComponent } from './layout/current-event/current-event.component';
 
 @NgModule({
-    declarations: [
+    imports: [
+        CommonModule,
+        RouterModule,
+        FontAwesomeModule,
+        ReactiveFormsModule,
+        SharedModule,
+        FormField,
+        EventPermissionsComponent,
+        CurrentEventComponent,
         AdministrationLayoutComponent,
         NavBarComponent,
         NavBarItemComponent,
@@ -42,16 +50,6 @@ import { CurrentEventComponent } from './layout/current-event/current-event.comp
         TicketsFormComponent,
         UsersListComponent,
         UsersFormComponent,
-    ],
-    imports: [
-        CommonModule,
-        RouterModule,
-        FontAwesomeModule,
-        ReactiveFormsModule,
-        SharedModule,
-        FormField,
-        EventPermissionsComponent,
-        CurrentEventComponent,
     ]
 })
 export class AdministrationModule { }

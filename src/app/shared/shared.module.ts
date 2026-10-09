@@ -10,18 +10,16 @@ import { DialogModule } from '@angular/cdk/dialog';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
-    declarations: [
-        UserInfoComponent,
-        CopyrightComponent,
-        TableSearchComponent,
-        TableSortHeaderComponent,
-        ConfirmDialogComponent,
-    ],
     imports: [
         CommonModule,
         DialogModule,
         FontAwesomeModule,
         FormatScopesPipe,
+        UserInfoComponent,
+        CopyrightComponent,
+        TableSearchComponent,
+        TableSortHeaderComponent,
+        ConfirmDialogComponent,
     ],
     exports: [
         UserInfoComponent,

@@ -1,19 +1,23 @@
 import { Component, computed, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { disabled, form, required, submit } from '@angular/forms/signals';
+import { disabled, form, required, submit, FormField } from '@angular/forms/signals';
 import { EventService } from '../events.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { Router } from '@angular/router';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable, firstValueFrom, of } from 'rxjs';
 import { EventCreate } from '../events.types';
+import { LoadingComponent } from '../../loading/loading.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { EventPermissionsComponent } from '../permissions/event-permissions.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'app-events-form',
     templateUrl: './events-form.component.html',
     styleUrls: ['./events-form.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+    imports: [LoadingComponent, ReactiveFormsModule, FormField, EventPermissionsComponent, AsyncPipe]
 })
 export class EventsFormComponent {
   readonly #router = inject(Router);

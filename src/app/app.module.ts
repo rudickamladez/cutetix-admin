@@ -21,13 +21,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        NotFoundComponent,
-        LoginPageComponent,
-        UserProfileComponent,
-        LocalStorageFieldComponent,
-    ],
+    declarations: [AppComponent],
     bootstrap: [AppComponent],
     imports: [
         AdministrationModule,
@@ -46,16 +40,14 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         }),
         FormField,
         MatSnackBarModule,
+        NotFoundComponent,
+        LoginPageComponent,
+        UserProfileComponent,
+        LocalStorageFieldComponent,
     ],
     providers: [
-        provideHttpClient(
-            withFetch(),
-            withInterceptors([authInterceptor]),
-        ),
-        provideRouter(
-            APP_ROUTES,
-            withComponentInputBinding(),
-        ),
+        provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+        provideRouter(APP_ROUTES, withComponentInputBinding()),
     ]
 })
 export class AppModule { }

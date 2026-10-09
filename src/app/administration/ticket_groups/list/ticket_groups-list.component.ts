@@ -9,15 +9,21 @@ import { Observable } from 'rxjs';
 import { matchesSearch } from '../../../shared/matches-search';
 import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
 import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
+import { LoadingComponent } from '../../loading/loading.component';
+import { TableSearchComponent } from '../../../components/table-search/table-search.component';
+import { TableSortHeaderComponent } from '../../../components/table-sort-header/table-sort-header.component';
+import { RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { AsyncPipe } from '@angular/common';
 
 type TicketGroupSortColumn = 'name' | 'capacity' | 'event';
 
 @Component({
-  selector: 'app-ticket_groups-list',
-  templateUrl: './ticket_groups-list.component.html',
-  styleUrls: ['./ticket_groups-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-ticket_groups-list',
+    templateUrl: './ticket_groups-list.component.html',
+    styleUrls: ['./ticket_groups-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [LoadingComponent, TableSearchComponent, TableSortHeaderComponent, RouterLink, FaIconComponent, AsyncPipe]
 })
 export class TicketGroupsListComponent {
   readonly #ticket_groupService = inject(TicketGroupService);
