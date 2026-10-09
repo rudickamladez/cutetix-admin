@@ -1,9 +1,8 @@
-import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
+import { FaIconComponent, IconDefinition } from '@fortawesome/angular-fontawesome';
 import { faCalendar, faClock, faEye, faPen, faTicket, faTrash, faFloppyDisk, faCircleNotch, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
@@ -48,7 +47,7 @@ const READ_SCOPE_FOR_EDIT: Readonly<Partial<Record<EventScope, EventScope>>> = {
   templateUrl: './event-permissions.component.html',
   styleUrls: ['./event-permissions.component.scss'],
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule],
+  imports: [FaIconComponent, ReactiveFormsModule],
 })
 export class EventPermissionsComponent implements OnInit {
   readonly eventId = input.required<string>();

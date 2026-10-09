@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { EventService } from '../../events/events.service';
 
 @Component({
-  imports: [],
   selector: 'app-current-event',
   styleUrls: ['./current-event.component.scss'],
   templateUrl: './current-event.component.html',

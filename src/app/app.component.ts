@@ -4,12 +4,14 @@ import { UpdateService } from './services/update.service';
 import { StorageService } from './services/storage.service';
 import { StorageKeys } from './tokens/storage.tokens';
 import { environment } from 'src/environments/environment';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+    standalone: true,
+    imports: [RouterOutlet],
 })
 export class AppComponent implements OnInit {
   readonly #storageService = inject(StorageService);

@@ -1,16 +1,14 @@
 @if (users.isLoading()) {
 <app-loading></app-loading>
-}
-<div>
-  @if (users.error()) {
+} @else if (users.error()) {
   <div class="error">
     <p>
       There's a problem loading table.<br />
       {{ loadErrorText() }}
     </p>
   </div>
-  }
-  @if (!users.error()) {
+} @else {
+<div>
   <div class="toolbar">
     <div class="filters">
       <div label="Search">
@@ -88,5 +86,5 @@
     </tbody>
   </table>
   </div>
-  }
 </div>
+}

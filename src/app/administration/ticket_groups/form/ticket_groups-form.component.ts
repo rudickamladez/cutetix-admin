@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, effect, inject, input, signal } from '@angular/core';
-import { disabled, form, required, submit } from '@angular/forms/signals';
+import { disabled, form, required, submit, FormField } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { Observable, firstValueFrom, of } from 'rxjs';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
@@ -7,13 +7,15 @@ import { Event as EventItem } from '../../events/events.types';
 import { EventService } from '../../events/events.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { TicketGroupService } from '../ticket_groups.service';
+import { LoadingComponent } from '../../loading/loading.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-ticket-groups-form',
-  templateUrl: './ticket_groups-form.component.html',
-  styleUrls: ['./ticket_groups-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-ticket-groups-form',
+    templateUrl: './ticket_groups-form.component.html',
+    styleUrls: ['./ticket_groups-form.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [LoadingComponent, FormField, AsyncPipe]
 })
 export class TicketGroupsFormComponent {
   readonly #router = inject(Router);

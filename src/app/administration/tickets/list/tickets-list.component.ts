@@ -6,19 +6,24 @@ import { SnackbarToastrService } from '../../../services/snackbar-toastr.service
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable, of } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { matchesSearch } from '../../../shared/matches-search';
 import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
 import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
+import { LoadingComponent } from '../../loading/loading.component';
+import { TableSearchComponent } from '../../../components/table-search/table-search.component';
+import { TableSortHeaderComponent } from '../../../components/table-sort-header/table-sort-header.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { AsyncPipe } from '@angular/common';
 
 type TicketSortColumn = 'lastname' | 'firstname' | 'id' | 'email' | 'group' | 'event' | 'status';
 
 @Component({
-  selector: 'app-tickets-list',
-  templateUrl: './tickets-list.component.html',
-  styleUrls: ['./tickets-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-tickets-list',
+    templateUrl: './tickets-list.component.html',
+    styleUrls: ['./tickets-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [LoadingComponent, TableSearchComponent, TableSortHeaderComponent, RouterLink, FaIconComponent, AsyncPipe]
 })
 export class TicketsListComponent {
   readonly #ticketsService = inject(TicketService);

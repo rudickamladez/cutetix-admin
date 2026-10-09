@@ -1,17 +1,25 @@
 import { Component, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { debounce, email, form, required, submit } from '@angular/forms/signals';
+import { debounce, email, form, required, submit, FormField } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
 import { faCog, faPersonCirclePlus, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import { UserLogin, UserRegister } from '../types/auth.types';
+import { LocalStorageFieldComponent } from '../components/local-storage-field/local-storage-field.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { CopyrightComponent } from '../components/copyright/copyright.component';
 
 @Component({
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+    templateUrl: './login-page.component.html',
+    styleUrls: ['./login-page.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [
+        FormField,
+        LocalStorageFieldComponent,
+        FaIconComponent,
+        CopyrightComponent,
+    ],
 })
 export class LoginPageComponent {
   readonly #auth = inject(AuthService);

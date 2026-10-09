@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, input, model, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'app-table-search',
-  templateUrl: './table-search.component.html',
-  styleUrls: ['./table-search.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-table-search',
+    templateUrl: './table-search.component.html',
+    styleUrls: ['./table-search.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class TableSearchComponent {
   @ViewChild('searchInput') private searchInput?: ElementRef<HTMLInputElement>;

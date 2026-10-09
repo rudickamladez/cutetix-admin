@@ -9,15 +9,20 @@ import { Observable } from 'rxjs';
 import { matchesSearch } from '../../../shared/matches-search';
 import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
 import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
+import { LoadingComponent } from '../../loading/loading.component';
+import { TableSearchComponent } from '../../../components/table-search/table-search.component';
+import { TableSortHeaderComponent } from '../../../components/table-sort-header/table-sort-header.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { AsyncPipe, DatePipe } from '@angular/common';
 
 type EventSortColumn = 'name' | 'tickets_sales_start' | 'tickets_sales_end';
 
 @Component({
-  selector: 'app-events-list',
-  templateUrl: './events-list.component.html',
-  styleUrls: ['./events-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-events-list',
+    templateUrl: './events-list.component.html',
+    styleUrls: ['./events-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [LoadingComponent, TableSearchComponent, TableSortHeaderComponent, FaIconComponent, AsyncPipe, DatePipe]
 })
 export class EventsListComponent {
   protected readonly eventsService = inject(EventService);
