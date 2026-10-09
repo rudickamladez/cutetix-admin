@@ -45,6 +45,7 @@ export class AuthService implements OnDestroy {
     #refreshingTimer: ReturnType<typeof setTimeout> | null = null;
     #loginSub?: Subscription;
     #registerSub?: Subscription;
+    #refreshSub?: Subscription;
 
     constructor() {
         // could not be unsubscribed, because it is provided in root
@@ -212,7 +213,7 @@ export class AuthService implements OnDestroy {
         this.#logging.log("auth", "Refreshing of access token.");
         this.#isRefreshingToken = true;
         try {
-            this.#http.post<TokensFromApi>(
+            this.#refreshSub = this.#http.post<TokensFromApi>(
                 new URL("auth/refresh", this.#storageService.get(StorageKeys.API_URL)!).href,
                 {
                     refresh_token: refreshToken,
@@ -248,13 +249,24 @@ export class AuthService implements OnDestroy {
         }
     }
 
-    logout(): void {
+    logout(skipBackendRequest = false): void {
         const logoutLogic = () => {
             this.#storageService
                 .delete(StorageKeys.ACCESS_TOKEN)
                 .delete(StorageKeys.REFRESH_TOKEN);
             this.#canGoToPrivate.set(false);
         };
+
+        if (skipBackendRequest) {
+            this.#refreshSub?.unsubscribe();
+            this.#isRefreshingToken = false;
+            if (this.#refreshingTimer !== null) {
+                clearTimeout(this.#refreshingTimer);
+                this.#refreshingTimer = null;
+            }
+            logoutLogic();
+            return;
+        }
 
         if (!this.isLoggedIn()) return;
 
