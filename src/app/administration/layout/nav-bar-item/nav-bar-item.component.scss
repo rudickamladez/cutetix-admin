@@ -6,7 +6,6 @@
     font-size: 16px;
     font-weight: 500;
     padding: 0 16px;
-    border-bottom: 1px solid $foreColorMedium;
     overflow: hidden;
 
     & > a {
@@ -68,10 +67,6 @@
 
     &.context-active > a + .subitems {
         display: block;
-    }
-
-    @media (max-width: 1200px) {
-        border-bottom: none;
     }
 }
 
