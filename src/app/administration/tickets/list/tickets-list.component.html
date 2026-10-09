@@ -1,0 +1,124 @@
+@if (tickets.isLoading()) {
+<app-loading></app-loading>
+} @else if (tickets.error()) {
+  <div class="error">
+    <p>
+      There's problem loading table.<br />
+      {{ tickets.error()?.message || tickets.error() }}
+    </p>
+  </div>
+} @else {
+<div>
+  <div class="toolbar">
+    <div class="filters">
+      <div label="Search">
+        <app-table-search [(value)]="search" placeholder="Name, ID, e-mail, group, or event"></app-table-search>
+      </div>
+      <span class="count">{{ filteredTickets().length }} / {{ tickets.value().length }}</span>
+    </div>
+  </div>
+  <div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('lastname')">
+          <app-table-sort-header label="Last&nbsp;Name" column="lastname" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('firstname')">
+          <app-table-sort-header label="First&nbsp;Name" column="firstname" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('id')">
+          <app-table-sort-header label="ID" column="id" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('email')">
+          <app-table-sort-header label="E-mail" column="email" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th class="d-none">Description</th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('group')">
+          <app-table-sort-header label="Group" column="group" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        @if (isGlobal) {
+        <th scope="col" [attr.aria-sort]="sortAriaSort('event')">
+          <app-table-sort-header label="Event" column="event" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        }
+        <th class="d-md-none" scope="col" [attr.aria-sort]="sortAriaSort('status')">
+          <app-table-sort-header label="Status" column="status" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (ticket of sortedTickets(); track ticket) {
+      @let canEditTicket = canEdit(ticket) | async;
+      <tr>
+        <td>{{ ticket.lastname }}</td>
+        <td>{{ ticket.firstname }}</td>
+        <td>{{ ticket.id }}</td>
+        <td>
+          <a href="mailto:{{ ticket.email }}">
+            {{ ticket.email }}
+          </a>
+        </td>
+        <td class="d-none">{{ ticket.description }}</td>
+        <td>
+          @if (ticket.group == null) {
+          <span>
+            No group
+          </span>
+          } @else {
+          <a [routerLink]="['/ticket_groups', 'detail', ticket.group.id]">
+            {{ ticket.group.name}}
+          </a>
+          }
+        </td>
+        @if (isGlobal) {
+        <td>
+          @if (ticket.group?.event == null) {
+          <span>
+            No event for group
+          </span>
+          } @else {
+          <a [routerLink]="['/events', 'detail', $safeNavigationMigration(ticket.group?.event?.id)]">
+            {{ ticket.group?.event?.name}}
+          </a>
+          }
+        </td>
+        }
+        <!-- <td *ngSwitch="ticket.status"> -->
+        <td class="d-md-none">
+          <!-- <span *ngSwitchCase="ticketStatusEnum.new"></span> -->
+          @if (ticket.status == 0) {
+          <span class="new">New</span>
+          }
+          @if (ticket.status == 1) {
+          <span class="confirmed">Confirmed</span>
+          }
+          @if (ticket.status == 2) {
+          <span class="paid">Paid</span>
+          }
+          @if (ticket.status == 3) {
+          <span class="cancelled">Cancelled</span>
+          }
+        </td>
+        <td class="actions">
+          <button class="detail" aria-label="View ticket details" [routerLink]="viewTicketRoute(ticket)" [disabled]="(canRead(ticket) | async) !== true">
+            <fa-icon [icon]="viewIcon"></fa-icon>
+          </button>
+          <button class="destructive" (click)="cancel(ticket)" [disabled]="canEditTicket !== true">
+            <fa-icon [icon]="cancelIcon"></fa-icon>
+          </button>
+          <button class="edit" [routerLink]="editTicketRoute(ticket)" [disabled]="canEditTicket !== true">
+            <fa-icon [icon]="editIcon"></fa-icon>
+          </button>
+          <button class="delete" (click)="deleteTicket(ticket)" [disabled]="canEditTicket !== true">
+            <fa-icon [icon]="deleteIcon"></fa-icon>
+          </button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  </div>
+</div>
+}

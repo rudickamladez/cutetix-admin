@@ -1,0 +1,37 @@
+@use '../../common/styles';
+
+.checkbox {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+
+  input {
+    margin: 0;
+    width: auto;
+  }
+
+  label {
+    margin: 0;
+  }
+}
+
+.global-scopes {
+  margin: 1rem 0 0;
+}
+
+.scopes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.25rem 1rem;
+
+  .checkbox {
+    margin-top: 0;
+  }
+}
+
+.hint {
+  font-size: 0.85rem;
+  margin: 0;
+  opacity: 0.8;
+}

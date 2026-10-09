@@ -1,50 +1,76 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MenuItem } from './menu-items';
 import { MenuBuilder } from './menu-builder';
 import { AuthService } from 'src/app/services/auth.service';
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faChartLine, faSignOutAlt, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { StorageService } from 'src/app/services/storage.service';
+import { StorageKeys } from 'src/app/tokens/storage.tokens';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { NavBarItemComponent } from '../nav-bar-item/nav-bar-item.component';
+import { NavBarSubitemComponent } from '../nav-bar-subitem/nav-bar-subitem.component';
 
 @Component({
     selector: 'app-nav-bar',
     templateUrl: './nav-bar.component.html',
     styleUrls: ['./nav-bar.component.scss'],
-    standalone: false
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FaIconComponent, NavBarItemComponent, NavBarSubitemComponent]
 })
 export class NavBarComponent implements OnInit {
-    dashboardItem = new MenuItem('Dashboard', 'dashboard', 'fa-chart-line');
-    userProfileItem = new MenuItem('My profile', 'profile', 'fa-user');
-    logoutItem =  new MenuItem('Log out', '', 'fa-sign-out-alt', () => this.logout());
+    readonly #authService = inject(AuthService);
+    readonly #router = inject(Router);
+    readonly #storageService = inject(StorageService);
+    readonly #destroyRef = inject(DestroyRef);
+
+    dashboardItem = new MenuItem('Dashboard', 'dashboard', faChartLine);
+    userProfileItem = new MenuItem('My profile', 'profile', faUser);
+    logoutItem =  new MenuItem('Log out', '', faSignOutAlt, () => this.#authService.logout());
     builder = new MenuBuilder()
-    availableItems: MenuItem[] = [];
-    menuOpen = false;
+    readonly availableItems = signal<MenuItem[]>([]);
+    
+    readonly #menuOpen = signal<boolean>(false);
+    protected readonly menuOpen = this.#menuOpen.asReadonly();
 
     // icons
-    menuClosedIcon = faBars;
-    menuOpenIcon = faTimes;
-
-    constructor(
-        private authService: AuthService,
-    ) { }
+    protected readonly menuClosedIcon = faBars;
+    protected readonly menuOpenIcon = faTimes;
 
     ngOnInit(): void {
-        this.menuOpen = history.state.navBarVisible ?? false;
-        this.availableItems = this.builder.build()
-        this.availableItems.unshift(this.dashboardItem);
-        this.availableItems.push(
-            this.userProfileItem,
-            this.logoutItem
-        );
+        this.#menuOpen.update(m => history.state.navBarVisible ?? m);
+        this.#rebuildMenu(this.#router.url);
+
+        this.#router.events.pipe(
+            filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+            takeUntilDestroyed(this.#destroyRef),
+        ).subscribe(event => {
+            this.#rebuildMenu(event.urlAfterRedirects);
+        });
+
+        this.#storageService.storageEvent$(StorageKeys.ADMIN_MODE).pipe(
+            takeUntilDestroyed(this.#destroyRef),
+        ).subscribe(() => {
+            this.#rebuildMenu(this.#router.url);
+        });
     }
 
     toggle(): void {
-        this.menuOpen = !this.menuOpen;
+        this.#menuOpen.update(m => !m);
     }
 
     hide(): void {
-        this.menuOpen = false;
+        this.#menuOpen.set(false);
     }
 
-    logout(): void {
-        this.authService.logout();
+    #rebuildMenu(currentUrl: string): void {
+        const availableItems = this.builder.build(currentUrl);
+        availableItems.unshift(this.dashboardItem);
+        availableItems.push(
+            this.userProfileItem,
+            this.logoutItem
+        );
+        this.availableItems.set(availableItems);
     }
 }

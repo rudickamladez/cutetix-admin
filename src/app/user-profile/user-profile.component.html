@@ -1,9 +1,19 @@
 <div class="details">
-  <h1>User details</h1>
-  <app-user-info></app-user-info>
+  <div class="profile-heading">
+    <h1>User details</h1>
+    <div class="admin-mode-control">
+      <div class="info" label="Admin mode">{{ adminModeService.status() ? 'ON' : 'OFF' }}</div>
+      <button type="button" (click)="adminModeService.toggle()" [attr.aria-label]="adminModeService.status() ? 'Turn off admin mode' : 'Enable admin mode'">
+        <fa-icon [icon]="toggleIcon"></fa-icon>
+      </button>
+    </div>
+  </div>
+  <app-user-info [show_profile_view]="true"></app-user-info>
 </div>
 
+@if (adminModeService.status()) {
 <div class="details">
   <h1>Settings</h1>
   <app-local-storage-field [key]="keys.API_URL" label="API URL" type="url" />
 </div>
+}

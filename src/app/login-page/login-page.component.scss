@@ -1,3 +1,4 @@
+@use "../administration/common/styles.scss" as *;
 @use "../../styles/colors" as *;
 
 :host {
@@ -14,10 +15,11 @@
         "title"
         "error"
         "window"
-        ".";
+        "."
+        "copyright";
 
     @media (max-width: 650px) {
-        grid-template-rows: auto auto;
+        grid-template-rows: 1fr 0.5fr 1fr 1fr;
         align-items: initial;
     }
 }
@@ -84,24 +86,36 @@ h2 {
     }
 }
 
-button.config {
+form .error {
+    margin: auto;
+    padding: 0px;
+    background-color: transparent;
+    font-size: 80%;
+}
+
+div.buttons {
     position: fixed;
     right: 0px;
     bottom: 0px;
-    min-width: auto;
-    width: auto;
-    padding: 0px 15px;
-
-    z-index: 1000; // more than window
-    pointer-events: auto;
-
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    
+    z-index: 1000; // more than window
+    
+    button {
+        min-width: auto;
+        width: auto;
+        padding: 0px 15px;
+        margin: 0px;
+        pointer-events: auto;
 
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+    }
 }
 
 .window {
@@ -123,50 +137,13 @@ button.config {
     }
 
     form {
-        display: flex;
-        flex-direction: column;
         margin: 0px auto;
+        background-color: transparent;
+        padding: none;
+        max-width: 100%;
 
         input {
-            border: 2px solid black;
-            font-size: 1.25rem;
-            line-height: 1rem;
-            padding: .5rem .75rem;
-            width: 100%;
-            margin: .25rem 0px;
             text-align: center;
-            outline: none;
-
-            // sudo mode
-            &.password {
-                color: transparent;
-
-                &:focus-within {
-                    color: transparent;
-
-                    &::selection {
-                        color: transparent;
-                    }
-                }
-            }
-
-            &:focus-within {
-                border: 2px solid rgba($color: black, $alpha: .75);
-                background-color: rgba($color: black, $alpha: .25);
-                color: $foreColor;
-
-                &::placeholder {
-                    color: $foreColor;
-                }
-            }
-        }
-
-        button {
-            margin-top: 10px;
-
-            fa-icon {
-                margin-right: 5px;
-            }
         }
     }
 }
@@ -222,4 +199,8 @@ button.large {
             display: block;
         }
     }
+}
+
+app-copyright {
+    grid-area: copyright;
 }

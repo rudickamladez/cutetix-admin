@@ -1,0 +1,125 @@
+import { Component, Input, OnDestroy, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { StorageService } from '../../services/storage.service';
+import { StorageKeys } from 'src/app/tokens/storage.tokens';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+
+@Component({
+    selector: 'app-local-storage-field',
+    templateUrl: './local-storage-field.component.html',
+    styleUrls: ['./local-storage-field.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [ReactiveFormsModule],
+})
+export class LocalStorageFieldComponent implements OnInit, OnDestroy {
+  readonly #storageService = inject(StorageService);
+  readonly #authService = inject(AuthService);
+  readonly #router = inject(Router);
+  readonly #destroy$ = new Subject<void>();
+
+  @Input({ required: true }) key!: StorageKeys;
+  @Input() label = 'Value';
+  @Input() type: 'text' | 'password' | 'url' | 'checkbox' = 'text';
+  @Input() placeholder?: string;
+  @Input() autocomplete: string = 'off';
+  @Input() autosaveDebounce = 400;
+  @Input() autosave = false;
+
+  ctrl = new FormControl<string | boolean>('', { nonNullable: true });
+  readonly dirty = signal(false);
+  readonly status = signal('');
+  cid = ''; // ID for label
+
+  get isCheckbox() { return this.type === 'checkbox'; }
+
+  ngOnInit(): void {
+    // create ID when we know the key value
+    this.cid = `lsf_${String(this.key)}_${Math.random().toString(36).slice(2, 8)}`;
+
+    const stored = this.#storageService.get(this.key);
+    const initial = this.isCheckbox ? this.#toBool(stored) : (stored ?? '');
+    this.ctrl.setValue(initial as any, { emitEvent: false });
+
+    const delay = this.autosave ? (this.isCheckbox ? 0 : this.autosaveDebounce) : 0;
+
+    this.ctrl.valueChanges
+      .pipe(debounceTime(delay), distinctUntilChanged(), takeUntil(this.#destroy$))
+      .subscribe(val => {
+        this.dirty.set(true);
+        if (!this.autosave) return;
+        this.#write(val);
+      });
+
+    this.#storageService.storageEvent$(this.key)
+      .pipe(takeUntil(this.#destroy$))
+      .subscribe(e => {
+        const incoming = this.isCheckbox ? this.#toBool(e.currentValue) : (e.currentValue ?? '');
+        if (this.ctrl.value !== incoming) {
+          this.ctrl.setValue(incoming as any, { emitEvent: false });
+          this.dirty.set(false);
+          this.#flashStatus(e.action === 'delete' ? 'Deleted from storage' : 'Updated from storage');
+        }
+      });
+  }
+
+  saveNow() { this.#write(this.ctrl.value); }
+
+  resetToStored() {
+    const current = this.#storageService.get(this.key);
+    const val = this.isCheckbox ? this.#toBool(current) : (current ?? '');
+    this.ctrl.setValue(val as any, { emitEvent: false });
+    this.dirty.set(false);
+    this.#flashStatus('Reverted to stored value');
+  }
+
+  // TODO
+  // resetToEnv() {
+  //   const current = StorageKeysToENV[this.key] ?? '';
+  //   this.ctrl.setValue(current, { emitEvent: false });
+  //   this.dirty = false;
+  //   this.flashStatus('Reverted to ENV value');
+  // }
+
+  #write(val: string | boolean | null | undefined) {
+    const value = this.isCheckbox ? (this.#toBool(val) ? 'true' : 'false') : (val ?? '').toString();
+    const currentValue = this.#storageService.get(this.key);
+
+    if (this.key === StorageKeys.API_URL && value !== currentValue) {
+      this.#authService.logout(true);
+      this.#storageService.set(this.key, value);
+      this.dirty.set(false);
+      this.#flashStatus('Saved');
+      void this.#router.navigate(['/login']);
+      return;
+    }
+
+    if (this.isCheckbox) {
+      const b = this.#toBool(val);
+      this.#storageService.set(this.key, b ? 'true' : 'false'); // kompatibilně jako string
+    } else {
+      this.#storageService.set(this.key, (val ?? '').toString());
+    }
+    this.dirty.set(false);
+    this.#flashStatus('Saved');
+  }
+
+  #flashStatus(text: string) {
+    this.status.set(text);
+    setTimeout(() => this.status.set(''), 1200);
+  }
+
+  #toBool(v: unknown): boolean {
+    if (typeof v === 'boolean') return v;
+    if (typeof v === 'number') return v !== 0;
+    if (typeof v === 'string') {
+      const s = v.trim().toLowerCase();
+      if (['true', '1', 'yes', 'y', 'on'].includes(s)) return true;
+      if (['false', '0', 'no', 'n', 'off', ''].includes(s)) return false;
+    }
+    return false;
+  }
+
+  ngOnDestroy(): void { this.#destroy$.next(); this.#destroy$.complete(); }
+}

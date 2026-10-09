@@ -1,0 +1,90 @@
+@if (users.isLoading()) {
+<app-loading></app-loading>
+} @else if (users.error()) {
+  <div class="error">
+    <p>
+      There's a problem loading table.<br />
+      {{ loadErrorText() }}
+    </p>
+  </div>
+} @else {
+<div>
+  <div class="toolbar">
+    <div class="filters">
+      <div label="Search">
+        <app-table-search
+          [(value)]="search"
+          placeholder="Username, full name, e-mail, scope"
+        ></app-table-search>
+      </div>
+      <button type="button" (click)="clearFilters()">
+        Reset
+      </button>
+      <label class="include-disabled">
+        <input
+          type="checkbox"
+          [checked]="includeDisabled()"
+          (change)="includeDisabled.set($event.target.checked)"
+        >
+        Include disabled users
+      </label>
+      <div class="count">{{ filteredUsers().length }} / {{ users.value().length }}</div>
+    </div>
+  </div>
+  <div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('username')" class="d-sm-none">
+          <app-table-sort-header label="Username" column="username" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('full_name')">
+          <app-table-sort-header label="Full&nbsp;name" column="full_name" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('email')" class="d-sm-none">
+          <app-table-sort-header label="E-mail" column="email" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('disabled')">
+          <app-table-sort-header label="Disabled" [mobileIcon]="disabledIcon" column="disabled" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (filteredUsers().length === 0) {
+      <tr>
+        <td colspan="5">No users found.</td>
+      </tr>
+      }
+      @for (user of sortedUsers(); track user.username) {
+      <tr>
+        <td class="d-sm-none">{{ user.username }}</td>
+        <td>{{ user.full_name }}</td>
+        <td class="d-sm-none">
+          <a href="mailto:{{ user.email }}">
+            {{ user.email }}
+          </a>
+        </td>
+        <td>{{ user.disabled ? 'Yes' : 'No' }}</td>
+        <td class="actions">
+          @if (authService.hasScope('users:read')) {
+          <button class="detail" (click)="router.navigate(['users', 'detail', user.uuid]);">
+            <fa-icon [icon]="detailIcon"></fa-icon>
+          </button>
+          }
+          @if (authService.hasScope('users:edit')) {
+          <button class="edit" (click)="router.navigate(['users', 'edit', user.uuid]);">
+            <fa-icon [icon]="editIcon"></fa-icon>
+          </button>
+          <button class="delete" (click)="delete(user)">
+            <fa-icon [icon]="deleteIcon"></fa-icon>
+          </button>
+          }
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  </div>
+</div>
+}

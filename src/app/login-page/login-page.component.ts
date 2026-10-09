@@ -1,43 +1,79 @@
-import { Component, effect, inject, OnDestroy, signal } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { debounce, email, form, required, submit, FormField } from '@angular/forms/signals';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
 import { StorageKeys } from '../tokens/storage.tokens';
 import { StorageService } from '../services/storage.service';
-import { faCircleNotch, faCog, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faPersonCirclePlus, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { UserLogin, UserRegister } from '../types/auth.types';
+import { LocalStorageFieldComponent } from '../components/local-storage-field/local-storage-field.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { CopyrightComponent } from '../components/copyright/copyright.component';
 
 @Component({
     templateUrl: './login-page.component.html',
     styleUrls: ['./login-page.component.scss'],
-    standalone: false
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [
+        FormField,
+        LocalStorageFieldComponent,
+        FaIconComponent,
+        CopyrightComponent,
+    ],
 })
 export class LoginPageComponent {
   readonly #auth = inject(AuthService);
   readonly #router = inject(Router);
-  readonly #storageService = inject(StorageService);
+  readonly storageService = inject(StorageService);
 
-  public loggingIn: boolean = false;
-  public loginFailed: boolean = false;
-  public errorText?: string;
-  public loginForm = new FormGroup({
-    username: new FormControl(''),
-    password: new FormControl('')
+  protected errorText?: string;
+
+  protected loginModel = signal<UserLogin>({
+    username: '',
+    password: '',
   });
+  protected loginForm = form(
+    this.loginModel,
+    (schemaPath) => {
+      required(schemaPath.username, { message: 'Username is required.' });
+      required(schemaPath.password, { message: 'Password is required.' });
+    }
+  );
+
+  protected registerModel = signal<UserRegister>({
+    email: '',
+    username: '',
+    full_name: '',
+    plaintext_password: '',
+  });
+  protected registerForm = form(
+    this.registerModel,
+    (schemaPath) => {
+      debounce(schemaPath.email, 500);
+      required(schemaPath.email, { message: 'Email is required.' });
+      email(schemaPath.email);
+
+      required(schemaPath.username, { message: 'Username is required.' });
+      required(schemaPath.full_name, { message: 'Full name is required.' });
+      required(schemaPath.plaintext_password, { message: 'Password is required.' });
+    }
+  );
 
   protected readonly canRun = signal(false);
   protected readonly showConfig = signal(false);
+  readonly #redirectAfterAuthentication = signal(false);
   readonly keys = StorageKeys;
+  protected readonly mode = signal<'login' | 'register'>('login');
 
   // icons
-  loginIcon = faSignInAlt;
-  loadingIcon = faCircleNotch;
-  settingsIcon = faCog;
+  protected readonly loginIcon = faSignInAlt;
+  protected readonly settingsIcon = faCog;
+  protected readonly registerIcon = faPersonCirclePlus;
 
 
   constructor() {
     // Check if browser is chromium based and version >= 132
-    if (this.#storageService.getBoolean(StorageKeys.BROWSER_CORE_CHECK) === false) {
+    if (this.storageService.getBoolean(StorageKeys.BROWSER_CORE_CHECK) === false) {
       this.canRun.set(true);
     } else {
       // eslint-disable-next-line  @typescript-eslint/no-explicit-any
@@ -51,28 +87,38 @@ export class LoginPageComponent {
     }
 
     effect(() => {
-      const canGoToPrivate = this.#auth.canGoToPrivate();
-      if (canGoToPrivate) {
+      if (this.#redirectAfterAuthentication() && this.#auth.canGoToPrivate()) {
         this.#router.navigate(["/dashboard"]);
       }
     });
   }
 
-  protected loginWithPassword() {
-    // Show loading spinner
-    this.loggingIn = true;
+  protected login(event: Event) {
+    event.preventDefault();
+    this.#redirectAfterAuthentication.set(true);
 
-    this.#auth.login(
-      this.loginForm.value.username ?? '',
-      this.loginForm.value.password ?? ''
-    );
+    submit(this.loginForm, async () => {
+      await this.#auth.login(
+        this.loginModel().username,
+        this.loginModel().password,
+      );
+    });
+  }
 
-    // Hide loading spinner
-    this.loggingIn = false;
+  protected register(event: Event) {
+    event.preventDefault();
+    this.#redirectAfterAuthentication.set(true);
+
+    submit(this.registerForm, async () => {
+      await this.#auth.register(this.registerModel());
+    });
+  }
+
+  protected toggleMode() {
+    this.mode.update(mode => mode === 'login' ? 'register' : 'login');
   }
 
   public toggleConfigVisibility() {
     this.showConfig.update(value => !value);
   }
-
 }

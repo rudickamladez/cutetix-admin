@@ -1,0 +1,42 @@
+@use "../../../styles/colors" as *;
+
+:host {
+  display: block;
+  width: min(32rem, calc(100vw - 2rem));
+  color: $foreColor;
+  background: $backColor;
+}
+
+.confirm-dialog {
+  padding: 24px;
+}
+
+h2 {
+  margin-bottom: 16px;
+}
+
+p {
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+@media (max-width: 480px) {
+  .confirm-dialog {
+    padding: 20px;
+  }
+
+  .dialog-actions {
+    flex-direction: column-reverse;
+  }
+
+  .dialog-actions button {
+    width: 100%;
+  }
+}

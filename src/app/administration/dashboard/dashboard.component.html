@@ -1,7 +1,15 @@
 <div class="container">
-    <!-- TODO: Favourite events by user -->
-    <app-dashboard-event-overview event_id="1"></app-dashboard-event-overview>
-    <app-dashboard-event-overview event_id="2"></app-dashboard-event-overview>
-    <app-dashboard-event-overview event_id="3"></app-dashboard-event-overview>
-    <app-dashboard-event-overview event_id="4"></app-dashboard-event-overview>
+    @if (usersService.user.isLoading()) {
+        <p>Loading user data...</p>
+    } @else {
+        <!-- User is loaded -->
+        @let user = usersService.user.value()!;
+        @if (user.favorite_events && user.favorite_events.length > 0) {
+            @for (event of user.favorite_events; track event.id) {
+                <app-dashboard-event-overview [event_id]="event.id"/>
+            }
+        } @else {
+            <p>No favorite events found.</p>
+        }
+    }
 </div>

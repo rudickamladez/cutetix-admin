@@ -1,0 +1,50 @@
+<div class="info" label="Username">{{ authService.getUsername() }}</div>
+@if (!show_profile_view() || adminModeService.status()) {
+<div class="info" label="Scopes in token">{{ authService.getScopes() }}</div>
+@let accessTokenExpiration = get_access_token_expiration();
+@let refreshTokenExpiration = refresh_token_expire();
+<div class="info" label="Access token expires on">{{ accessTokenExpiration ? tokenExpirationDateFormatter.format(accessTokenExpiration) : 'undefined' }} ‒ {{ time_to_access_token_expire() }}</div>
+<div class="info" label="Refresh token expires on">{{ refreshTokenExpiration ? tokenExpirationDateFormatter.format(refreshTokenExpiration) : 'undefined' }} ‒ {{ time_to_refresh_token_expire() }}</div>
+}
+@if (!show_profile_view()) {
+<div class="admin-mode-container">
+  <div class="info" label="Admin mode">{{ adminModeService.status() ? "ON" : "OFF" }}</div>
+  <button type="button" (click)="adminModeService.toggle()" [attr.aria-label]="adminModeService.status() ? 'Turn off admin mode' : 'Enable admin mode'">
+    <fa-icon [icon]="toggleIcon"></fa-icon>
+  </button>
+</div>
+}
+
+@if (usersService.user.isLoading()) {
+<span>Loading user data...</span>
+} @else {
+<!-- User is loaded -->
+@let user = usersService.user.value()!;
+
+@if (show_user_dependended_info()) {
+  @if (adminModeService.status()) {
+    <hr />
+  }
+<div class="info" label="Full name">{{ user.full_name }}</div>
+<div class="info" label="E-mail">{{ user.email }}</div>
+@if (!show_profile_view() || adminModeService.status()) {
+<div class="info" label="UUID">{{ user.uuid }}</div>
+<div class="info" label="Scopes in database">{{ user.scopes | formatScopes }}</div>
+}
+@if (show_favorite_events()) {
+
+<div class="info" label="Favorite events">
+  @if (user.favorite_events && user.favorite_events.length > 0) {
+  <ul>
+    @for (event of user!.favorite_events; track event.id) {
+    <li>{{ event.name }}</li>
+    }
+  </ul>
+
+  } @else {
+  <span>No favorite events.</span>
+  }
+</div>
+}
+}
+}

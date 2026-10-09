@@ -1,7 +1,10 @@
 import { TicketGroup } from "../ticket_groups/ticket_groups.types";
 
-export interface Event {
-    id?: string;
+export interface Event extends EventCreate {
+    id: string;
+}
+
+export interface EventCreate {
     name: string;
     tickets_sales_start: string;
     tickets_sales_end: string;

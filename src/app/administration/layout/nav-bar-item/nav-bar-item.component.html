@@ -1,12 +1,12 @@
 @if (item.customFunc == null) {
   <a [routerLink]="item.link" [state]="{navBarVisible: true}" routerLinkActive="active">
-    <i class="fas {{item.icon}} fa-icon"></i>
+    <fa-icon [icon]="item.icon"></fa-icon>
     {{item.name}}
   </a>
 }
 @if (item.customFunc != null) {
   <a (click)="item.customFunc()">
-    <i class="fas {{item.icon}} fa-icon"></i>
+    <fa-icon [icon]="item.icon"></fa-icon>
     {{item.name}}
   </a>
 }

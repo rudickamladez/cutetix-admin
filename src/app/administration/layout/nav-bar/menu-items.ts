@@ -1,3 +1,5 @@
+import { IconDefinition } from "@fortawesome/angular-fontawesome";
+
 export class MenuSubItem {
     constructor(
         public name: string,
@@ -11,7 +13,7 @@ export class MenuItem extends MenuSubItem {
     constructor(
         public override name: string,
         public override link: string,
-        public icon: string,
+        public icon: IconDefinition,
         public customFunc?: () => void
     ) {
         super(name, link);

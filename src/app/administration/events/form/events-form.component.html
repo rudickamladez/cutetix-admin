@@ -1,0 +1,52 @@
+@if (isEditing() && event.isLoading()) {
+  <app-loading></app-loading>
+}
+
+@if (isEditing() && event.error()) {
+  <div class="error">
+    <p>
+      There's problem loading event.<br />
+      {{ loadErrorText() }}
+    </p>
+  </div>
+}
+
+@if (!isEditing() || (!event.isLoading() && !event.error())) {
+<form (submit)="saveEvent($event)">
+  <h1>{{ mode() === 'new' ? 'New event' : mode() === 'edit' ? 'Event edit' : 'Event detail' }}</h1>
+
+  <label for="name">Name</label>
+  <input id="name" type="text" [formField]="eventForm.name">
+
+  <label for="ticketsSalesStart">Ticket sales start</label>
+  <input id="ticketsSalesStart" type="datetime-local" [formField]="eventForm.tickets_sales_start">
+
+  <label for="ticketsSalesEnd">Ticket sales end</label>
+  <input id="ticketsSalesEnd" type="datetime-local" [formField]="eventForm.tickets_sales_end">
+
+  <label for="smtpMailFrom">SMTP MAIL FROM</label>
+  <input id="smtpMailFrom" type="text" [formField]="eventForm.smtp_mail_from">
+
+  <label for="mailTextNewTicket">Text for new ticket</label>
+  <textarea id="mailTextNewTicket" [formField]="eventForm.mail_text_new_ticket" rows="5" cols="2"></textarea>
+
+  <label for="mailHtmlNewTicket">HTML for new ticket</label>
+  <textarea id="mailHtmlNewTicket" [formField]="eventForm.mail_html_new_ticket" rows="10" cols="2"></textarea>
+
+  <label for="mailTextCancelledTicket">Text for cancelled ticket</label>
+  <textarea id="mailTextCancelledTicket" [formField]="eventForm.mail_text_cancelled_ticket" rows="5" cols="10"></textarea>
+
+  <label for="mailHtmlCancelledTicket">HTML for cancelled ticket</label>
+  <textarea id="mailHtmlCancelledTicket" [formField]="eventForm.mail_html_cancelled_ticket" rows="10" cols="5"></textarea>
+
+  @if (mode() !== 'detail') {
+    <button class="alt" [disabled]="eventForm().invalid()">
+      {{ mode() === 'new' ? 'Create' : 'Edit' }}
+    </button>
+  }
+</form>
+
+@if (isEditing() && (canManagePermissions() | async) === true) {
+  <app-event-permissions [eventId]="eventId()"></app-event-permissions>
+}
+}

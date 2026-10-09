@@ -1,124 +1,150 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Event, EventCapacitySummary } from './events.types';
+import { HttpClient, HttpResourceRef, httpResource, HttpErrorResponse } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Event, EventCapacitySummary, EventCreate } from './events.types';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { StorageService } from 'src/app/services/storage.service';
+import { SnackbarToastrService } from '../../services/snackbar-toastr.service';
+import { TicketGroupService } from '../ticket_groups/ticket_groups.service';
+import { TicketService } from '../../services/tickets.service';
+import { LoggingService } from '../../services/logging.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
-  private API_PATH: string = 'events';
+  readonly #httpClient = inject(HttpClient);
+
   readonly #storageService = inject(StorageService);
+  readonly #toastr = inject(SnackbarToastrService);
+  readonly #ticketGroups = inject(TicketGroupService);
+  readonly #tickets = inject(TicketService);
+  readonly #logging = inject(LoggingService);
 
-  private eventSource = new Subject<Event>();
+  readonly #apiPath = 'events';
 
-  public asObservable() {
-    return this.eventSource.asObservable();
+  readonly #currentEvent = signal<Event | undefined>(undefined);
+  readonly currentEvent = this.#currentEvent.asReadonly();
+  readonly #activeEventId = signal<string | null>(null);
+  readonly activeEventId = this.#activeEventId.asReadonly();
+  readonly activeEventResource = this.eventByIdResource(() => this.#activeEventId());
+
+  setActiveEventId(eventId: string | null): void {
+    this.#activeEventId.set(eventId);
   }
 
-  public register(event: Event) {
-    this.eventSource.next(event);
+  setCurrentEvent(event: Event | undefined): void {
+    this.#currentEvent.set(event);
   }
 
-  private deleteSource = new Subject<Event>();
+  readonly events = httpResource<Event[]>(
+    () => this.#endpoint('/'),
+    {
+      defaultValue: [],
+    }
+  );
 
-  public deleteAsObservable() {
-    return this.deleteSource.asObservable();
+  readonly myEvents = httpResource<Event[]>(
+    () => this.#endpoint('/me'),
+    {
+      defaultValue: [],
+    }
+  );
+
+  constructor() {
+    this.events.reload();
   }
 
-  public ticketDelete(event: Event) {
-    this.deleteSource.next(event);
+  #endpoint(path: string): string {
+    return new URL(`${this.#apiPath}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
-  constructor(
-    private readonly httpClient: HttpClient
-  ) {
-
+  public eventByIdResource(
+    getId: () => string | null | undefined
+  ): HttpResourceRef<Event | undefined> {
+    return httpResource<Event>(() => {
+      const id = getId();
+      if (!id) {
+        return undefined;
+      }
+      return this.#endpoint(`/${id}/`);
+    });
   }
 
-  public get(): Observable<Event[]> {
-    return this.httpClient.get(
-      new URL(`${this.API_PATH}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
-    ).pipe(
-      map(
-        (res: any) => {
-          return res.map(
-            (result: any) => <Event[]>result
-          );
-        }
-      )
-    );
+  public eventCapacitySummaryByIdResource(
+    getId: () => string | null | undefined
+  ): HttpResourceRef<EventCapacitySummary | undefined> {
+    return httpResource<EventCapacitySummary>(() => {
+      const id = getId();
+      if (!id) {
+        return undefined;
+      }
+      return this.#endpoint(`/capacity_summary/${id}/`);
+    });
   }
 
-  public getById(
-    id: string
-  ): Observable<Event> {
-    return this.httpClient.get(
-      new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
-    ).pipe(
-      map(
-        (res: any) => {
-          return <Event>res;
-        }
-      )
-    )
-  }
-
-  public create(event: Event): Observable<Event> {
-    return this.httpClient.post(
-      new URL(`${this.API_PATH}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+  public create(event: EventCreate): Observable<Event> {
+    return this.#httpClient.post<Event>(
+      this.#endpoint('/'),
       event
     ).pipe(
-      map(
-        (res: any) => {
-          return <Event>res;
-        }
-      )
-    )
+      tap(() => {
+        this.events.reload();
+        this.myEvents.reload();
+      })
+    );
   }
 
   public update(
     id: string,
-    body: Event
+    body: EventCreate
   ): Observable<Event> {
-    return this.httpClient.patch(
-      new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+    return this.#httpClient.patch<Event>(
+      this.#endpoint(`/${id}/`),
       body
     ).pipe(
-      map(
-        (res: any) => {
-          return <Event>res;
+      tap(() => {
+        this.events.reload();
+        this.myEvents.reload();
+        if (this.#activeEventId() === id) {
+          this.activeEventResource.reload();
         }
-      )
-    )
+      })
+    );
   }
 
-  // public delete(id: string): Observable<Event> {
-  //   return this.httpClient.delete(
-  //     new URL(`${this.API_PATH}/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
-  //   ).pipe(
-  //     map(
-  //       (res: any) => {
-  //         return <Event>res;
-  //       }
-  //     )
-  //   )
-  // }
-
-  public capacitySummaryById(
-    id: string
-  ): Observable<EventCapacitySummary> {
-    return this.httpClient.get(
-      new URL(`${this.API_PATH}/capacity_summary/${id}/`, this.#storageService.get(StorageKeys.API_URL)!).href,
+  public delete(event: Event): void {
+    this.#httpClient.delete<void>(
+      this.#endpoint(`/${event.id}/`)
     ).pipe(
-      map(
-        (res: any) => {
-          return <EventCapacitySummary>res;
-        }
-      )
-    )
+      tap(() => {
+        this.events.reload();
+        this.myEvents.reload();
+        this.#ticketGroups.ticketGroups.reload();
+        this.#ticketGroups.activeSum.reload();
+        this.#tickets.tickets.reload();
+      })
+    ).subscribe({
+      next: () => {
+        this.#toastr.info(
+          event.name,
+          'Event deleted',
+          {
+            progressBar: true
+          }
+        );
+      },
+      error: (err: HttpErrorResponse) => {
+        this.#logging.error('events', 'Event deletion failed.', err);
+        this.#toastr.error(
+          `Error: ${err.error?.detail ?? err.message}`,
+          'Event wasn\'t deleted!',
+          {
+            progressBar: true,
+          }
+        );
+      }
+    });
   }
 }

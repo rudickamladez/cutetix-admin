@@ -1,0 +1,58 @@
+.info {
+    &:before {
+        content: attr(label);
+        font-size: 14px;
+        display: block;
+        font-weight: 400;
+    }
+
+    font-size: 18px;
+    font-weight: 500;
+    margin: 10px 0px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    &:last-child {
+        margin-bottom: 0px;
+    }
+
+    ul {
+        display: inline-flex;
+        margin: 0;
+        padding: 0;
+
+        li {
+            list-style: none;
+
+            &::after {
+                content: ', ';
+                display: inline-block;
+                margin-right: 2.5px;
+            }
+
+            &:last-child::after {
+                display: none;
+            }
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .info ul {
+        display: block;
+
+        li {
+            display: block;
+        }
+    }
+}
+
+.admin-mode-container {
+    display: inline-flex;
+
+    button {
+        margin: auto 5px;
+        padding: 0px 10px;
+        min-width: 0px;
+    }
+}

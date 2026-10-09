@@ -1,50 +1,111 @@
 @use '../../../styles/colors' as *;
 
-tr.odd {
-    background-color: $backColorMediumDarkTran;
+button.action-button {
+    min-width: 0px;
+    max-width: 100px;
+    padding: 10px;
+    margin: 2.5px;
+
+    &.tickets {
+        background-color: gold;
+        box-shadow: inset 0 -2px 0 darkgoldenrod;
+
+        &:hover {
+            background-color: rgba($color: gold, $alpha: .5);
+            box-shadow: inset 0 -2px 0 gold;
+        }
+
+        fa-icon {
+            color: $foreColorDark;
+        }
+    }
+
+    &.favorite {
+        background-color: #1E90ED;
+        box-shadow: inset 0 -2px 0 darkblue;
+
+        &:hover {
+            background-color: rgba($color: #1e90ed, $alpha: .5);
+            box-shadow: inset 0 -2px 0 #1e90ed;
+        }
+    }
+
+    &.edit {
+        background-color: #BF40BF;
+        box-shadow: inset 0 -2px 0 darkmagenta;
+
+        &:hover {
+            background-color: rgba($color: #bf40bf, $alpha: .5);
+            box-shadow: inset 0 -2px 0 #bf40bf;
+        }
+    }
+
+    &.detail {
+        @extend .favorite;
+    }
+
+    &.delete {
+        background-color: tomato;
+        box-shadow: inset 0 -2px 0 darkred;
+
+        &:hover {
+            background-color: rgba($color: tomato, $alpha: .5);
+            box-shadow: inset 0 -2px 0 tomato;
+        }
+    }
+}
+
+.table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
 }
 
 table {
-    margin: 0px !important;
-    width: 100% !important;
+    margin: 0px;
+    width: 100%;
+    border-collapse: collapse;
+    --padding-left-for-cells: 10px;
 
     th {
         text-align: left;
-    }
-}
-
-td {
-    button {
-        min-width: 0px !important;
-        max-width: 100px !important;
-        box-shadow: none;
-        padding: 10px;
-        margin: auto 2.5px;
-
-        &.delete {
-            background-color: tomato;
-        }
-
-        &.edit {
-            background-color: #BF40BF;
-        }
+        padding-left: var(--padding-left-for-cells);
     }
 
-    span {
-        &.new {
-            color: green;
+    tr:nth-child(2n) {
+        background-color: $backColorMediumDarkTran;
+    }
+
+
+    td {
+        padding-left: var(--padding-left-for-cells);
+
+        &.actions {
+            display: inline-flex;
         }
 
-        &.confirmed {
-            color: $foreColorMediumLight;
+        button {
+            @extend .action-button;
+            box-shadow: none !important;
         }
 
-        &.paid {
-            color: greenyellow;
-        }
+        span {
+            &.new {
+                color: green;
+            }
 
-        &.cancelled {
-            color: red;
+            &.confirmed {
+                color: $foreColorMediumLight;
+            }
+
+            &.paid {
+                color: greenyellow;
+            }
+
+            &.cancelled {
+                color: red;
+            }
         }
     }
 }
@@ -57,12 +118,43 @@ td {
     padding: 1.5rem;
 }
 
+.input {
+    border: 2px solid black;
+    font-size: 1.25rem;
+    line-height: 1rem;
+    padding: .5rem .75rem;
+    width: 100%;
+    margin: .25rem 0px;
+    outline: none;
+
+    &.sudo-mode {
+        color: transparent;
+
+        &:focus-within {
+            color: transparent;
+
+            &::selection {
+                color: transparent;
+            }
+        }
+    }
+
+    &:focus-within {
+        border: 2px solid rgba($color: black, $alpha: .75);
+        background-color: rgba($color: black, $alpha: .25);
+        color: $foreColor;
+
+        &::placeholder {
+            color: $foreColor;
+        }
+    }
+}
+
 form {
     display: flex;
     flex-direction: column;
-    max-width: 80%;
     padding: 1rem 1.5rem;
-    margin: auto;
+    margin: 0px auto 15px auto;
     background-color: $foreColorMediumLight;
 
     label {
@@ -72,27 +164,14 @@ form {
     input,
     select,
     textarea {
-        border: 2px solid black;
-        font-size: 1.5rem;
-        line-height: 1rem;
-        padding: .5rem .75rem;
-        min-height: 15px;
-        margin: .25rem;
-        outline: none;
-
-        &:focus-within {
-            border: 2px solid rgba($color: black, $alpha: .75);
-            background-color: rgba($color: black, $alpha: .25);
-            color: $foreColor;
-
-            &::placeholder {
-                color: $foreColor;
-            }
-        }
+        @extend .input;
     }
 
     button {
-        max-width: 99%;
-        margin: 10px 0px;
+        margin-top: 10px;
+
+        fa-icon {
+            margin-right: 5px;
+        }
     }
 }

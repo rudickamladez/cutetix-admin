@@ -1,0 +1,87 @@
+@if (events.isLoading()) {
+<app-loading></app-loading>
+} @else if (events.error()) {
+  <div class="error">
+    <p>
+      There's problem loading table.<br />
+      {{ loadErrorText() }}
+    </p>
+  </div>
+} @else {
+<div>
+  <div class="toolbar">
+    <div class="filters">
+      <div label="Search">
+        <app-table-search
+          [(value)]="search"
+          placeholder="Event name or ID"
+        ></app-table-search>
+      </div>
+      <span class="count">{{ filteredEvents().length }} / {{ events.value().length }}</span>
+    </div>
+  </div>
+  <div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col" [attr.aria-sort]="sortAriaSort('name')">
+          <app-table-sort-header label="Name" column="name" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th class="d-none">ID</th>
+        <th class="d-sm-none" scope="col" [attr.aria-sort]="sortAriaSort('tickets_sales_start')">
+          <app-table-sort-header label="Ticket sales start" column="tickets_sales_start" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th class="d-sm-none" scope="col" [attr.aria-sort]="sortAriaSort('tickets_sales_end')">
+          <app-table-sort-header label="Ticket sales end" column="tickets_sales_end" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+        </th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (event of sortedEvents(); track event) {
+      @let canEditEvent = canEdit(event.id) | async;
+      <tr>
+        <td>{{ event.name }}</td>
+        <!-- so hidden column with IDs is second -->
+        <td class="d-none">{{ event.id }}</td>
+        <td class="d-sm-none">{{ event.tickets_sales_start | date : "yyyy-MM-dd h:mm a" }}</td>
+        <td class="d-sm-none">{{ event.tickets_sales_end   | date : "yyyy-MM-dd h:mm a" }}</td>
+        <td class="actions">
+          <button
+            class="tickets"
+            (click)="openEventTickets(event)"
+            [disabled]="!(canViewTickets(event.id) | async)"
+          >
+            <fa-icon [icon]="ticketsIcon"></fa-icon>
+          </button>
+          <button class="favorite" (click)="favorite(event.id!)">
+            <fa-icon [icon]="favoriteIcon(event.id!)"></fa-icon>
+          </button>
+          <button class="edit" (click)="edit(event)" [disabled]="canEditEvent !== true">
+            <fa-icon [icon]="editIcon"></fa-icon>
+          </button>
+          <button class="delete" (click)="deleteEvent(event)" [disabled]="canEditEvent !== true">
+            <fa-icon [icon]="deleteIcon"></fa-icon>
+          </button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  </div>
+  <hr class="spacer" />
+  <div class="legend">
+    <h4>Legend</h4>
+    <ul>
+      <li>
+        <fa-icon [icon]="favoriteEventIcon"></fa-icon>
+        Make event favorite
+      </li>
+      <li>
+        <fa-icon [icon]="unfavoriteEventIcon"></fa-icon>
+        Remove event from favorites
+      </li>
+    </ul>
+  </div>
+</div>
+}

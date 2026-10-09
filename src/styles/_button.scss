@@ -35,16 +35,6 @@ button:not(.default-style),
         }
     }
 
-    .can-focus &:focus,
-    &:active {
-        background: $accentColorDark;
-    }
-
-    &:hover,
-    &:focus {
-        color: $foreColor;
-    }
-
     &:disabled {
         opacity: 0.33;
         cursor: not-allowed;
@@ -53,6 +43,15 @@ button:not(.default-style),
 
     &:not(:disabled) {
         box-shadow: inset 0px -2px 0px $accentColorDark;
+    }
+
+    .can-focus &:focus,
+    &:active,
+    &:hover,
+    &:focus {
+        color: $foreColor;
+        background: $accentColorDark;
+        box-shadow: inset 0px -2px 0px $accentColor;
     }
 
     &:active {
