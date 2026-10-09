@@ -47,7 +47,7 @@ export class UsersFormComponent {
         // required(schemaPath.plaintext_password, { message: 'Password is required' });
       // }
 
-      disabled(schemaPath, () => { return this.mode() === 'detail'; });
+      disabled(schemaPath, { when: () => this.mode() === 'detail' });
     }
   );
 

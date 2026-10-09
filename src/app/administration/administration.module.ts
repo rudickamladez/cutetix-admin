@@ -11,12 +11,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { LoadingComponent } from './loading/loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TicketGroupsListComponent } from './ticket_groups/list/ticket_groups-list.component';
-import { TicketGroupsEditComponent } from './ticket_groups/edit/ticket_groups-edit.component';
-import { TicketGroupsNewComponent } from './ticket_groups/new/ticket_groups-new.component';
+import { TicketGroupsFormComponent } from './ticket_groups/form/ticket_groups-form.component';
 import { EventsListComponent } from './events/list/events-list.component';
 import { TicketsListComponent } from './tickets/list/tickets-list.component';
-import { TicketsNewComponent } from './tickets/new/tickets-new.component';
-import { TicketsEditComponent } from './tickets/edit/tickets-edit.component';
+import { TicketsFormComponent } from './tickets/form/tickets-form.component';
 import { EventsFormComponent } from './events/form/events-form.component';
 import { SharedModule } from '../shared/shared.module';
 import { DashboardEventOverviewComponent } from './dashboard/event-overview/dashboard-event-overview.component';
@@ -37,13 +35,11 @@ import { CurrentEventComponent } from './layout/current-event/current-event.comp
         DashboardEventOverviewComponent,
         LoadingComponent,
         TicketGroupsListComponent,
-        TicketGroupsEditComponent,
-        TicketGroupsNewComponent,
+        TicketGroupsFormComponent,
         EventsListComponent,
         EventsFormComponent,
         TicketsListComponent,
-        TicketsNewComponent,
-        TicketsEditComponent,
+        TicketsFormComponent,
         UsersListComponent,
         UsersFormComponent,
     ],

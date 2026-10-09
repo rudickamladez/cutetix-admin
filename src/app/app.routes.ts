@@ -4,13 +4,11 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { DashboardComponent } from './administration/dashboard/dashboard.component';
 import { AdministrationLayoutComponent } from './administration/layout/layout.component';
 import { TicketGroupsListComponent } from './administration/ticket_groups/list/ticket_groups-list.component';
-import { TicketGroupsNewComponent } from './administration/ticket_groups/new/ticket_groups-new.component';
-import { TicketGroupsEditComponent } from './administration/ticket_groups/edit/ticket_groups-edit.component';
+import { TicketGroupsFormComponent } from './administration/ticket_groups/form/ticket_groups-form.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { EventsListComponent } from './administration/events/list/events-list.component';
 import { TicketsListComponent } from './administration/tickets/list/tickets-list.component';
-import { TicketsNewComponent } from './administration/tickets/new/tickets-new.component';
-import { TicketsEditComponent } from './administration/tickets/edit/tickets-edit.component';
+import { TicketsFormComponent } from './administration/tickets/form/tickets-form.component';
 import { EventsFormComponent } from './administration/events/form/events-form.component';
 import { UsersListComponent } from './administration/users/list/users-list.component';
 import { UsersFormComponent } from './administration/users/form/users-form.component';
@@ -19,7 +17,7 @@ import { logoutGuard } from './guards/logout.guard';
 import { usersSectionGuard } from './guards/users-section.guard';
 import { eventCreateGuard, eventEditGuard } from './guards/event-permissions.guard';
 import { ticketGroupEditGuard } from './guards/ticket-group-permissions.guard';
-import { ticketEditGuard } from './guards/ticket-permissions.guard';
+import { ticketEditGuard, ticketReadGuard } from './guards/ticket-permissions.guard';
 import { eventTicketsReadGuard } from './guards/event-permissions.guard';
 
 let eventsChildren: Routes = [
@@ -35,16 +33,19 @@ let eventsChildren: Routes = [
   {
     path: 'add',
     component: EventsFormComponent,
+    data: { mode: 'new' },
     canActivate: [eventCreateGuard]
   },
   {
     path: 'edit/:id',
     component: EventsFormComponent,
+    data: { mode: 'edit' },
     canActivate: [eventEditGuard]
   },
   {
     path: 'detail/:id',
-    component: EventsFormComponent
+    component: EventsFormComponent,
+    data: { mode: 'detail' }
   },
   {
     path: ':event-id/tickets',
@@ -61,8 +62,15 @@ let eventsChildren: Routes = [
       },
       {
         path: ':id/edit',
-        component: TicketsEditComponent,
+        component: TicketsFormComponent,
+        data: { mode: 'edit' },
         canActivate: [ticketEditGuard]
+      },
+      {
+        path: ':id/detail',
+        component: TicketsFormComponent,
+        data: { mode: 'detail' },
+        canActivate: [ticketReadGuard]
       }
     ]
   }
@@ -115,12 +123,20 @@ export let APP_ROUTES: Routes = [
           },
           {
             path: 'add',
-            component: TicketsNewComponent
+            component: TicketsFormComponent,
+            data: { mode: 'new' }
           },
           {
             path: 'edit/:id',
-            component: TicketsEditComponent,
+            component: TicketsFormComponent,
+            data: { mode: 'edit' },
             canActivate: [ticketEditGuard]
+          },
+          {
+            path: 'detail/:id',
+            component: TicketsFormComponent,
+            data: { mode: 'detail' },
+            canActivate: [ticketReadGuard]
           }
         ]
       },
@@ -138,16 +154,19 @@ export let APP_ROUTES: Routes = [
           },
           {
             path: 'add',
-            component: TicketGroupsNewComponent
+            component: TicketGroupsFormComponent,
+            data: { mode: 'new' }
           },
           {
             path: 'edit/:id',
-            component: TicketGroupsEditComponent,
+            component: TicketGroupsFormComponent,
+            data: { mode: 'edit' },
             canActivate: [ticketGroupEditGuard]
           },
           {
             path: 'detail/:id',
-            component: TicketGroupsEditComponent,
+            component: TicketGroupsFormComponent,
+            data: { mode: 'detail' },
           }
         ]
       },

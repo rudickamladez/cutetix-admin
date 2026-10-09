@@ -24,10 +24,10 @@
     <thead>
       <tr>
         <th scope="col" [attr.aria-sort]="sortAriaSort('lastname')">
-          <app-table-sort-header label="Last Name" column="lastname" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+          <app-table-sort-header label="Last&nbsp;Name" column="lastname" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th scope="col" [attr.aria-sort]="sortAriaSort('firstname')">
-          <app-table-sort-header label="First Name" column="firstname" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
+          <app-table-sort-header label="First&nbsp;Name" column="firstname" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
         </th>
         <th scope="col" [attr.aria-sort]="sortAriaSort('id')">
           <app-table-sort-header label="ID" column="id" [sortState]="sortState()" (sort)="toggleSort($event)"></app-table-sort-header>
@@ -104,6 +104,9 @@
           }
         </td>
         <td class="actions">
+          <button class="detail" [routerLink]="viewTicketRoute(ticket)" [disabled]="(canRead(ticket) | async) !== true">
+            <fa-icon [icon]="viewIcon"></fa-icon>
+          </button>
           <button class="destructive" (click)="cancel(ticket)" [disabled]="canEditTicket !== true">
             <fa-icon [icon]="cancelIcon"></fa-icon>
           </button>
