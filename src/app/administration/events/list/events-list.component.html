@@ -1,16 +1,14 @@
 @if (events.isLoading()) {
 <app-loading></app-loading>
-}
-<div>
-  @if (events.error()) {
+} @else if (events.error()) {
   <div class="error">
     <p>
       There's problem loading table.<br />
       {{ loadErrorText() }}
     </p>
   </div>
-  }
-  @if (!events.error()) {
+} @else {
+<div>
   <div class="toolbar">
     <div class="filters">
       <div label="Search">
@@ -85,5 +83,5 @@
       </li>
     </ul>
   </div>
-  }
 </div>
+}

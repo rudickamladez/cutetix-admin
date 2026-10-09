@@ -1,16 +1,14 @@
 @if (ticketGroups.isLoading()) {
 <app-loading></app-loading>
-}
-<div>
-  @if (ticketGroups.error()) {
+} @else if (ticketGroups.error()) {
   <div class="error">
     <p>
       There's problem loading table.<br />
       {{ ticketGroups.error()?.message }}
     </p>
   </div>
-  }
-  @if (!ticketGroups.error()) {
+} @else {
+<div>
   <div class="toolbar">
     <div class="filters">
       <div label="Search">
@@ -71,5 +69,5 @@
     </tbody>
   </table>
   </div>
-  }
 </div>
+}

@@ -1,16 +1,14 @@
 @if (tickets.isLoading()) {
 <app-loading></app-loading>
-}
-<div>
-  @if (tickets.error()) {
+} @else if (tickets.error()) {
   <div class="error">
     <p>
       There's problem loading table.<br />
       {{ tickets.error()?.message || tickets.error() }}
     </p>
   </div>
-  }
-  @if (!tickets.error()) {
+} @else {
+<div>
   <div class="toolbar">
     <div class="filters">
       <div label="Search">
@@ -122,5 +120,5 @@
     </tbody>
   </table>
   </div>
-  }
 </div>
+}
