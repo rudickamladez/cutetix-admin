@@ -5,7 +5,6 @@ import { SnackbarToastrService } from '../../../services/snackbar-toastr.service
 import { UserService } from '../users.service';
 import { User } from '../users.types';
 import { AuthService } from 'src/app/services/auth.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { matchesSearch } from '../../../shared/matches-search';
 import { getAriaSort, sortRows, TableSortState, toggleSort } from '../../../shared/table-sort';
 import { ConfirmDialogService } from '../../../services/confirm-dialog.service';
@@ -14,6 +13,7 @@ import { TableSearchComponent } from '../../../components/table-search/table-sea
 import { TableSortHeaderComponent } from '../../../components/table-sort-header/table-sort-header.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { LoggingService } from '../../../services/logging.service';
+import { errorMessage } from '../../../utils/error-message';
 
 type UserSortColumn = 'username' | 'full_name' | 'email' | 'disabled';
 
@@ -92,10 +92,10 @@ export class UsersListComponent {
             }
           );
         },
-        error: (err: HttpErrorResponse) => {
+        error: (err: unknown) => {
           this.#logging.error('user', 'User deletion failed.', err);
           this.#toastr.error(
-            `Error: ${err.error?.detail ?? err.message}`,
+            `Error: ${errorMessage(err)}`,
             'User wasn\'t deleted!',
             {
               progressBar: true,
@@ -126,12 +126,6 @@ export class UsersListComponent {
     if (!err) {
       return '';
     }
-    if (err instanceof HttpErrorResponse) {
-      return err.error?.detail ?? err.message;
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return String(err);
+    return errorMessage(err);
   }
 }

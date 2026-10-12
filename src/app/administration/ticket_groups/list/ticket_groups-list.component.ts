@@ -2,7 +2,6 @@ import { Component, computed, inject, ChangeDetectionStrategy, signal } from '@a
 import { TicketGroupService } from '../ticket_groups.service';
 import { faPen, faPeopleGroup, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { TicketGroup } from '../ticket_groups.types';
 import { EventPermissionsService } from 'src/app/services/event-permissions.service';
 import { Observable } from 'rxjs';
@@ -14,6 +13,7 @@ import { TableSearchComponent } from '../../../components/table-search/table-sea
 import { TableSortHeaderComponent } from '../../../components/table-sort-header/table-sort-header.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { AsyncPipe } from '@angular/common';
+import { errorMessage } from '../../../utils/error-message';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -107,9 +107,9 @@ export class TicketGroupsListComponent {
             }
           );
         },
-        error: (err: HttpErrorResponse) => {
+        error: (err: unknown) => {
           this.#toastr.error(
-            err.error?.detail ?? err.message,
+            errorMessage(err),
             'Ticket group wasn\'t deleted!',
             {
               progressBar: true,
