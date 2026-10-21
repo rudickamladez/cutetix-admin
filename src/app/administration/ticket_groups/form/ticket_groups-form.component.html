@@ -31,7 +31,7 @@
 
   @if (mode() !== 'detail') {
     @let canEdit = canEditEvent(model().eventId) | async;
-    <button class="alt" [disabled]="ticketGroupForm().invalid() || canEdit !== true">
+    <button class="alt" [disabled]="ticketGroupForm().invalid() || ticketGroupForm().submitting() || canEdit !== true">
       {{ mode() === 'new' ? 'Create' : 'Edit' }}
     </button>
   }
