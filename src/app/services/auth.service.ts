@@ -2,7 +2,7 @@ import { Injectable, type OnDestroy, effect, inject, signal } from "@angular/cor
 import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
 
 import { jwtDecode } from "jwt-decode";
-import { timeout, type Subscription } from "rxjs";
+import { firstValueFrom, timeout, type Subscription } from "rxjs";
 // import { Socket } from "ngx-socket-io";
 import { SnackbarToastrService } from './snackbar-toastr.service';
 
@@ -46,6 +46,7 @@ export class AuthService implements OnDestroy {
     #loginSub?: Subscription;
     #registerSub?: Subscription;
     #refreshSub?: Subscription;
+    #sessionRestore?: Promise<boolean>;
 
     constructor() {
         // could not be unsubscribed, because it is provided in root
@@ -342,6 +343,12 @@ export class AuthService implements OnDestroy {
         if (this.#canRefreshToken === true) return;
         if (this.#visibilityService.visible() === false) return;
 
+        if (!navigator.locks) {
+            this.#canRefreshToken = true;
+            if (this.isLoggedIn()) this.#scheduleNextRefresh();
+            return;
+        }
+
         if (this.#lockAbortController.signal.aborted) {
             this.#lockAbortController = new AbortController();
         }
@@ -352,8 +359,6 @@ export class AuthService implements OnDestroy {
 
             if (this.isLoggedIn()) {
                 this.#scheduleNextRefresh();
-            } else {
-                this.refresh();
             }
 
             return new Promise((_, r) => {
@@ -366,14 +371,63 @@ export class AuthService implements OnDestroy {
         });
     }
 
+    isTokenExpired(token: string): boolean {
+        try {
+            const parsedToken = jwtDecode(token);
+            return parsedToken.exp !== undefined && parsedToken.exp * 1000 <= Date.now();
+        } catch {
+            return true;
+        }
+    }
+
     isLoggedIn(): boolean {
         const accessToken = this.getAccessToken();
         if (accessToken === null) return false;
 
         try {
-            const parsedAccessToken = jwtDecode(accessToken);
-            return parsedAccessToken.exp === undefined || parsedAccessToken.exp * 1000 > Date.now();
+            return !this.isTokenExpired(accessToken);
         } catch (err) {
+            return false;
+        }
+    }
+
+    ensureAuthenticated(): Promise<boolean> {
+        if (this.isLoggedIn()) {
+            this.#canGoToPrivate.set(true);
+            return Promise.resolve(true);
+        }
+        if (this.#sessionRestore) return this.#sessionRestore;
+
+        this.#sessionRestore = this.#restoreSession().finally(() => {
+            this.#sessionRestore = undefined;
+        });
+        return this.#sessionRestore;
+    }
+
+    async #restoreSession(): Promise<boolean> {
+        const refreshToken = this.getRefreshToken();
+        if (!refreshToken || this.isTokenExpired(refreshToken)) {
+            this.#canGoToPrivate.set(false);
+            return false;
+        }
+
+        try {
+            const tokens = await firstValueFrom(this.#http.post<TokensFromApi>(
+                new URL("auth/refresh", this.#storageService.get(StorageKeys.API_URL)!).href,
+                {
+                    refresh_token: refreshToken,
+                    requested_scopes: this.getDecodedAccessToken()?.scope || null,
+                },
+            ));
+            this.#storageService
+                .set(StorageKeys.ACCESS_TOKEN, tokens.access_token)
+                .set(StorageKeys.REFRESH_TOKEN, tokens.refresh_token);
+            this.#canGoToPrivate.set(true);
+            this.#scheduleNextRefresh();
+            return true;
+        } catch (err) {
+            this.#logging.error("auth", "Could not restore session from refresh token.", err);
+            this.#canGoToPrivate.set(false);
             return false;
         }
     }
