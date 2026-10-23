@@ -416,7 +416,7 @@ export class AuthService implements OnDestroy {
                 new URL("auth/refresh", this.#storageService.get(StorageKeys.API_URL)!).href,
                 {
                     refresh_token: refreshToken,
-                    requested_scopes: this.getDecodedAccessToken()?.scope || null,
+                    requested_scopes: Object(this.getDecodedAccessToken())?.scope || null,
                 },
             ));
             this.#storageService
