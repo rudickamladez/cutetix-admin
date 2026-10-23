@@ -1,5 +1,5 @@
 import { Injectable, type OnDestroy, effect, inject, signal } from "@angular/core";
-import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 
 import { jwtDecode } from "jwt-decode";
 import { firstValueFrom, Subject, takeUntil, TimeoutError, timeout, type Subscription } from "rxjs";
