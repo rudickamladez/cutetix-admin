@@ -213,7 +213,10 @@ export class AuthService implements OnDestroy {
         this.#sessionRestore = undefined;
         this.#refreshLockAbortController?.abort();
         this.#refreshLockAbortController = undefined;
-        this.#cancelRefreshRequests.next();
+        const cancelledRefreshRequests = this.#cancelRefreshRequests;
+        this.#cancelRefreshRequests = new Subject<void>();
+        cancelledRefreshRequests.next();
+        cancelledRefreshRequests.complete();
         this.#loginSub?.unsubscribe();
         this.#registerSub?.unsubscribe();
         if (this.#refreshingTimer !== null) {
