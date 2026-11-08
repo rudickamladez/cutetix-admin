@@ -22,6 +22,7 @@ export const authInterceptor: HttpInterceptorFn =
         const auth = inject(AuthService);
         const storage = inject(StorageService);
         const apiUrl = storage.get(StorageKeys.API_URL);
+        const authSessionId = storage.get(StorageKeys.AUTH_SESSION_ID);
         const apiRequest = isWithinApiBase(req.url, apiUrl);
         const authEndpoint = apiRequest ? getAuthEndpoint(req.url, apiUrl) : null;
         const skipAuth = req.headers.has(SKIP_AUTH_HEADER);
@@ -58,12 +59,13 @@ export const authInterceptor: HttpInterceptorFn =
                     return throwError(() => err);
                 }
 
-                return auth.refreshForUnauthorizedRequest(attachedAccessToken).pipe(
+                return auth.refreshForUnauthorizedRequest(attachedAccessToken, authSessionId).pipe(
                     switchMap((newToken) => {
                         // The configured API may have changed while refresh was in flight.
                         // Do not retry an old URL or attach credentials from the new session.
                         if (
                             storage.get(StorageKeys.API_URL) !== apiUrl ||
+                            storage.get(StorageKeys.AUTH_SESSION_ID) !== authSessionId ||
                             !isWithinApiBase(request.url, storage.get(StorageKeys.API_URL)) ||
                             auth.getAccessToken() !== newToken
                         ) {

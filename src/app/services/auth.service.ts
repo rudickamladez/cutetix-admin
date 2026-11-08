@@ -71,6 +71,12 @@ export class AuthService implements OnDestroy {
         if (!this.#storageService.get(StorageKeys.API_URL)) {
             this.#storageService.set(StorageKeys.API_URL, environment.backend.api)
         }
+        if (
+            !this.#storageService.get(StorageKeys.AUTH_SESSION_ID) &&
+            (this.getAccessToken() || this.getRefreshToken())
+        ) {
+            this.#storageService.set(StorageKeys.AUTH_SESSION_ID, this.#createAuthSessionId());
+        }
 
         // A non-owner tab asks the existing lock owner to refresh through this
         // storage event. No second Web Lock request is queued behind its lock.
@@ -148,6 +154,7 @@ export class AuthService implements OnDestroy {
             next: ({ refresh_token, access_token }) => {
                 this.#logging.log("auth", "User registred successfully.");
                 this.#storageService
+                    .set(StorageKeys.AUTH_SESSION_ID, this.#createAuthSessionId())
                     .set(StorageKeys.ACCESS_TOKEN, access_token)
                     .set(StorageKeys.REFRESH_TOKEN, refresh_token);
                 this.#refreshRetryAfter = 0;
@@ -211,6 +218,7 @@ export class AuthService implements OnDestroy {
             next: ({ refresh_token, access_token }) => {
                 this.#logging.log("auth", "User logged in successfully.");
                 this.#storageService
+                    .set(StorageKeys.AUTH_SESSION_ID, this.#createAuthSessionId())
                     .set(StorageKeys.ACCESS_TOKEN, access_token)
                     .set(StorageKeys.REFRESH_TOKEN, refresh_token);
                 this.#refreshRetryAfter = 0;
@@ -292,12 +300,23 @@ export class AuthService implements OnDestroy {
         }
     }
 
+    #createAuthSessionId(): string {
+        return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+
     /**
      * Refreshes for an HTTP 401 using the tab that already owns REFRESH_LOCK.
      * The operation is shared with scheduled refreshes in this tab. Other tabs
      * signal the lock owner and wait for the shared access-token storage event.
      */
-    refreshForUnauthorizedRequest(failedAccessToken: string): Observable<string> {
+    refreshForUnauthorizedRequest(
+        failedAccessToken: string,
+        expectedAuthSessionId: string | null,
+    ): Observable<string> {
+        if (this.#storageService.get(StorageKeys.AUTH_SESSION_ID) !== expectedAuthSessionId) {
+            return throwError(() => new Error("Authentication session changed before refresh."));
+        }
+
         const currentAccessToken = this.getAccessToken();
         if (currentAccessToken && currentAccessToken !== failedAccessToken) {
             return of(currentAccessToken);
@@ -331,10 +350,12 @@ export class AuthService implements OnDestroy {
 
         const refreshUrl = new URL("auth/refresh", apiUrl).href;
         const accessToken = this.getAccessToken();
+        const authSessionId = this.#storageService.get(StorageKeys.AUTH_SESSION_ID);
         const sessionVersion = this.#authSessionVersion;
         const sessionIsCurrent = () =>
             this.#authSessionVersion === sessionVersion &&
             this.#storageService.get(StorageKeys.API_URL) === apiUrl &&
+            this.#storageService.get(StorageKeys.AUTH_SESSION_ID) === authSessionId &&
             this.getAccessToken() === accessToken &&
             this.getRefreshToken() === refreshToken;
         const accessTokenPayload = Object(this.getDecodedAccessToken());
@@ -479,6 +500,7 @@ export class AuthService implements OnDestroy {
         }
         // Local logout must complete even if the access token expired or the backend is offline.
         this.#storageService
+            .delete(StorageKeys.AUTH_SESSION_ID)
             .delete(StorageKeys.ACCESS_TOKEN)
             .delete(StorageKeys.REFRESH_TOKEN);
         this.#canGoToPrivate.set(false);
