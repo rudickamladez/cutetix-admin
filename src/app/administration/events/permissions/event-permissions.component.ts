@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -10,6 +9,7 @@ import { SnackbarToastrService } from 'src/app/services/snackbar-toastr.service'
 import { UserSearchService } from 'src/app/services/user-search.service';
 import { EVENT_SCOPES, EventScope, EventUserScope } from 'src/app/types/event-permissions.types';
 import { UserSearchResult } from 'src/app/types/user-search.types';
+import { errorMessage } from '../../../utils/error-message';
 
 type PermissionUser = {
   userId: string;
@@ -99,7 +99,7 @@ export class EventPermissionsComponent implements OnInit {
         this.#searching.set(true);
         return this.#userSearch.search(query).pipe(
           catchError(error => {
-            this.#searchError.set(this.#errorMessage(error));
+            this.#searchError.set(errorMessage(error));
             return of<UserSearchResult[]>([]);
           })
         );
@@ -170,7 +170,7 @@ export class EventPermissionsComponent implements OnInit {
   }
 
   protected save(user: PermissionUser): void {
-    if (user.scopes.length === 0) {
+    if (user.scopes.length === 0 || user.saving) {
       return;
     }
     const userName = user.identity.full_name || user.identity.username;
@@ -181,6 +181,7 @@ export class EventPermissionsComponent implements OnInit {
       user.scopes
     ).subscribe({
       next: () => {
+        this.#setUserState(user.userId, { saving: false });
         this.#toastr.success(
           `Permissions for ${userName} were updated.`,
           'Event permissions'
@@ -189,7 +190,7 @@ export class EventPermissionsComponent implements OnInit {
         this.#load();
       },
       error: error => {
-        const message = this.#errorMessage(error);
+        const message = errorMessage(error);
         this.#setUserState(user.userId, { saving: false, error: message });
         this.#toastr.error(message, 'Event permissions');
       },
@@ -209,7 +210,7 @@ export class EventPermissionsComponent implements OnInit {
         this.#loading.set(false);
       },
       error: error => {
-        this.#loadError.set(this.#errorMessage(error));
+        this.#loadError.set(errorMessage(error));
         this.#loading.set(false);
       },
     });
@@ -244,14 +245,10 @@ export class EventPermissionsComponent implements OnInit {
     ));
   }
 
-  #errorMessage(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      return error.error?.detail ?? error.message;
-    }
-    return error instanceof Error ? error.message : String(error);
-  }
-
   deleteUser(user: PermissionUser): void {
+    if (user.saving) {
+      return;
+    }
     const userName = user.identity.full_name || user.identity.username;
     this.#setUserState(user.userId, { saving: true, error: null });
     this.#eventPermissions.replaceUserScopes(
@@ -260,6 +257,7 @@ export class EventPermissionsComponent implements OnInit {
       []
     ).subscribe({
       next: () => {
+        this.#setUserState(user.userId, { saving: false });
         this.#toastr.success(
           `Permissions for ${userName} were deleted.`,
           'Event permissions'
@@ -268,7 +266,7 @@ export class EventPermissionsComponent implements OnInit {
         this.#load();
       },
       error: error => {
-        const message = this.#errorMessage(error);
+        const message = errorMessage(error);
         this.#setUserState(user.userId, { saving: false, error: message });
         this.#toastr.error(message, 'Event permissions');
       },

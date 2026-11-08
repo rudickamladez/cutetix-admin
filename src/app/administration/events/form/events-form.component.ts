@@ -1,5 +1,4 @@
 import { Component, computed, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { disabled, form, required, submit, FormField } from '@angular/forms/signals';
 import { EventService } from '../events.service';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
@@ -10,6 +9,7 @@ import { EventCreate } from '../events.types';
 import { LoadingComponent } from '../../loading/loading.component';
 import { EventPermissionsComponent } from '../permissions/event-permissions.component';
 import { AsyncPipe } from '@angular/common';
+import { errorMessage } from '../../../utils/error-message';
 
 @Component({
     selector: 'app-events-form',
@@ -80,9 +80,8 @@ export class EventsFormComponent {
         return;
       }
       this.#loadErrorShown = true;
-      const detail = err instanceof HttpErrorResponse ? err.error?.detail : undefined;
       this.#toastr.error(
-        typeof detail === 'string' ? detail : err.message,
+        errorMessage(err),
         'Cannot load event',
         { progressBar: true }
       );
@@ -107,7 +106,7 @@ export class EventsFormComponent {
         this.#router.navigate(['/events/detail/' + event.id]);
       } catch (err) {
         this.#toastr.error(
-          `${this.mode() === 'new' ? 'NOT CREATED' : 'NOT EDITED'}! Error: ${err instanceof Error ? err.message : String(err)}`,
+          `${this.mode() === 'new' ? 'NOT CREATED' : 'NOT EDITED'}! Error: ${errorMessage(err)}`,
           'Event',
           { progressBar: true }
         );
@@ -120,9 +119,6 @@ export class EventsFormComponent {
     if (!err) {
       return '';
     }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return String(err);
+    return errorMessage(err);
   }
 }
