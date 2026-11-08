@@ -2,8 +2,8 @@ import { Injectable, type OnDestroy, effect, inject, signal } from "@angular/cor
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 
 import { jwtDecode } from "jwt-decode";
-import { Observable, of, throwError, timeout, type Subscription } from "rxjs";
-import { catchError, finalize, map, shareReplay } from "rxjs/operators";
+import { firstValueFrom, Observable, of, Subject, throwError, timeout, type Subscription } from "rxjs";
+import { catchError, finalize, map, shareReplay, takeUntil } from "rxjs/operators";
 // import { Socket } from "ngx-socket-io";
 import { SnackbarToastrService } from './snackbar-toastr.service';
 
@@ -22,7 +22,8 @@ type TokensFromApi = {
     access_token: string,
 }
 
-const REFRESH_WAIT_MS = 10_000;
+const REFRESH_TIMEOUT_MS = 10_000;
+const REFRESH_WAIT_MS = 15_000;
 
 @Injectable({
     providedIn: "root"
@@ -55,6 +56,8 @@ export class AuthService implements OnDestroy {
     #refreshRequestSub?: Subscription;
     #apiUrlSub?: Subscription;
     #accessTokenSub?: Subscription;
+    #cancelRefreshRequests = new Subject<void>();
+    #refreshRetryAfter = 0;
 
     constructor() {
         // could not be unsubscribed, because it is provided in root
@@ -121,6 +124,7 @@ export class AuthService implements OnDestroy {
         this.#refreshRequestSub?.unsubscribe();
         this.#apiUrlSub?.unsubscribe();
         this.#accessTokenSub?.unsubscribe();
+        this.#cancelRefreshRequests.complete();
     }
 
     register(
@@ -146,6 +150,7 @@ export class AuthService implements OnDestroy {
                 this.#storageService
                     .set(StorageKeys.ACCESS_TOKEN, access_token)
                     .set(StorageKeys.REFRESH_TOKEN, refresh_token);
+                this.#refreshRetryAfter = 0;
 
                 this.#scheduleNextRefresh();
 
@@ -208,6 +213,7 @@ export class AuthService implements OnDestroy {
                 this.#storageService
                     .set(StorageKeys.ACCESS_TOKEN, access_token)
                     .set(StorageKeys.REFRESH_TOKEN, refresh_token);
+                this.#refreshRetryAfter = 0;
 
                 this.#scheduleNextRefresh();
 
@@ -248,6 +254,42 @@ export class AuthService implements OnDestroy {
         this.#refreshSub = this.#startRefresh().subscribe({
             error: () => undefined,
         });
+    }
+
+    async ensureAuthenticated(): Promise<boolean> {
+        if (this.isLoggedIn()) {
+            this.#refreshRetryAfter = 0;
+            this.#canGoToPrivate.set(true);
+            return true;
+        }
+        if (Date.now() < this.#refreshRetryAfter) return false;
+        if (!this.getRefreshToken()) {
+            this.#canGoToPrivate.set(false);
+            return false;
+        }
+
+        const failedAccessToken = this.getAccessToken();
+        try {
+            // The lock owner performs the refresh; other tabs wait for its storage update.
+            const refreshedAccessToken = this.#canRefreshToken && this.#visibilityService.visible()
+                ? await firstValueFrom(this.#startRefresh())
+                : await firstValueFrom(this.#waitForRefreshFromLockOwner(failedAccessToken));
+
+            const restored = refreshedAccessToken === this.getAccessToken() && this.isLoggedIn();
+            if (restored) {
+                this.#refreshRetryAfter = 0;
+                this.#canGoToPrivate.set(true);
+            }
+            return restored;
+        } catch (err) {
+            this.#logging.error("auth", "Could not restore session from refresh token.", err);
+            if (this.isLoggedIn()) {
+                this.#canGoToPrivate.set(true);
+                return true;
+            }
+            this.#refreshRetryAfter = Date.now() + REFRESH_WAIT_MS;
+            return false;
+        }
     }
 
     /**
@@ -306,6 +348,8 @@ export class AuthService implements OnDestroy {
                 requested_scopes: accessTokenPayload.scope || null,
             },
         ).pipe(
+            timeout(REFRESH_TIMEOUT_MS),
+            takeUntil(this.#cancelRefreshRequests),
             map(({ refresh_token, access_token }) => {
                 // Do not let an in-flight response replace credentials after
                 // logout, login, refresh-token rotation, or an API URL change.
@@ -317,6 +361,7 @@ export class AuthService implements OnDestroy {
                 this.#storageService
                     .set(StorageKeys.ACCESS_TOKEN, access_token)
                     .set(StorageKeys.REFRESH_TOKEN, refresh_token);
+                this.#refreshRetryAfter = 0;
                 this.#canGoToPrivate.set(true);
                 this.#scheduleNextRefresh();
                 return access_token;
@@ -361,7 +406,7 @@ export class AuthService implements OnDestroy {
         return operation$;
     }
 
-    #waitForRefreshFromLockOwner(failedAccessToken: string): Observable<string> {
+    #waitForRefreshFromLockOwner(failedAccessToken: string | null): Observable<string> {
         if (this.#refreshWaitOperation$) return this.#refreshWaitOperation$;
 
         const operation$ = new Observable<string>(subscriber => {
@@ -414,41 +459,37 @@ export class AuthService implements OnDestroy {
 
     logout(skipBackendRequest = false): void {
         this.#authSessionVersion++;
-
-        const logoutLogic = () => {
-            this.#storageService
-                .delete(StorageKeys.ACCESS_TOKEN)
-                .delete(StorageKeys.REFRESH_TOKEN);
-            this.#canGoToPrivate.set(false);
-        };
-
-        if (skipBackendRequest) {
-            this.#loginSub?.unsubscribe();
-            this.#registerSub?.unsubscribe();
-            this.#refreshSub?.unsubscribe();
-            this.#isRefreshingToken = false;
-            if (this.#refreshingTimer !== null) {
-                clearTimeout(this.#refreshingTimer);
-                this.#refreshingTimer = null;
-            }
-            logoutLogic();
-            return;
-        }
-
-        if (!this.isLoggedIn()) return;
-
+        const wasLoggedIn = this.isLoggedIn();
+        const accessToken = this.getAccessToken();
         const refreshToken = this.getRefreshToken();
         const apiUrl = this.#storageService.get(StorageKeys.API_URL);
 
-        if (!refreshToken || !apiUrl) {
-            window.location.reload();
-            return;
+        // Cancel any pending refresh and give a future login a fresh cancellation notifier.
+        const cancelledRefreshRequests = this.#cancelRefreshRequests;
+        this.#cancelRefreshRequests = new Subject<void>();
+        cancelledRefreshRequests.next();
+        cancelledRefreshRequests.complete();
+        this.#loginSub?.unsubscribe();
+        this.#registerSub?.unsubscribe();
+        this.#refreshSub?.unsubscribe();
+        this.#isRefreshingToken = false;
+        if (this.#refreshingTimer !== null) {
+            clearTimeout(this.#refreshingTimer);
+            this.#refreshingTimer = null;
         }
+        // Local logout must complete even if the access token expired or the backend is offline.
+        this.#storageService
+            .delete(StorageKeys.ACCESS_TOKEN)
+            .delete(StorageKeys.REFRESH_TOKEN);
+        this.#canGoToPrivate.set(false);
+
+        if (skipBackendRequest || !wasLoggedIn || !refreshToken || !apiUrl) return;
 
         // TODO rework with navigator.sendBeacon
         this.#http.post(
             (new URL("auth/logout", apiUrl)).href,
-            {}
+            {},
+            accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {},
         ).pipe(
             timeout(1000)
         ).subscribe({
@@ -458,7 +499,6 @@ export class AuthService implements OnDestroy {
                     "You have been logged out.",
                     "Logout",
                 );
-                logoutLogic();
             },
             error: (err: HttpErrorResponse) => {
                 this.#logging.error("auth", "User logout failed.", err);
@@ -466,7 +506,6 @@ export class AuthService implements OnDestroy {
                     `Logout request failed. You might still be logged in on the server. Error: ${err.message}`,
                     "Logout",
                 );
-                logoutLogic();
             },
         });
     }

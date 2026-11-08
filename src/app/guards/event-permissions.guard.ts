@@ -45,3 +45,21 @@ export const eventTicketsReadGuard: CanActivateFn = route => {
     )
   );
 };
+
+export const eventTicketGroupsReadGuard: CanActivateFn = route => {
+  const eventPermissions = inject(EventPermissionsService);
+  const router = inject(Router);
+  const eventId = route.parent?.paramMap.get('event-id') ?? route.paramMap.get('event-id');
+
+  if (!eventId) {
+    return router.createUrlTree(['/my-events/list']);
+  }
+
+  return eventPermissions.canForEvent(
+    eventId,
+    eventPermissions.hasGlobalScope('ticket_groups:edit') ? 'ticket_groups:edit' : 'ticket_groups:read'
+  ).pipe(
+    map(canRead => canRead || router.createUrlTree(['/my-events/list'])),
+    catchError(() => of(router.createUrlTree(['/my-events/list'])))
+  );
+};

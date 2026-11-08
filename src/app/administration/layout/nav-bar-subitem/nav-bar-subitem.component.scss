@@ -27,7 +27,7 @@ a {
     text-decoration: none;
     color: inherit;
     cursor: default;
-    opacity: 0.8;
+    opacity: 1;
     transition: all 150ms;
     padding: 4px;
 
@@ -36,15 +36,20 @@ a {
     }
 
     &:hover {
-        opacity: 1;
+        color: $accentColorLight;
+        text-decoration: underline;
+        text-underline-offset: 2px;
     }
 
-    @media (min-width: 1199px) {
-        &.active {
-            opacity: 1;
-            font-weight: 500;
-            color: $accentColorLight;
-        }
+    &.active {
+        opacity: 1;
+        font-weight: 700;
+        color: $accentColorLight;
+    }
+
+    &:focus-visible {
+        outline: 1px solid $accentColorLight;
+        outline-offset: 1px;
     }
 
     @media (pointer: coarse) {

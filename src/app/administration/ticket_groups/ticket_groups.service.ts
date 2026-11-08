@@ -35,6 +35,27 @@ export class TicketGroupService {
     return new URL(`${this.#apiPath}${path}`, this.#storageService.get(StorageKeys.API_URL)!).href;
   }
 
+  public ticketGroupsByEventIdResource(
+    getEventId: () => string | null
+  ): HttpResourceRef<TicketGroup[]> {
+    return httpResource<TicketGroup[]>(() => {
+      const eventId = getEventId();
+
+      if (!eventId) {
+        return undefined;
+      }
+
+      return new URL(
+        `events/${eventId}/ticket_groups`,
+        this.#storageService.get(StorageKeys.API_URL)!
+      ).href;
+    },
+    {
+      defaultValue: [],
+    }
+  );
+  }
+
   public ticketGroupByIdResource(
     getId: () => string | null | undefined
   ): HttpResourceRef<TicketGroup | undefined> {
