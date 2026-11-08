@@ -61,7 +61,6 @@ export class LoginPageComponent {
 
   protected readonly canRun = signal(false);
   protected readonly showConfig = signal(false);
-  readonly #redirectAfterAuthentication = signal(false);
   readonly keys = StorageKeys;
   protected readonly mode = signal<'login' | 'register'>('login');
 
@@ -87,7 +86,7 @@ export class LoginPageComponent {
     }
 
     effect(() => {
-      if (this.#redirectAfterAuthentication() && this.#auth.canGoToPrivate()) {
+      if (this.#auth.canGoToPrivate()) {
         this.#router.navigate(["/dashboard"]);
       }
     });
@@ -95,8 +94,6 @@ export class LoginPageComponent {
 
   protected login(event: Event) {
     event.preventDefault();
-    this.#redirectAfterAuthentication.set(true);
-
     submit(this.loginForm, async () => {
       await this.#auth.login(
         this.loginModel().username,
@@ -107,8 +104,6 @@ export class LoginPageComponent {
 
   protected register(event: Event) {
     event.preventDefault();
-    this.#redirectAfterAuthentication.set(true);
-
     submit(this.registerForm, async () => {
       await this.#auth.register(this.registerModel());
     });
