@@ -6,6 +6,7 @@ import { Event, EventCapacitySummary, EventCreate } from './events.types';
 import { StorageKeys } from 'src/app/tokens/storage.tokens';
 import { StorageService } from 'src/app/services/storage.service';
 import { SnackbarToastrService } from '../../services/snackbar-toastr.service';
+import { errorMessage } from '../../utils/error-message';
 import { TicketGroupService } from '../ticket_groups/ticket_groups.service';
 import { TicketService } from '../../services/tickets.service';
 import { LoggingService } from '../../services/logging.service';
@@ -138,7 +139,7 @@ export class EventService {
       error: (err: HttpErrorResponse) => {
         this.#logging.error('events', 'Event deletion failed.', err);
         this.#toastr.error(
-          `Error: ${err.error?.detail ?? err.message}`,
+          `Error: ${errorMessage(err)}`,
           'Event wasn\'t deleted!',
           {
             progressBar: true,

@@ -68,7 +68,7 @@
   }
   }
   @if (mode() !== 'detail') {
-  <button class="alt" [disabled]="userForm().invalid()">
+  <button class="alt" [disabled]="userForm().invalid() || userForm().submitting()">
     {{ mode() === 'new' ? 'Create' : 'Save' }}
   </button>
   }

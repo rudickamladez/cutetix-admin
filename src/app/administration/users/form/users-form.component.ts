@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { SnackbarToastrService } from '../../../services/snackbar-toastr.service';
 import { UserService } from '../users.service';
 import { User, UserCreate, UserUpdate } from '../users.types';
-import { HttpErrorResponse } from '@angular/common/http';
 import { SCOPES_ENTRIES } from '../../../types/auth.types';
 import { LoadingComponent } from '../../loading/loading.component';
 import { LoggingService } from '../../../services/logging.service';
+import { firstValueFrom } from 'rxjs';
+import { errorMessage } from '../../../utils/error-message';
 
 @Component({
     selector: 'app-users-form',
@@ -69,7 +70,7 @@ export class UsersFormComponent {
         return;
       }
       this.#toastr.error(
-        err instanceof HttpErrorResponse ? err.error?.detail ?? err.message : err.message,
+        errorMessage(err),
         'Cannot load user',
         {
           progressBar: true,
@@ -112,28 +113,14 @@ export class UsersFormComponent {
 
     if (this.mode() === 'new') {
       submit(this.userForm, async () => {
-        await this.#usersService.create(this.userModel()).subscribe({
-          next: () => {
-            this.#toastr.info(
-              'Successfully created.',
-              'User',
-              {
-                progressBar: true,
-              }
-            );
-            this.#router.navigate(['users']);
-          },
-          error: (err: HttpErrorResponse) => {
-            this.#logging.error('user', 'User creation failed.', err);
-            this.#toastr.error(
-              err.error.detail ? err.error.detail : err.message,
-              'User not created',
-              {
-                progressBar: true,
-              }
-            );
-          }
-        });
+        try {
+          await firstValueFrom(this.#usersService.create(this.userModel()));
+          this.#toastr.info('Successfully created.', 'User', { progressBar: true });
+          this.#router.navigate(['users']);
+        } catch (err) {
+          this.#logging.error('user', 'User creation failed.', err);
+          this.#toastr.error(errorMessage(err), 'User not created', { progressBar: true });
+        }
       });
     } else {
       submit(this.userForm, async () => {
@@ -143,31 +130,17 @@ export class UsersFormComponent {
         }
 
         const { plaintext_password: _plaintextPassword, ...userUpdate } = this.userModel();
-        await this.#usersService.update(currentUser.uuid, {
-          ...userUpdate,
-          uuid: currentUser.uuid,
-        }).subscribe({
-          next: (user: User) => {
-            this.#toastr.info(
-              'Successfully edited.',
-              `User '${user.username}'`,
-              {
-                progressBar: true,
-              }
-            );
-            this.#router.navigate(['/users/edit', user.uuid]);
-          },
-          error: (err: HttpErrorResponse) => {
-            this.#logging.error('user', 'User update failed.', err);
-            this.#toastr.error(
-              err.error.detail ? err.error.detail : err.message,
-              'User not edited',
-              {
-                progressBar: true,
-              }
-            );
-          }
-        });
+        try {
+          const user = await firstValueFrom(this.#usersService.update(currentUser.uuid, {
+            ...userUpdate,
+            uuid: currentUser.uuid,
+          }));
+          this.#toastr.info('Successfully edited.', `User '${user.username}'`, { progressBar: true });
+          this.#router.navigate(['/users/edit', user.uuid]);
+        } catch (err) {
+          this.#logging.error('user', 'User update failed.', err);
+          this.#toastr.error(errorMessage(err), 'User not edited', { progressBar: true });
+        }
       });
     }
   }
