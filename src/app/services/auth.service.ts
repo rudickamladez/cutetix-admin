@@ -2,7 +2,8 @@ import { Injectable, type OnDestroy, effect, inject, signal } from "@angular/cor
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 
 import { jwtDecode } from "jwt-decode";
-import { firstValueFrom, Subject, takeUntil, TimeoutError, timeout, type Subscription } from "rxjs";
+import { firstValueFrom, Observable, of, Subject, throwError, timeout, type Subscription } from "rxjs";
+import { catchError, finalize, map, shareReplay, takeUntil } from "rxjs/operators";
 // import { Socket } from "ngx-socket-io";
 import { SnackbarToastrService } from './snackbar-toastr.service';
 
@@ -21,6 +22,9 @@ type TokensFromApi = {
     access_token: string,
 }
 
+const REFRESH_TIMEOUT_MS = 10_000;
+const REFRESH_WAIT_MS = 15_000;
+
 @Injectable({
     providedIn: "root"
 })
@@ -37,14 +41,23 @@ export class AuthService implements OnDestroy {
     readonly #canGoToPrivate = signal(this.isLoggedIn());
     readonly canGoToPrivate = this.#canGoToPrivate.asReadonly();
 
+    #canRefreshToken = false;
+    #isRefreshingToken = false;
+    #refreshOperation$: Observable<string> | null = null;
+    #refreshWaitOperation$: Observable<string> | null = null;
+    #authSessionVersion = 0;
+
+    #lockAbortController = new AbortController();
+
     #refreshingTimer: ReturnType<typeof setTimeout> | null = null;
     #loginSub?: Subscription;
     #registerSub?: Subscription;
-    #sessionRestore?: Promise<boolean>;
+    #refreshSub?: Subscription;
+    #refreshRequestSub?: Subscription;
+    #apiUrlSub?: Subscription;
+    #accessTokenSub?: Subscription;
     #cancelRefreshRequests = new Subject<void>();
-    #sessionGeneration = 0;
     #refreshRetryAfter = 0;
-    #refreshLockAbortController?: AbortController;
 
     constructor() {
         // could not be unsubscribed, because it is provided in root
@@ -58,17 +71,44 @@ export class AuthService implements OnDestroy {
         if (!this.#storageService.get(StorageKeys.API_URL)) {
             this.#storageService.set(StorageKeys.API_URL, environment.backend.api)
         }
+        if (
+            !this.#storageService.get(StorageKeys.AUTH_SESSION_ID) &&
+            (this.getAccessToken() || this.getRefreshToken())
+        ) {
+            this.#storageService.set(StorageKeys.AUTH_SESSION_ID, this.#createAuthSessionId());
+        }
+
+        // A non-owner tab asks the existing lock owner to refresh through this
+        // storage event. No second Web Lock request is queued behind its lock.
+        this.#refreshRequestSub = this.#storageService.storageEvent$(StorageKeys.AUTH_REFRESH_REQUEST)
+            .subscribe(event => {
+                if (event.currentValue && this.#canRefreshToken) {
+                    this.refresh();
+                }
+            });
+
+        // API_URL is shared between tabs. A change invalidates tokens issued by
+        // the previously configured backend in every open tab.
+        this.#apiUrlSub = this.#storageService.storageEvent$(StorageKeys.API_URL)
+            .subscribe(() => this.logout(true));
+        this.#accessTokenSub = this.#storageService.storageEvent$(StorageKeys.ACCESS_TOKEN)
+            .subscribe(event => {
+                if (!event.currentValue) {
+                    this.#canGoToPrivate.set(false);
+                } else if (this.isLoggedIn()) {
+                    this.#canGoToPrivate.set(true);
+                }
+            });
 
         effect(() => {
             if (this.#visibilityService.visible()) {
                 if (this.isLoggedIn()) {
                     this.#canGoToPrivate.set(true);
-                    this.#scheduleNextRefresh();
-                } else if (this.getRefreshToken()) {
-                    void this.#refreshWithLock();
                 }
+                this.#handleRefreshLock();
                 return;
             }
+            this.#lockAbortController.abort();
             if (this.#refreshingTimer !== null) {
                 clearTimeout(this.#refreshingTimer);
                 this.#refreshingTimer = null;
@@ -87,6 +127,9 @@ export class AuthService implements OnDestroy {
 
     ngOnDestroy(): void {
         this.#loginSub?.unsubscribe();
+        this.#refreshRequestSub?.unsubscribe();
+        this.#apiUrlSub?.unsubscribe();
+        this.#accessTokenSub?.unsubscribe();
         this.#cancelRefreshRequests.complete();
     }
 
@@ -97,6 +140,8 @@ export class AuthService implements OnDestroy {
         if (this.isLoggedIn()) {
             return;
         }
+
+        this.#authSessionVersion++;
 
         if (this.#registerSub) {
             this.#registerSub.unsubscribe();
@@ -109,12 +154,14 @@ export class AuthService implements OnDestroy {
             next: ({ refresh_token, access_token }) => {
                 this.#logging.log("auth", "User registred successfully.");
                 this.#storageService
+                    .set(StorageKeys.AUTH_SESSION_ID, this.#createAuthSessionId())
                     .set(StorageKeys.ACCESS_TOKEN, access_token)
                     .set(StorageKeys.REFRESH_TOKEN, refresh_token);
                 this.#refreshRetryAfter = 0;
 
                 this.#scheduleNextRefresh();
 
+                this.#handleRefreshLock();
                 this.#toastr.success(
                     "You have been registered.",
                     "Register",
@@ -147,6 +194,8 @@ export class AuthService implements OnDestroy {
             return;
         }
 
+        this.#authSessionVersion++;
+
         if (this.#loginSub) {
             this.#loginSub.unsubscribe();
         }
@@ -169,12 +218,14 @@ export class AuthService implements OnDestroy {
             next: ({ refresh_token, access_token }) => {
                 this.#logging.log("auth", "User logged in successfully.");
                 this.#storageService
+                    .set(StorageKeys.AUTH_SESSION_ID, this.#createAuthSessionId())
                     .set(StorageKeys.ACCESS_TOKEN, access_token)
                     .set(StorageKeys.REFRESH_TOKEN, refresh_token);
                 this.#refreshRetryAfter = 0;
 
                 this.#scheduleNextRefresh();
 
+                this.#handleRefreshLock();
                 this.#toastr.success(
                     "You have been logged in.",
                     "Login",
@@ -200,30 +251,256 @@ export class AuthService implements OnDestroy {
 
     refresh(): void {
         this.#logging.log("auth", "Initiating refreshing of access token.");
-        void this.#refreshWithLock();
+        if (!this.#canRefreshToken || !this.#visibilityService.visible()) return;
+        if (this.#isRefreshingToken) return;
+
+        if (!this.getRefreshToken()) {
+            this.logout(true);
+            return;
+        }
+
+        this.#refreshSub = this.#startRefresh().subscribe({
+            error: () => undefined,
+        });
+    }
+
+    async ensureAuthenticated(): Promise<boolean> {
+        if (this.isLoggedIn()) {
+            this.#refreshRetryAfter = 0;
+            this.#canGoToPrivate.set(true);
+            return true;
+        }
+        if (Date.now() < this.#refreshRetryAfter) return false;
+        if (!this.getRefreshToken()) {
+            this.#canGoToPrivate.set(false);
+            return false;
+        }
+
+        const failedAccessToken = this.getAccessToken();
+        try {
+            // The lock owner performs the refresh; other tabs wait for its storage update.
+            const refreshedAccessToken = this.#canRefreshToken && this.#visibilityService.visible()
+                ? await firstValueFrom(this.#startRefresh())
+                : await firstValueFrom(this.#waitForRefreshFromLockOwner(failedAccessToken));
+
+            const restored = refreshedAccessToken === this.getAccessToken() && this.isLoggedIn();
+            if (restored) {
+                this.#refreshRetryAfter = 0;
+                this.#canGoToPrivate.set(true);
+            }
+            return restored;
+        } catch (err) {
+            this.#logging.error("auth", "Could not restore session from refresh token.", err);
+            if (this.isLoggedIn()) {
+                this.#canGoToPrivate.set(true);
+                return true;
+            }
+            this.#refreshRetryAfter = Date.now() + REFRESH_WAIT_MS;
+            return false;
+        }
+    }
+
+    #createAuthSessionId(): string {
+        return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+
+    /**
+     * Refreshes for an HTTP 401 using the tab that already owns REFRESH_LOCK.
+     * The operation is shared with scheduled refreshes in this tab. Other tabs
+     * signal the lock owner and wait for the shared access-token storage event.
+     */
+    refreshForUnauthorizedRequest(
+        failedAccessToken: string,
+        expectedAuthSessionId: string | null,
+    ): Observable<string> {
+        if (this.#storageService.get(StorageKeys.AUTH_SESSION_ID) !== expectedAuthSessionId) {
+            return throwError(() => new Error("Authentication session changed before refresh."));
+        }
+
+        const currentAccessToken = this.getAccessToken();
+        if (currentAccessToken && currentAccessToken !== failedAccessToken) {
+            return of(currentAccessToken);
+        }
+
+        if (this.#refreshOperation$) {
+            return this.#refreshOperation$;
+        }
+
+        if (!this.getRefreshToken()) {
+            this.logout(true);
+            return throwError(() => new Error("No refresh token is available."));
+        }
+
+        if (this.#canRefreshToken && this.#visibilityService.visible()) {
+            return this.#startRefresh();
+        }
+
+        return this.#waitForRefreshFromLockOwner(failedAccessToken);
+    }
+
+    #startRefresh(): Observable<string> {
+        if (this.#refreshOperation$) return this.#refreshOperation$;
+
+        const refreshToken = this.getRefreshToken();
+        const apiUrl = this.#storageService.get(StorageKeys.API_URL);
+        if (!refreshToken || !apiUrl) {
+            this.logout(true);
+            return throwError(() => new Error("Refresh credentials or API URL are unavailable."));
+        }
+
+        const refreshUrl = new URL("auth/refresh", apiUrl).href;
+        const accessToken = this.getAccessToken();
+        const authSessionId = this.#storageService.get(StorageKeys.AUTH_SESSION_ID);
+        const sessionVersion = this.#authSessionVersion;
+        const sessionIsCurrent = () =>
+            this.#authSessionVersion === sessionVersion &&
+            this.#storageService.get(StorageKeys.API_URL) === apiUrl &&
+            this.#storageService.get(StorageKeys.AUTH_SESSION_ID) === authSessionId &&
+            this.getAccessToken() === accessToken &&
+            this.getRefreshToken() === refreshToken;
+        const accessTokenPayload = Object(this.getDecodedAccessToken());
+        this.#logging.log("auth", "Refreshing of access token.");
+        this.#isRefreshingToken = true;
+
+        const operation$ = this.#http.post<TokensFromApi>(
+            refreshUrl,
+            {
+                refresh_token: refreshToken,
+                requested_scopes: accessTokenPayload.scope || null,
+            },
+        ).pipe(
+            timeout(REFRESH_TIMEOUT_MS),
+            takeUntil(this.#cancelRefreshRequests),
+            map(({ refresh_token, access_token }) => {
+                // Do not let an in-flight response replace credentials after
+                // logout, login, refresh-token rotation, or an API URL change.
+                if (!sessionIsCurrent()) {
+                    throw new Error("Authentication session changed while refreshing credentials.");
+                }
+
+                this.#logging.log("auth", "Access token was refreshed.");
+                this.#storageService
+                    .set(StorageKeys.ACCESS_TOKEN, access_token)
+                    .set(StorageKeys.REFRESH_TOKEN, refresh_token);
+                this.#refreshRetryAfter = 0;
+                this.#canGoToPrivate.set(true);
+                this.#scheduleNextRefresh();
+                return access_token;
+            }),
+            catchError((err: unknown) => {
+                this.#logging.error("auth", "Error while refreshing token.", err);
+
+                // A failed request from an old session must not log out a
+                // newer session. Keep the current session's refresh schedule.
+                if (!sessionIsCurrent()) {
+                    const hasNewerSession = this.isLoggedIn() && (
+                        this.getAccessToken() !== accessToken ||
+                        this.getRefreshToken() !== refreshToken ||
+                        this.#storageService.get(StorageKeys.API_URL) !== apiUrl
+                    );
+                    if (hasNewerSession) {
+                        this.#scheduleNextRefresh();
+                    }
+                    return throwError(() => err);
+                }
+
+                // Rejected/invalid refresh credentials are definitive. Clear
+                // locally without making another request to the failed backend.
+                if (err instanceof HttpErrorResponse && [400, 401, 403].includes(err.status)) {
+                    this.logout(true);
+                } else if (this.#storageService.get(StorageKeys.API_URL) === apiUrl) {
+                    // Network/server failures preserve the session and retry on
+                    // the existing schedule; callers receive this error now.
+                    this.#scheduleNextRefresh();
+                }
+
+                return throwError(() => err);
+            }),
+            finalize(() => {
+                this.#isRefreshingToken = false;
+                this.#refreshOperation$ = null;
+            }),
+            shareReplay({ bufferSize: 1, refCount: false }),
+        );
+
+        this.#refreshOperation$ = operation$;
+        return operation$;
+    }
+
+    #waitForRefreshFromLockOwner(failedAccessToken: string | null): Observable<string> {
+        if (this.#refreshWaitOperation$) return this.#refreshWaitOperation$;
+
+        const operation$ = new Observable<string>(subscriber => {
+            const timeoutId = setTimeout(() => {
+                subscriber.error(new Error("Timed out waiting for another tab to refresh the access token."));
+            }, REFRESH_WAIT_MS);
+
+            const accessTokenSub = this.#storageService.storageEvent$(StorageKeys.ACCESS_TOKEN)
+                .subscribe(event => {
+                    if (event.currentValue === failedAccessToken) return;
+                    if (event.currentValue) {
+                        subscriber.next(event.currentValue);
+                        subscriber.complete();
+                    } else {
+                        subscriber.error(new Error("Authentication ended while waiting for token refresh."));
+                    }
+                });
+
+            // Subscribe to storage changes before checking state or signaling,
+            // so a token update cannot be missed in the cross-tab race window.
+            const currentAccessToken = this.getAccessToken();
+            if (currentAccessToken !== failedAccessToken) {
+                if (currentAccessToken) {
+                    subscriber.next(currentAccessToken);
+                    subscriber.complete();
+                } else {
+                    subscriber.error(new Error("Authentication ended while waiting for token refresh."));
+                }
+            } else {
+                this.#storageService.set(
+                    StorageKeys.AUTH_REFRESH_REQUEST,
+                    `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                );
+            }
+
+            return () => {
+                clearTimeout(timeoutId);
+                accessTokenSub.unsubscribe();
+            };
+        }).pipe(
+            finalize(() => {
+                this.#refreshWaitOperation$ = null;
+            }),
+            shareReplay({ bufferSize: 1, refCount: false }),
+        );
+
+        this.#refreshWaitOperation$ = operation$;
+        return operation$;
     }
 
     logout(skipBackendRequest = false): void {
+        this.#authSessionVersion++;
         const wasLoggedIn = this.isLoggedIn();
         const accessToken = this.getAccessToken();
         const refreshToken = this.getRefreshToken();
         const apiUrl = this.#storageService.get(StorageKeys.API_URL);
 
-        this.#sessionGeneration++;
-        this.#sessionRestore = undefined;
-        this.#refreshLockAbortController?.abort();
-        this.#refreshLockAbortController = undefined;
+        // Cancel any pending refresh and give a future login a fresh cancellation notifier.
         const cancelledRefreshRequests = this.#cancelRefreshRequests;
         this.#cancelRefreshRequests = new Subject<void>();
         cancelledRefreshRequests.next();
         cancelledRefreshRequests.complete();
         this.#loginSub?.unsubscribe();
         this.#registerSub?.unsubscribe();
+        this.#refreshSub?.unsubscribe();
+        this.#isRefreshingToken = false;
         if (this.#refreshingTimer !== null) {
             clearTimeout(this.#refreshingTimer);
             this.#refreshingTimer = null;
         }
+        // Local logout must complete even if the access token expired or the backend is offline.
         this.#storageService
+            .delete(StorageKeys.AUTH_SESSION_ID)
             .delete(StorageKeys.ACCESS_TOKEN)
             .delete(StorageKeys.REFRESH_TOKEN);
         this.#canGoToPrivate.set(false);
@@ -286,17 +563,36 @@ export class AuthService implements OnDestroy {
             // if the token is corrupted, log out the user
             // should not occur if the token is issued by the api server
         } catch (err) {
-            this.logout();
+            this.logout(true);
         }
     }
 
-    isTokenExpired(token: string): boolean {
-        try {
-            const parsedToken = jwtDecode(token);
-            return parsedToken.exp !== undefined && parsedToken.exp * 1000 <= Date.now();
-        } catch {
-            return true;
+    #handleRefreshLock() {
+        if (this.#canRefreshToken === true) return;
+        if (this.#visibilityService.visible() === false) return;
+
+        if (this.#lockAbortController.signal.aborted) {
+            this.#lockAbortController = new AbortController();
         }
+        this.#logging.log("auth", "Requesting refresh lock.");
+        navigator.locks.request(LockNames.REFRESH_LOCK, { signal: this.#lockAbortController.signal }, () => {
+            this.#logging.log("auth", "This window will refresh access tokens.");
+            this.#canRefreshToken = true;
+
+            if (this.isLoggedIn()) {
+                this.#scheduleNextRefresh();
+            } else {
+                this.refresh();
+            }
+
+            return new Promise((_, r) => {
+                this.#lockAbortController.signal.addEventListener("abort", () => r());
+            });
+        }).catch(() => {
+            this.#logging.log("auth", "This window will not refresh access tokens.");
+            this.#canRefreshToken = false;
+            setTimeout(() => this.#handleRefreshLock(), 500);
+        });
     }
 
     isLoggedIn(): boolean {
@@ -304,124 +600,11 @@ export class AuthService implements OnDestroy {
         if (accessToken === null) return false;
 
         try {
-            return !this.isTokenExpired(accessToken);
+            const parsedAccessToken = jwtDecode(accessToken);
+            return parsedAccessToken.exp === undefined || parsedAccessToken.exp * 1000 > Date.now();
         } catch (err) {
             return false;
         }
-    }
-
-    ensureAuthenticated(): Promise<boolean> {
-        if (this.isLoggedIn()) {
-            this.#refreshRetryAfter = 0;
-            this.#canGoToPrivate.set(true);
-            return Promise.resolve(true);
-        }
-        if (Date.now() < this.#refreshRetryAfter) return Promise.resolve(false);
-        return this.#refreshWithLock();
-    }
-
-    #refreshWithLock(): Promise<boolean> {
-        if (this.#sessionRestore) return this.#sessionRestore;
-        const storedRefreshToken = this.getRefreshToken();
-        if (!storedRefreshToken || this.isTokenExpired(storedRefreshToken)) {
-            this.#canGoToPrivate.set(false);
-            return Promise.resolve(false);
-        }
-
-        const generation = this.#sessionGeneration;
-        const performRefresh = async (): Promise<boolean> => {
-            if (generation !== this.#sessionGeneration) return false;
-
-            // Another tab may have refreshed while this tab waited for the lock.
-            const currentAccessToken = this.getAccessToken();
-            if (currentAccessToken && !this.isTokenExpired(currentAccessToken)) {
-                this.#refreshRetryAfter = 0;
-                this.#canGoToPrivate.set(true);
-                this.#scheduleNextRefresh();
-                return true;
-            }
-
-            const refreshToken = this.getRefreshToken();
-            if (!refreshToken || this.isTokenExpired(refreshToken)) {
-                this.#canGoToPrivate.set(false);
-                return false;
-            }
-
-            try {
-                const tokens = await firstValueFrom(this.#http.post<TokensFromApi>(
-                    new URL("auth/refresh", this.#storageService.get(StorageKeys.API_URL)!).href,
-                    {
-                        refresh_token: refreshToken,
-                        requested_scopes: Object(this.getDecodedAccessToken())?.scope || null,
-                    },
-                ).pipe(
-                    timeout(10_000),
-                    takeUntil(this.#cancelRefreshRequests),
-                ));
-
-                if (generation !== this.#sessionGeneration || this.getRefreshToken() !== refreshToken) {
-                    return false;
-                }
-                this.#storageService
-                    .set(StorageKeys.ACCESS_TOKEN, tokens.access_token)
-                    .set(StorageKeys.REFRESH_TOKEN, tokens.refresh_token);
-                this.#refreshRetryAfter = 0;
-                this.#canGoToPrivate.set(true);
-                this.#scheduleNextRefresh();
-                this.#logging.log("auth", "Access token was refreshed.");
-                return true;
-            } catch (err) {
-                if (generation !== this.#sessionGeneration) return false;
-                this.#logging.error("auth", "Error while refreshing token.", err);
-                const latestAccessToken = this.getAccessToken();
-                if (latestAccessToken && !this.isTokenExpired(latestAccessToken)) {
-                    this.#canGoToPrivate.set(true);
-                    this.#scheduleNextRefresh();
-                    return true;
-                }
-                if (err instanceof HttpErrorResponse && err.status !== 0 && this.getRefreshToken() === refreshToken) {
-                    this.#storageService.delete(StorageKeys.REFRESH_TOKEN);
-                }
-                this.#refreshRetryAfter = Date.now() + 15_000;
-                this.#canGoToPrivate.set(false);
-                if ((err instanceof HttpErrorResponse && err.status === 0) || err instanceof TimeoutError) {
-                    this.#scheduleNextRefresh();
-                }
-                return false;
-            }
-        };
-
-        let lockTimeout: ReturnType<typeof setTimeout> | undefined;
-        let lockAbortController: AbortController | undefined;
-        let coordinatedRefresh: Promise<boolean>;
-        if (navigator.locks) {
-            lockAbortController = new AbortController();
-            this.#refreshLockAbortController = lockAbortController;
-            lockTimeout = setTimeout(() => lockAbortController?.abort(), 15_000);
-            coordinatedRefresh = navigator.locks.request(
-                LockNames.REFRESH_LOCK,
-                { signal: lockAbortController.signal },
-                performRefresh,
-            );
-        } else {
-            coordinatedRefresh = performRefresh();
-        }
-        const sharedRefresh = Promise.resolve(coordinatedRefresh).catch(err => {
-            if (generation === this.#sessionGeneration) {
-                this.#logging.error("auth", "Could not acquire refresh lock.", err);
-                this.#refreshRetryAfter = Date.now() + 15_000;
-                this.#scheduleNextRefresh();
-            }
-            return false;
-        }).finally(() => {
-            if (lockTimeout !== undefined) clearTimeout(lockTimeout);
-            if (this.#refreshLockAbortController === lockAbortController) {
-                this.#refreshLockAbortController = undefined;
-            }
-            if (this.#sessionRestore === sharedRefresh) this.#sessionRestore = undefined;
-        });
-        this.#sessionRestore = sharedRefresh;
-        return sharedRefresh;
     }
 
     getAccessToken(): string | null {
